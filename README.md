@@ -14,7 +14,7 @@ Symfony bundle that adds the possibility to find Twig templates and blocks used 
 ## Installation
 
 ```bash
-composer require nowo-tech/twig-inspector-bundle:^0.0.1 --dev
+composer require nowo-tech/twig-inspector-bundle:^1.0.0 --dev
 ```
 
 Then, register the bundle in your `config/bundles.php`:
