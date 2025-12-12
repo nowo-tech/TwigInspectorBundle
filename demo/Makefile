@@ -16,14 +16,14 @@ help:
 	@echo "  shell-symfony6     Open shell in Symfony 6.4 PHP container"
 	@echo "  logs-symfony6      Show Symfony 6.4 container logs"
 	@echo ""
-	@echo "Symfony 7.0 Demo (Port 8081):"
+	@echo "Symfony 7.0 Demo (Port 8001):"
 	@echo "  up-symfony7        Start Symfony 7.0 demo containers"
 	@echo "  down-symfony7      Stop Symfony 7.0 demo containers"
 	@echo "  install-symfony7   Install dependencies for Symfony 7.0 demo"
 	@echo "  shell-symfony7     Open shell in Symfony 7.0 PHP container"
 	@echo "  logs-symfony7      Show Symfony 7.0 container logs"
 	@echo ""
-	@echo "Symfony 8.0 Demo (Port 8082):"
+	@echo "Symfony 8.0 Demo (Port 8001):"
 	@echo "  up-symfony8        Start Symfony 8.0 demo containers"
 	@echo "  down-symfony8      Stop Symfony 8.0 demo containers"
 	@echo "  install-symfony8   Install dependencies for Symfony 8.0 demo"
@@ -41,8 +41,8 @@ help:
 	@echo ""
 	@echo "Access URLs:"
 	@echo "  Symfony 6.4: http://localhost:8001"
-	@echo "  Symfony 7.0: http://localhost:8081"
-	@echo "  Symfony 8.0: http://localhost:8082"
+	@echo "  Symfony 7.0: http://localhost:8001"
+	@echo "  Symfony 8.0: http://localhost:8001"
 
 # Symfony 6.4 Demo
 up-symfony6:
@@ -73,7 +73,7 @@ up-symfony7:
 	@echo "Starting Symfony 7.0 demo..."
 	cd demo-symfony7 && docker-compose up -d
 	@echo "✅ Symfony 7.0 demo started!"
-	@echo "🌐 Access at: http://localhost:8081"
+	@echo "🌐 Access at: http://localhost:8001"
 
 down-symfony7:
 	@echo "Stopping Symfony 7.0 demo..."
@@ -84,7 +84,7 @@ install-symfony7:
 	@echo "Installing Composer dependencies for Symfony 7.0..."
 	cd demo-symfony7 && docker-compose exec -T php composer update --no-interaction
 	@echo "✅ Symfony 7.0 dependencies installed!"
-	@echo "🌐 Access at: http://localhost:8081"
+	@echo "🌐 Access at: http://localhost:8001"
 
 shell-symfony7:
 	cd demo-symfony7 && docker-compose exec php sh
@@ -97,7 +97,7 @@ up-symfony8:
 	@echo "Starting Symfony 8.0 demo..."
 	cd demo-symfony8 && docker-compose up -d
 	@echo "✅ Symfony 8.0 demo started!"
-	@echo "🌐 Access at: http://localhost:8082"
+	@echo "🌐 Access at: http://localhost:8001"
 
 down-symfony8:
 	@echo "Stopping Symfony 8.0 demo..."
@@ -108,7 +108,7 @@ install-symfony8:
 	@echo "Installing Composer dependencies for Symfony 8.0..."
 	cd demo-symfony8 && docker-compose exec -T php composer update --no-interaction
 	@echo "✅ Symfony 8.0 dependencies installed!"
-	@echo "🌐 Access at: http://localhost:8082"
+	@echo "🌐 Access at: http://localhost:8001"
 
 shell-symfony8:
 	cd demo-symfony8 && docker-compose exec php sh

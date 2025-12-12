@@ -42,8 +42,9 @@
         "twig/twig": "^3.8 || ^4.0"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.0",
         "phpunit/phpunit": "^10.0 || ^11.0",
-        "friendsofphp/php-cs-fixer": "^3.0"
+        "symfony/yaml": "^8.0"
     },
     "autoload": {
         "psr-4": {
@@ -81,4 +82,3 @@
         "qa": "Run all quality assurance checks"
     }
 }
-

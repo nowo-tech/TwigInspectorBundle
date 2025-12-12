@@ -41,31 +41,27 @@ final class DebugInfoNodeVisitorTest extends TestCase
 
   public function testLeaveNodeWithModuleNode(): void
   {
-    $moduleNode = $this->createMock(ModuleNode::class);
-    $moduleNode->method('getTemplateName')->willReturn('test.html.twig');
-    $moduleNode->method('getTemplateLine')->willReturn(1);
+    // Create a real ModuleNode instance
+    $body = new Node([]);
+    $parent = null;
+    $blocks = new Node([]);
+    $macros = new Node([]);
+    $traits = new Node([]);
+    $embeddedTemplates = [];
+    $source = new \Twig\Source('', 'test.html.twig');
+    $moduleNode = new ModuleNode($body, $parent, $blocks, $macros, $traits, $embeddedTemplates, $source);
 
-    $displayStart = new Node([]);
-    $displayEnd   = new Node([]);
-
-    $moduleNode->method('getNode')
-      ->willReturnCallback(function ($name) use ($displayStart, $displayEnd) {
-        return match ($name) {
-          'display_start' => $displayStart,
-          'display_end'   => $displayEnd,
-        };
-      });
-
-    $moduleNode->expects($this->exactly(2))
-      ->method('setNode')
-      ->withConsecutive(
-        ['display_start', $this->isInstanceOf(Node::class)],
-        ['display_end', $this->isInstanceOf(Node::class)]
-      );
+    $originalDisplayStart = $moduleNode->getNode('display_start');
+    $originalDisplayEnd = $moduleNode->getNode('display_end');
 
     $result = $this->visitor->leaveNode($moduleNode, $this->env);
 
     $this->assertSame($moduleNode, $result);
+    // Verify that display_start and display_end were modified
+    $newDisplayStart = $moduleNode->getNode('display_start');
+    $newDisplayEnd = $moduleNode->getNode('display_end');
+    $this->assertNotSame($originalDisplayStart, $newDisplayStart);
+    $this->assertNotSame($originalDisplayEnd, $newDisplayEnd);
   }
 
   public function testLeaveNodeWithBlockNode(): void
@@ -108,16 +104,21 @@ final class DebugInfoNodeVisitorTest extends TestCase
     $visitor1 = new DebugInfoNodeVisitor();
     $visitor2 = new DebugInfoNodeVisitor();
 
-    $moduleNode = $this->createMock(ModuleNode::class);
-    $moduleNode->method('getTemplateName')->willReturn('test.html.twig');
-    $moduleNode->method('getTemplateLine')->willReturn(1);
-    $moduleNode->method('getNode')->willReturn(new Node([]));
-    $moduleNode->method('setNode')->willReturnSelf();
+    // Create a real ModuleNode instance
+    $body = new Node([]);
+    $parent = null;
+    $blocks = new Node([]);
+    $macros = new Node([]);
+    $traits = new Node([]);
+    $embeddedTemplates = [];
+    $source = new \Twig\Source('', 'test.html.twig');
+    $moduleNode = new ModuleNode($body, $parent, $blocks, $macros, $traits, $embeddedTemplates, $source);
 
     $visitor1->leaveNode($moduleNode, $this->env);
     $visitor2->leaveNode($moduleNode, $this->env);
 
     // Var name should be consistent (based on extension name hash)
+    // Both visitors should generate the same variable name
     $this->assertTrue(true);
   }
 }

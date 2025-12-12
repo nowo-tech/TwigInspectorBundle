@@ -58,7 +58,12 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     $this->extension->start($ref);
 
-    // Output buffering should be started
+    // Output buffering should be started, clean it up
+    if (ob_get_level() > 0)
+    {
+      ob_end_clean();
+    }
+
     $this->assertTrue(true);
   }
 
@@ -88,15 +93,19 @@ final class HtmlCommentsExtensionTest extends TestCase
       ->with('nowo_twig_inspector_template_link', ['template' => 'template.html.twig', 'line' => 10])
       ->willReturn('/_template/template.html.twig?line=10');
 
+    // Wrap the entire test in output buffering to capture end()'s output
+    // This ensures end() gets the buffer from start(), not a new empty buffer
     ob_start();
+    $this->extension->start($ref);
     echo '<div>Test content</div>';
     $this->extension->end($ref);
     $output = ob_get_clean();
 
-    $this->assertStringContainsString('<!--', $output);
-    $this->assertStringContainsString('block_name', $output);
-    $this->assertStringContainsString('<div>Test content</div>', $output);
-    $this->assertStringContainsString('-->', $output);
+    // Verify that comments were added
+    $this->assertStringContainsString('<!--', $output, 'Output should contain HTML comment start. Got: ' . $output);
+    $this->assertStringContainsString('block_name', $output, 'Output should contain block name. Got: ' . $output);
+    $this->assertStringContainsString('<div>Test content</div>', $output, 'Output should contain original content. Got: ' . $output);
+    $this->assertStringContainsString('-->', $output, 'Output should contain HTML comment end. Got: ' . $output);
   }
 
   public function testEndWithNonHtmlContent(): void
@@ -107,8 +116,9 @@ final class HtmlCommentsExtensionTest extends TestCase
     $request->cookies->set('twig_inspector_is_active', '1');
     $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
-    ob_start();
+    $this->extension->start($ref);
     echo 'plain text';
+    ob_start();
     $this->extension->end($ref);
     $output = ob_get_clean();
 
@@ -124,8 +134,9 @@ final class HtmlCommentsExtensionTest extends TestCase
     $request->cookies->set('twig_inspector_is_active', '1');
     $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
-    ob_start();
+    $this->extension->start($ref);
     echo '{"key": "value"}';
+    ob_start();
     $this->extension->end($ref);
     $output = ob_get_clean();
 
@@ -141,8 +152,9 @@ final class HtmlCommentsExtensionTest extends TestCase
     $request->cookies->set('twig_inspector_is_active', '1');
     $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
-    ob_start();
+    $this->extension->start($ref);
     echo '<div><% code %></div>';
+    ob_start();
     $this->extension->end($ref);
     $output = ob_get_clean();
 
@@ -158,6 +170,11 @@ final class HtmlCommentsExtensionTest extends TestCase
     $request->cookies->set('twig_inspector_is_active', '1');
     $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
+    // start() should not start buffering for non-.html.twig templates
+    $this->extension->start($ref);
+
+    // Since start() doesn't start buffering for non-.html.twig, end() will return early
+    // We need to capture output normally
     ob_start();
     echo '<div>content</div>';
     $this->extension->end($ref);
@@ -177,16 +194,21 @@ final class HtmlCommentsExtensionTest extends TestCase
     $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
     $this->urlGenerator->method('generate')
-      ->willReturn('/_template/template.html.twig?line=1');
+      ->willReturnCallback(function ($route, $params) {
+        return '/_template/' . $params['template'] . '?line=' . $params['line'];
+      });
 
     // First block
     ob_start();
+    $this->extension->start($ref1);
     echo '<div>outer</div>';
     $this->extension->end($ref1);
     $output1 = ob_get_clean();
 
-    // Second block (nested)
+    // Second block (nested) - contains previous content but changed
+    // This tests the case where trim($content) !== trim((string) $this->previousContent)
     ob_start();
+    $this->extension->start($ref2);
     echo $output1 . '<div>inner</div>';
     $this->extension->end($ref2);
     $output2 = ob_get_clean();
@@ -241,6 +263,102 @@ final class HtmlCommentsExtensionTest extends TestCase
     $result = $method->invoke($this->extension, $ref);
 
     $this->assertTrue($result);
+  }
+
+  public function testEndWithNestedContentUnchanged(): void
+  {
+    $ref1 = new NodeReference('outer', 'template.html.twig', 1);
+    $ref2 = new NodeReference('inner', 'template.html.twig', 2);
+
+    $request = new Request();
+    $request->cookies->set('twig_inspector_is_active', '1');
+    $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+    $this->urlGenerator->method('generate')
+      ->willReturnCallback(function ($route, $params) {
+        return '/_template/' . $params['template'] . '?line=' . $params['line'];
+      });
+
+    // First block - this sets previousContent
+    ob_start();
+    $this->extension->start($ref1);
+    echo '<div>outer</div>';
+    $this->extension->end($ref1);
+    $output1 = ob_get_clean();
+
+    // Second block with same trimmed content - should detect nested but unchanged
+    // This tests the case where trim($content) === trim((string) $this->previousContent)
+    ob_start();
+    $this->extension->start($ref2);
+    echo '<div>outer</div>'; // Same trimmed content as previous
+    $this->extension->end($ref2);
+    $output2 = ob_get_clean();
+
+    // Both should have comments
+    $this->assertStringContainsString('<!--', $output1);
+    $this->assertStringContainsString('<!--', $output2);
+    $this->assertStringContainsString('outer', $output1);
+    $this->assertStringContainsString('inner', $output2);
+  }
+
+  public function testIsEnabledWithNonHtmlTwigTemplate(): void
+  {
+    $ref = new NodeReference('block', 'template.txt.twig', 1);
+
+    $request = new Request();
+    $request->cookies->set('twig_inspector_is_active', '1');
+    $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+    $reflection = new \ReflectionClass($this->extension);
+    $method     = $reflection->getMethod('isEnabled');
+    $method->setAccessible(true);
+
+    $result = $method->invoke($this->extension, $ref);
+
+    // Should return false because template doesn't end with .html.twig
+    $this->assertFalse($result);
+  }
+
+  public function testIsSupportedWithEmptyString(): void
+  {
+    $reflection = new \ReflectionClass($this->extension);
+    $method     = $reflection->getMethod('isSupported');
+    $method->setAccessible(true);
+
+    // Test with empty string - trimmed will be empty
+    $result = $method->invoke($this->extension, '');
+
+    // Empty string should not be supported (no HTML tags)
+    $this->assertFalse($result);
+  }
+
+  public function testIsSupportedWithWhitespaceOnly(): void
+  {
+    $reflection = new \ReflectionClass($this->extension);
+    $method     = $reflection->getMethod('isSupported');
+    $method->setAccessible(true);
+
+    // Test with whitespace only - trimmed will be empty
+    $result = $method->invoke($this->extension, '   ');
+
+    // Whitespace only should not be supported (no HTML tags)
+    $this->assertFalse($result);
+  }
+
+  public function testIsSupportedWithNonEmptyTrimmedButStartsWithBracket(): void
+  {
+    $reflection = new \ReflectionClass($this->extension);
+    $method     = $reflection->getMethod('isSupported');
+    $method->setAccessible(true);
+
+    // Test with content that has HTML tags but starts with [ or {
+    // This tests the case where trimmed !== '' && in_array($trimmed[0], ['[', '{'], true)
+    $result1 = $method->invoke($this->extension, '[{"html": "<div>test</div>"}]');
+    $result2 = $method->invoke($this->extension, '{"html": "<div>test</div>"}');
+
+    // Should return false because content starts with JSON brackets
+    $this->assertFalse($result1);
+    $this->assertFalse($result2);
   }
 
   public function testGetComment(): void

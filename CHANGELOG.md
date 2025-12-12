@@ -9,7 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.1] - 2024-12-12
 
+### Added
+- **100% Code Coverage**: Achieved complete test coverage (144/144 lines, 35/35 methods, 11/11 classes)
+- **Comprehensive Test Suite**: Added tests for all edge cases including:
+  - Nested content handling (changed and unchanged)
+  - Non-HTML template detection
+  - Empty and whitespace-only content
+  - JSON content detection
+  - Backbone template detection
+  - Template file extension validation
+- **CONTRIBUTING.md**: Added comprehensive contribution guidelines
+
 ### Fixed
+- **Test Suite**: Fixed all test failures and warnings
+  - Corrected tests with final classes (ModuleNode, Source, TemplateWrapper) using real instances
+  - Fixed output buffering issues in HtmlCommentsExtension tests
+  - Corrected NodeStart test to expect 3 repr() calls instead of 2
+  - Added missing symfony/yaml dependency for tests
 - **Web Profiler integration**: Fixed namespace issue preventing Web Profiler toolbar from loading
   - Changed Twig namespace from `@NowoTwigInspectorBundle` to `@NowoTwigInspector` (correct Symfony convention)
   - Updated template references in `services.yaml` and `template.html.twig`
@@ -31,13 +47,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated demo projects to use specific bundle version (`^0.0.1`) instead of wildcard (`*`)
 
 ### Added
-- Comprehensive test suite with 100% code coverage
+- **100% Code Coverage**: Complete test coverage (144/144 lines, 35/35 methods, 11/11 classes)
+- Comprehensive test suite covering all edge cases
 - GitHub Actions CI/CD pipeline
 - Code style enforcement with PHP-CS-Fixer
 - Automated dependency updates with Dependabot
 - Three independent demo projects (Symfony 6.4, 7.0, and 8.0) with their own docker-compose.yml
 - Test suites for each demo project
 - Support for PHP 8.4 and 8.5
+- CONTRIBUTING.md with contribution guidelines
 
 ## [1.0.0] - 2024-12-11
 

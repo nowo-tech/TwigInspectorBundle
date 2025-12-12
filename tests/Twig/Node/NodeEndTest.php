@@ -29,12 +29,19 @@ final class NodeEndTest extends TestCase
     $node     = new NodeEnd('var123');
     $compiler = $this->createMock(Compiler::class);
 
-    $compiler->expects($this->exactly(2))
-      ->method('write')
-      ->withConsecutive(
-        ["\n"],
-        [$this->stringContains('$var123->end($var123_ref')]
-      );
+    $compiler->method('write')
+      ->willReturnCallback(function ($arg) use ($compiler) {
+        static $callCount = 0;
+        $callCount++;
+        if ($callCount === 1) {
+          $this->assertSame("\n", $arg);
+        } else {
+          $this->assertStringContainsString('$var123->end($var123_ref', $arg);
+        }
+        return $compiler;
+      });
+
+    $compiler->expects($this->exactly(2))->method('write');
 
     $node->compile($compiler);
   }

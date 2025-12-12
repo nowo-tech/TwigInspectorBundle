@@ -32,21 +32,48 @@ final class NodeStartTest extends TestCase
     $node     = new NodeStart('ExtensionName', 'block_name', 10, 'var123');
     $compiler = $this->createMock(Compiler::class);
 
+    $writeCallCount = 0;
     $compiler->expects($this->exactly(2))
       ->method('write')
-      ->withConsecutive(
-        [$this->stringContains('$var123 = $this->env->getExtension(')],
-        [$this->stringContains('$var123->start($var123_ref = new')]
-      );
+      ->willReturnCallback(function ($arg) use (&$writeCallCount, $compiler) {
+        $writeCallCount++;
+        if ($writeCallCount === 1) {
+          $this->assertStringContainsString('$var123 = $this->env->getExtension(', $arg);
+        } else {
+          $this->assertStringContainsString('$var123->start($var123_ref = new', $arg);
+        }
+        return $compiler;
+      });
 
-    $compiler->expects($this->once())
+    $reprCallCount = 0;
+    $compiler->expects($this->exactly(3))
       ->method('repr')
-      ->with('ExtensionName')
-      ->willReturnSelf();
+      ->willReturnCallback(function ($arg) use (&$reprCallCount, $compiler) {
+        $reprCallCount++;
+        if ($reprCallCount === 1) {
+          $this->assertSame('ExtensionName', $arg);
+        } elseif ($reprCallCount === 2) {
+          $this->assertSame('block_name', $arg);
+        } else {
+          $this->assertSame(10, $arg);
+        }
+        return $compiler;
+      });
 
-    $compiler->expects($this->exactly(2))
+    $rawCallCount = 0;
+    $compiler->expects($this->exactly(3))
       ->method('raw')
-      ->willReturnSelf();
+      ->willReturnCallback(function ($arg) use (&$rawCallCount, $compiler) {
+        $rawCallCount++;
+        if ($rawCallCount === 1) {
+          $this->assertSame(");\n", $arg);
+        } elseif ($rawCallCount === 2) {
+          $this->assertSame(', $this->getTemplateName(), ', $arg);
+        } else {
+          $this->assertSame("));\n\n", $arg);
+        }
+        return $compiler;
+      });
 
     $node->compile($compiler);
   }

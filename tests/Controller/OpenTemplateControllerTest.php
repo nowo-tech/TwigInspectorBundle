@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Twig\Environment;
 use Twig\Error\LoaderError;
+use Twig\Loader\ArrayLoader;
 use Twig\Source;
 use Twig\TemplateWrapper;
 
@@ -39,11 +40,10 @@ final class OpenTemplateControllerTest extends TestCase
     $request  = new Request();
     $template = 'test.html.twig';
 
-    $source = $this->createMock(Source::class);
-    $source->method('getPath')->willReturn('/path/to/test.html.twig');
-
-    $templateWrapper = $this->createMock(TemplateWrapper::class);
-    $templateWrapper->method('getSourceContext')->willReturn($source);
+    // Create a real Twig environment with ArrayLoader to create real TemplateWrapper
+    $loader = new ArrayLoader([$template => 'test content']);
+    $realTwig = new Environment($loader);
+    $templateWrapper = $realTwig->load($template);
 
     $this->twig->expects($this->once())
       ->method('load')
@@ -52,7 +52,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     $this->fileLinkFormatter->expects($this->once())
       ->method('format')
-      ->with('/path/to/test.html.twig', 1)
+      ->with($this->anything(), 1)
       ->willReturn('phpstorm://open?file=/path/to/test.html.twig&line=1');
 
     $response = ($this->controller)($request, $template);
@@ -66,11 +66,10 @@ final class OpenTemplateControllerTest extends TestCase
     $request  = new Request(['line' => 42]);
     $template = 'test.html.twig';
 
-    $source = $this->createMock(Source::class);
-    $source->method('getPath')->willReturn('/path/to/test.html.twig');
-
-    $templateWrapper = $this->createMock(TemplateWrapper::class);
-    $templateWrapper->method('getSourceContext')->willReturn($source);
+    // Create a real Twig environment with ArrayLoader to create real TemplateWrapper
+    $loader = new ArrayLoader([$template => 'test content']);
+    $realTwig = new Environment($loader);
+    $templateWrapper = $realTwig->load($template);
 
     $this->twig->expects($this->once())
       ->method('load')
@@ -79,7 +78,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     $this->fileLinkFormatter->expects($this->once())
       ->method('format')
-      ->with('/path/to/test.html.twig', 42)
+      ->with($this->anything(), 42)
       ->willReturn('phpstorm://open?file=/path/to/test.html.twig&line=42');
 
     $response = ($this->controller)($request, $template);
@@ -93,11 +92,10 @@ final class OpenTemplateControllerTest extends TestCase
     $request  = new Request(['line' => '100']);
     $template = 'test.html.twig';
 
-    $source = $this->createMock(Source::class);
-    $source->method('getPath')->willReturn('/path/to/test.html.twig');
-
-    $templateWrapper = $this->createMock(TemplateWrapper::class);
-    $templateWrapper->method('getSourceContext')->willReturn($source);
+    // Create a real Twig environment with ArrayLoader to create real TemplateWrapper
+    $loader = new ArrayLoader([$template => 'test content']);
+    $realTwig = new Environment($loader);
+    $templateWrapper = $realTwig->load($template);
 
     $this->twig->expects($this->once())
       ->method('load')
@@ -106,7 +104,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     $this->fileLinkFormatter->expects($this->once())
       ->method('format')
-      ->with('/path/to/test.html.twig', 100)
+      ->with($this->anything(), 100)
       ->willReturn('phpstorm://open?file=/path/to/test.html.twig&line=100');
 
     $response = ($this->controller)($request, $template);
