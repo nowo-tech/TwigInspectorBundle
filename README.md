@@ -14,7 +14,7 @@ Symfony bundle that adds the possibility to find Twig templates and blocks used 
 ## Installation
 
 ```bash
-composer require nowo-tech/twig-inspector-bundle:^1.0.1 --dev
+composer require nowo-tech/twig-inspector-bundle:^1.0.2 --dev
 ```
 
 Then, register the bundle in your `config/bundles.php`:
@@ -212,9 +212,9 @@ composer cs-fix
 The bundle uses GitHub Actions for continuous integration:
 
 - **Tests**: Runs on PHP 8.1, 8.2, 8.3, 8.4, and 8.5 with Symfony 6.4, 7.0, and 8.0
-  - PHP 8.1: Symfony 6.4 and 7.0 (Symfony 8.0 requires PHP 8.2+)
-  - PHP 8.2: Symfony 6.4, 7.0, and 8.0
-  - PHP 8.3: Symfony 6.4, 7.0, and 8.0
+  - PHP 8.1: Symfony 6.4 only (Symfony 7.0+ requires PHP 8.2+, Symfony 8.0 requires PHP 8.4+)
+  - PHP 8.2: Symfony 6.4 and 7.0 (Symfony 8.0 requires PHP 8.4+)
+  - PHP 8.3: Symfony 6.4 and 7.0 (Symfony 8.0 requires PHP 8.4+)
   - PHP 8.4: Symfony 6.4, 7.0, and 8.0
   - PHP 8.5: Symfony 6.4, 7.0, and 8.0
 - **Code Style**: Automatically fixes code style on push
