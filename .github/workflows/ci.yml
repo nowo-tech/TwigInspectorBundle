@@ -18,8 +18,15 @@ jobs:
         php: ['8.1', '8.2', '8.3', '8.4', '8.5']
         symfony: ['6.4', '7.0', '8.0']
         exclude:
-          # PHP 8.1 doesn't support Symfony 8.0 (requires PHP 8.2+)
+          # PHP 8.1 doesn't support Symfony 7.0+ (requires PHP 8.2+) and Symfony 8.0 (requires PHP 8.4+)
           - php: '8.1'
+            symfony: '7.0'
+          - php: '8.1'
+            symfony: '8.0'
+          # PHP 8.2 and 8.3 don't support Symfony 8.0 (requires PHP 8.4+)
+          - php: '8.2'
+            symfony: '8.0'
+          - php: '8.3'
             symfony: '8.0'
 
     steps:
