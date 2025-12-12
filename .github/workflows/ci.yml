@@ -71,45 +71,45 @@ jobs:
         run: |
           echo "📊 Generating coverage report..."
           composer test-coverage
-          
+
           if [ $? -ne 0 ]; then
             echo "❌ ERROR: Tests failed when generating coverage report"
             exit 1
           fi
-          
+
           echo "✅ All tests passed, validating 100% coverage..."
-          
+
           # Validate that coverage is 100%
           php -r "
           if (!file_exists('coverage.xml')) {
               echo 'ERROR: coverage.xml file was not generated\n';
               exit(1);
           }
-          
+
           \$coverage = simplexml_load_file('coverage.xml');
           if (\$coverage === false) {
               echo 'ERROR: Could not read coverage.xml\n';
               exit(1);
           }
-          
+
           \$metrics = \$coverage->project->metrics;
           \$elements = (float)\$metrics['elements'];
           \$coveredElements = (float)\$metrics['coveredelements'];
-          
+
           if (\$elements == 0) {
               echo 'No elements to cover\n';
               exit(0);
           }
-          
+
           \$percentage = (\$coveredElements / \$elements) * 100;
-          
+
           echo \"Coverage: \$coveredElements/\$elements (\$percentage%)\n\";
-          
+
           if (\$percentage < 100) {
               echo \"ERROR: Coverage must be 100%. Current: \$percentage%\n\";
               exit(1);
           }
-          
+
           echo \"✅ 100% coverage confirmed\n\";
           "
 
@@ -135,7 +135,7 @@ jobs:
           tools: composer:v2, cs2pr
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer update --prefer-dist --no-progress --no-interaction
 
       - name: Fix code style
         run: composer cs-fix
@@ -175,7 +175,7 @@ jobs:
           tools: composer:v2, cs2pr
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer update --prefer-dist --no-progress --no-interaction
 
       - name: Check code style
         run: composer cs-check
@@ -197,13 +197,13 @@ jobs:
           tools: composer:v2
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer update --prefer-dist --no-progress --no-interaction
 
       - name: Run tests with coverage
         run: |
           echo "🧪 Running tests with coverage..."
           composer test-coverage
-          
+
           if [ $? -ne 0 ]; then
             echo "❌ ERROR: Tests failed"
             exit 1
@@ -213,38 +213,38 @@ jobs:
       - name: Validate 100% coverage
         run: |
           echo "📊 Validating 100% coverage..."
-          
+
           # Validate that coverage is 100%
           php -r "
           if (!file_exists('coverage.xml')) {
               echo 'ERROR: coverage.xml file was not generated\n';
               exit(1);
           }
-          
+
           \$coverage = simplexml_load_file('coverage.xml');
           if (\$coverage === false) {
               echo 'ERROR: Could not read coverage.xml\n';
               exit(1);
           }
-          
+
           \$metrics = \$coverage->project->metrics;
           \$elements = (float)\$metrics['elements'];
           \$coveredElements = (float)\$metrics['coveredelements'];
-          
+
           if (\$elements == 0) {
               echo 'No elements to cover\n';
               exit(0);
           }
-          
+
           \$percentage = (\$coveredElements / \$elements) * 100;
-          
+
           echo \"Coverage: \$coveredElements/\$elements (\$percentage%)\n\";
-          
+
           if (\$percentage < 100) {
               echo \"ERROR: Coverage must be 100%. Current: \$percentage%\n\";
               exit(1);
           }
-          
+
           echo \"✅ 100% coverage confirmed\n\";
           "
 
