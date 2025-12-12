@@ -1,5 +1,10 @@
 # Twig Inspector Bundle
 
+[![CI](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml)
+[![Latest Stable Version](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/v)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle)
+[![License](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/license)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle)
+[![PHP Version Require](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/require/php)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle)
+
 Symfony bundle that adds the possibility to find Twig templates and blocks used for rendering HTML pages faster during development.
 
 ## Features
