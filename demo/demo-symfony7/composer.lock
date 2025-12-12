@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "14a822b4b7581422bf783bf2dc5b994f",
+    "content-hash": "7c7ecf41e739e853641cd7e65ccda6ef",
     "packages": [
         {
             "name": "composer/semver",
@@ -85,16 +85,16 @@
         },
         {
             "name": "nowo-tech/twig-inspector-bundle",
-            "version": "v0.0.0",
+            "version": "0.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nowo-tech/TwigInspectorBundle.git",
-                "reference": "d693e240eb346376ce50208687dfb9a1d4800fbc"
+                "reference": "c2b80441b72ccb469b822a1506bc41c8d39b7243"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nowo-tech/TwigInspectorBundle/zipball/d693e240eb346376ce50208687dfb9a1d4800fbc",
-                "reference": "d693e240eb346376ce50208687dfb9a1d4800fbc",
+                "url": "https://api.github.com/repos/nowo-tech/TwigInspectorBundle/zipball/c2b80441b72ccb469b822a1506bc41c8d39b7243",
+                "reference": "c2b80441b72ccb469b822a1506bc41c8d39b7243",
                 "shasum": ""
             },
             "require": {
@@ -155,7 +155,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-12-12T12:40:56+00:00"
+            "time": "2025-12-12T13:17:39+00:00"
         },
         {
             "name": "psr/cache",
@@ -5307,12 +5307,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.1,<8.6"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.9.0"
 }
