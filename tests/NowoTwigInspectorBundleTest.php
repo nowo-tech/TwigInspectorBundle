@@ -12,40 +12,38 @@ use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 /**
  * Tests for NowoTwigInspectorBundle.
  *
- * @package Nowo\TwigInspectorBundle\Tests
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2024 Nowo.tech
  */
 final class NowoTwigInspectorBundleTest extends TestCase
 {
-  private NowoTwigInspectorBundle $bundle;
+    private NowoTwigInspectorBundle $bundle;
 
-  protected function setUp(): void
-  {
-    $this->bundle = new NowoTwigInspectorBundle();
-  }
+    protected function setUp(): void
+    {
+        $this->bundle = new NowoTwigInspectorBundle();
+    }
 
-  public function testGetContainerExtension(): void
-  {
-    $extension = $this->bundle->getContainerExtension();
+    public function testGetContainerExtension(): void
+    {
+        $extension = $this->bundle->getContainerExtension();
 
-    $this->assertInstanceOf(ExtensionInterface::class, $extension);
-    $this->assertInstanceOf(NowoTwigInspectorExtension::class, $extension);
-  }
+        $this->assertInstanceOf(ExtensionInterface::class, $extension);
+        $this->assertInstanceOf(NowoTwigInspectorExtension::class, $extension);
+    }
 
-  public function testGetContainerExtensionReturnsSameInstance(): void
-  {
-    $extension1 = $this->bundle->getContainerExtension();
-    $extension2 = $this->bundle->getContainerExtension();
+    public function testGetContainerExtensionReturnsSameInstance(): void
+    {
+        $extension1 = $this->bundle->getContainerExtension();
+        $extension2 = $this->bundle->getContainerExtension();
 
-    $this->assertSame($extension1, $extension2);
-  }
+        $this->assertSame($extension1, $extension2);
+    }
 
-  public function testGetContainerExtensionAlias(): void
-  {
-    $extension = $this->bundle->getContainerExtension();
+    public function testGetContainerExtensionAlias(): void
+    {
+        $extension = $this->bundle->getContainerExtension();
 
-    $this->assertSame('nowo_twig_inspector', $extension->getAlias());
-  }
+        $this->assertSame('nowo_twig_inspector', $extension->getAlias());
+    }
 }
-
