@@ -1,0 +1,5 @@
+demo_home:
+    path: /
+    controller: App\Controller\DemoController::home
+    methods: [GET]
+

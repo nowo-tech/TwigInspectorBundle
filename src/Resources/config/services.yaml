@@ -1,0 +1,40 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  nowo_twig_inspector.controller.open_template:
+    class: Nowo\TwigInspectorBundle\Controller\OpenTemplateController
+    arguments:
+      - '@twig'
+      - '@debug.file_link_formatter'
+    public: true
+
+  Nowo\TwigInspectorBundle\BoxDrawings:
+    class: Nowo\TwigInspectorBundle\BoxDrawings
+
+  Nowo\TwigInspectorBundle\Twig\TwigInspectorExtension:
+    class: Nowo\TwigInspectorBundle\Twig\TwigInspectorExtension
+    tags:
+      - { name: twig.extension }
+
+  Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension:
+    class: Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension
+    arguments:
+      - '@request_stack'
+      - '@router'
+      - '@Nowo\TwigInspectorBundle\BoxDrawings'
+    tags:
+      - { name: twig.extension }
+
+  Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector:
+    class: Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector
+    tags:
+      -
+        name: data_collector
+        template: '@NowoTwigInspectorBundle/Collector/template.html.twig'
+        id: 'twig_inspector'
+        # just before symfony twig collector
+        priority: 260
+
