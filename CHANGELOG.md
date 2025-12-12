@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.1] - 2024-12-12
+
+### Fixed
+- **Web Profiler integration**: Fixed namespace issue preventing Web Profiler toolbar from loading
+  - Changed Twig namespace from `@NowoTwigInspectorBundle` to `@NowoTwigInspector` (correct Symfony convention)
+  - Updated template references in `services.yaml` and `template.html.twig`
+- **Asset loading**: Fixed JavaScript and CSS assets not loading in Web Profiler toolbar
+  - Copied assets from `assets/dist/` to `views/assets/dist/` for Twig template access
+  - Updated template to use correct `include()` syntax for assets
+- **Demo projects**: Fixed multiple issues in demo projects
+  - Added Dockerfiles with Composer installation for all demos
+  - Fixed nginx configuration for correct PHP-FPM path resolution
+  - Added profiler configuration in `framework.yaml` for all demos
+  - Created base templates with profiler block support
+  - Added route imports for Web Profiler and Twig Inspector bundle
+  - Added `symfony/yaml` dependency to all demos
+  - Added entrypoint scripts in Dockerfiles to handle directory permissions
+  - Configured Composer audit settings to allow insecure packages in development demos
+  - Standardized port configuration (8001 by default, configurable via PORT env variable)
+
+### Changed
+- Updated demo projects to use specific bundle version (`^0.0.1`) instead of wildcard (`*`)
+
 ### Added
 - Comprehensive test suite with 100% code coverage
 - GitHub Actions CI/CD pipeline

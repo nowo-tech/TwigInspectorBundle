@@ -14,7 +14,7 @@ Symfony bundle that adds the possibility to find Twig templates and blocks used 
 ## Installation
 
 ```bash
-composer require nowo-tech/twig-inspector-bundle --dev
+composer require nowo-tech/twig-inspector-bundle:^0.0.1 --dev
 ```
 
 Then, register the bundle in your `config/bundles.php`:
@@ -85,9 +85,9 @@ Supported IDEs:
 
 The bundle includes three demo projects, one for each supported Symfony version. Each demo has its own `docker-compose.yml` and can be run independently:
 
-- **Symfony 6.4 Demo**: `demo/demo-symfony6/` (Port 8080)
-- **Symfony 7.0 Demo**: `demo/demo-symfony7/` (Port 8081)
-- **Symfony 8.0 Demo**: `demo/demo-symfony8/` (Port 8082)
+- **Symfony 6.4 Demo**: `demo/demo-symfony6/` (Port 8001 by default, configurable via PORT env variable)
+- **Symfony 7.0 Demo**: `demo/demo-symfony7/` (Port 8001 by default, configurable via PORT env variable)
+- **Symfony 8.0 Demo**: `demo/demo-symfony8/` (Port 8001 by default, configurable via PORT env variable)
 
 ### Quick Start with Docker
 
@@ -98,19 +98,19 @@ Each demo can be started independently:
 cd demo/demo-symfony6
 docker-compose up -d
 docker-compose exec php composer install
-# Access at: http://localhost:8080
+# Access at: http://localhost:8001 (default port)
 
 # Symfony 7.0 Demo
 cd demo/demo-symfony7
 docker-compose up -d
 docker-compose exec php composer install
-# Access at: http://localhost:8081
+# Access at: http://localhost:8001 (default port)
 
 # Symfony 8.0 Demo
 cd demo/demo-symfony8
 docker-compose up -d
 docker-compose exec php composer install
-# Access at: http://localhost:8082
+# Access at: http://localhost:8001 (default port)
 ```
 
 Or use the Makefile helper commands from the `demo/` directory:

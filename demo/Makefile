@@ -40,7 +40,7 @@ help:
 	@echo "  clean              Remove vendor and cache from all demos"
 	@echo ""
 	@echo "Access URLs:"
-	@echo "  Symfony 6.4: http://localhost:8080"
+	@echo "  Symfony 6.4: http://localhost:8001"
 	@echo "  Symfony 7.0: http://localhost:8081"
 	@echo "  Symfony 8.0: http://localhost:8082"
 
@@ -49,7 +49,7 @@ up-symfony6:
 	@echo "Starting Symfony 6.4 demo..."
 	cd demo-symfony6 && docker-compose up -d
 	@echo "✅ Symfony 6.4 demo started!"
-	@echo "🌐 Access at: http://localhost:8080"
+	@echo "🌐 Access at: http://localhost:8001"
 
 down-symfony6:
 	@echo "Stopping Symfony 6.4 demo..."
@@ -58,9 +58,9 @@ down-symfony6:
 
 install-symfony6:
 	@echo "Installing Composer dependencies for Symfony 6.4..."
-	cd demo-symfony6 && docker-compose exec -T php composer install --no-interaction
+	cd demo-symfony6 && docker-compose exec -T php composer update --no-interaction
 	@echo "✅ Symfony 6.4 dependencies installed!"
-	@echo "🌐 Access at: http://localhost:8080"
+	@echo "🌐 Access at: http://localhost:8001"
 
 shell-symfony6:
 	cd demo-symfony6 && docker-compose exec php sh
@@ -82,7 +82,7 @@ down-symfony7:
 
 install-symfony7:
 	@echo "Installing Composer dependencies for Symfony 7.0..."
-	cd demo-symfony7 && docker-compose exec -T php composer install --no-interaction
+	cd demo-symfony7 && docker-compose exec -T php composer update --no-interaction
 	@echo "✅ Symfony 7.0 dependencies installed!"
 	@echo "🌐 Access at: http://localhost:8081"
 
@@ -106,7 +106,7 @@ down-symfony8:
 
 install-symfony8:
 	@echo "Installing Composer dependencies for Symfony 8.0..."
-	cd demo-symfony8 && docker-compose exec -T php composer install --no-interaction
+	cd demo-symfony8 && docker-compose exec -T php composer update --no-interaction
 	@echo "✅ Symfony 8.0 dependencies installed!"
 	@echo "🌐 Access at: http://localhost:8082"
 

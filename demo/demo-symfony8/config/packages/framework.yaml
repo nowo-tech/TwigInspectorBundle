@@ -17,6 +17,11 @@ framework:
     php_errors:
         log: true
 
+    # Profiler configuration
+    profiler:
+        enabled: true
+        collect: true
+
     # IDE configuration for opening files
     ide: 'phpstorm://open?file=%%f&line=%%l'
 

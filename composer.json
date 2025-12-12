@@ -2,6 +2,7 @@
     "name": "nowo-tech/twig-inspector-bundle",
     "description": "Symfony bundle that adds the possibility to find Twig templates and blocks used for rendering HTML pages faster during development",
     "type": "symfony-bundle",
+    "version": "0.0.1",
     "license": "MIT",
     "keywords": [
         "symfony",

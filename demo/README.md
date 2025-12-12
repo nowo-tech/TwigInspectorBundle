@@ -6,9 +6,13 @@ This directory contains three demo projects, one for each supported Symfony vers
 
 - Three separate demo projects for Symfony 6.4, 7.0, and 8.0
 - Simple demo pages with multiple Twig blocks
-- Symfony Web Profiler integration
+- **Symfony Web Profiler integration** - Fully configured and enabled
+  - Toolbar at the bottom of pages
+  - Profiler accessible at `/_profiler`
+  - WDT (Web Debug Toolbar) at `/_wdt`
 - Visual demonstration of template inspection
 - Docker setup for easy development
+- Independent Docker containers for each demo
 
 ## Requirements
 
@@ -31,7 +35,7 @@ docker-compose up -d
 # Install dependencies
 docker-compose exec php composer install
 
-# Access at: http://localhost:8080
+# Access at: http://localhost:8001 (default port, configurable via PORT env variable)
 ```
 
 Or using the Makefile from the `demo/` directory:
@@ -54,7 +58,7 @@ docker-compose up -d
 # Install dependencies
 docker-compose exec php composer install
 
-# Access at: http://localhost:8081
+# Access at: http://localhost:8001 (default port, configurable via PORT env variable)
 ```
 
 Or using the Makefile:
@@ -77,7 +81,7 @@ docker-compose up -d
 # Install dependencies
 docker-compose exec php composer install
 
-# Access at: http://localhost:8082
+# Access at: http://localhost:8001 (default port, configurable via PORT env variable)
 ```
 
 Or using the Makefile:
@@ -87,6 +91,17 @@ cd demo
 make up-symfony8
 make install-symfony8
 ```
+
+### Web Profiler
+
+All demos come with **Symfony Web Profiler** pre-configured and enabled:
+
+- **Toolbar**: Visible at the bottom of every page in `dev` environment
+- **Profiler**: Access detailed profiling information at `/_profiler`
+- **WDT**: Web Debug Toolbar available at `/_wdt`
+- **Twig Inspector Integration**: The `</>` icon appears in the toolbar
+
+The Web Profiler is automatically enabled in `dev` and `test` environments. No additional configuration is needed.
 
 ### Enable Twig Inspector
 
@@ -175,26 +190,36 @@ Each demo includes:
 - **DemoController**: A simple controller with a demo page
 - **Template**: A Twig template with multiple blocks and includes
 - **Docker Setup**: Complete Docker configuration with PHP-FPM and Nginx
+- **Dockerfile**: Custom PHP-FPM image with Composer pre-installed
 - **Web Profiler**: Pre-configured Symfony Web Profiler for development
+  - Enabled in `dev` and `test` environments
+  - Accessible at `/_profiler` route
+  - Toolbar visible at the bottom of pages
 
 ## Demo Structure
 
 ```
 demo/
-├── demo-symfony6/          # Symfony 6.4 demo (Port 8080)
+├── demo-symfony6/          # Symfony 6.4 demo (Port 8001 by default)
 │   ├── docker-compose.yml  # Independent docker-compose for this demo
-│   ├── nginx.conf
-│   ├── composer.json
+│   ├── Dockerfile          # PHP-FPM image with Composer
+│   ├── nginx.conf          # Nginx configuration
+│   ├── composer.json       # Dependencies including Web Profiler
+│   ├── .env                # Optional: PORT variable (default: 8001)
 │   └── ...
-├── demo-symfony7/          # Symfony 7.0 demo (Port 8081)
+├── demo-symfony7/          # Symfony 7.0 demo (Port 8001 by default)
 │   ├── docker-compose.yml  # Independent docker-compose for this demo
-│   ├── nginx.conf
-│   ├── composer.json
+│   ├── Dockerfile          # PHP-FPM image with Composer
+│   ├── nginx.conf          # Nginx configuration
+│   ├── composer.json       # Dependencies including Web Profiler
+│   ├── .env                # Optional: PORT variable (default: 8001)
 │   └── ...
-├── demo-symfony8/          # Symfony 8.0 demo (Port 8082)
+├── demo-symfony8/          # Symfony 8.0 demo (Port 8001 by default)
 │   ├── docker-compose.yml  # Independent docker-compose for this demo
-│   ├── nginx.conf
-│   ├── composer.json
+│   ├── Dockerfile          # PHP-FPM image with Composer
+│   ├── nginx.conf          # Nginx configuration
+│   ├── composer.json       # Dependencies including Web Profiler
+│   ├── .env                # Optional: PORT variable (default: 8001)
 │   └── ...
 └── Makefile                # Helper commands for all demos
 ```
@@ -270,12 +295,34 @@ Each demo includes:
 
 ### Ports already in use
 
-If ports 8080, 8081, or 8082 are already in use, you can change them in `docker-compose.yml`:
+All demos use port **8001** by default. If this port is already in use, you can customize it in two ways:
+
+**Option 1: Using environment variable (Recommended)**
+
+Create a `.env` file in the demo directory:
+
+```bash
+# demo/demo-symfony6/.env
+PORT=8083
+```
+
+Then restart the containers:
+
+```bash
+docker-compose down
+docker-compose up -d
+```
+
+**Option 2: Directly in docker-compose.yml**
+
+Edit the `docker-compose.yml` file:
 
 ```yaml
 ports:
   - "8083:80"  # Change to any available port
 ```
+
+**Note**: All demos use port 8001 by default. You can run multiple demos by changing the PORT variable in each demo's `.env` file.
 
 ### Web Profiler not showing
 

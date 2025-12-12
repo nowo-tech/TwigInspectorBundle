@@ -16,12 +16,12 @@
       <label for="_twig_inspector__status"><span>enable (will reload the page)</span></label>
     </div>
   {% endset %}
-  {{ include('@NowoTwigInspectorBundle/Collector/toolbar_item.html.twig') }}
+  {{ include('@NowoTwigInspector/Collector/toolbar_item.html.twig') }}
   <script>
-    {{ source('@NowoTwigInspectorBundle/../../assets/dist/index.min.js') }}
+    {{ include('@NowoTwigInspector/assets/dist/index.min.js') }}
   </script>
   <style>
-    {{ source('@NowoTwigInspectorBundle/../../assets/dist/style.min.css') }}
+    {{ include('@NowoTwigInspector/assets/dist/style.min.css') }}
   </style>
 {% endblock %}
 
