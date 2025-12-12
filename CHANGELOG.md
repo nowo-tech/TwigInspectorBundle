@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **CI/CD Compatibility**: Fixed CI workflow to handle different PHP versions correctly
+  - Changed `composer install` to `composer update` in CI jobs to resolve dependencies based on PHP version
+  - Updated `symfony/yaml` version constraint from `^8.0` to `^6.0 || ^7.0 || ^8.0` for PHP 8.2/8.3 compatibility
+  - Removed `version` field from `composer.json` (Packagist detects version from Git tags automatically)
+
 ## [1.0.1] - 2024-12-12
 
 ### Changed
