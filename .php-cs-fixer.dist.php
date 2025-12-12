@@ -67,7 +67,6 @@ return (new PhpCsFixer\Config())
         'return_type_declaration' => true,
         'self_accessor' => true,
         'short_scalar_cast' => true,
-        'single_blank_line_before_namespace' => true,
         'single_quote' => true,
         'space_after_semicolon' => true,
         'standardize_not_equals' => true,
