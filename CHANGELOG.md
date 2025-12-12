@@ -7,11 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2024-12-12
+
 ### Fixed
 - **CI/CD Compatibility**: Fixed CI workflow to handle different PHP versions correctly
   - Changed `composer install` to `composer update` in CI jobs to resolve dependencies based on PHP version
   - Updated `symfony/yaml` version constraint from `^8.0` to `^6.0 || ^7.0 || ^8.0` for PHP 8.2/8.3 compatibility
   - Removed `version` field from `composer.json` (Packagist detects version from Git tags automatically)
+- **PHP-CS-Fixer**: Fixed rule conflict in code style configuration
+  - Removed duplicate `single_blank_line_before_namespace` rule (already included in `@PSR12`)
+  - Fixed PHP version format from `>=8.1,<8.6` to `>=8.1 <8.6` for better compatibility
+- **PHP 8.1 Compatibility**: Fixed PHPUnit version constraint for PHP 8.1 support
+  - Changed PHPUnit from `^10.0 || ^11.0` to `^10.0` (PHPUnit 11 requires PHP 8.2+)
+  - Updated `composer.lock` to use PHPUnit 10.5.60 (compatible with PHP 8.1)
+- **CI Matrix**: Fixed incompatible PHP/Symfony combinations in CI workflow
+  - PHP 8.1: Only Symfony 6.4 (Symfony 7.0+ requires PHP 8.2+, Symfony 8.0 requires PHP 8.4+)
+  - PHP 8.2 and 8.3: Symfony 6.4 and 7.0 (Symfony 8.0 requires PHP 8.4+)
+  - PHP 8.4 and 8.5: All Symfony versions (6.4, 7.0, 8.0)
+
+### Changed
+- Updated GitHub Actions dependencies (actions/checkout@v6, actions/cache@v5)
 
 ## [1.0.1] - 2024-12-12
 
