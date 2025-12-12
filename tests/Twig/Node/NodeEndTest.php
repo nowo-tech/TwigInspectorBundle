@@ -11,39 +11,38 @@ use Twig\Compiler;
 /**
  * Tests for NodeEnd.
  *
- * @package Nowo\TwigInspectorBundle\Tests\Twig\Node
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2024 Nowo.tech
  */
 final class NodeEndTest extends TestCase
 {
-  public function testConstructor(): void
-  {
-    $node = new NodeEnd('var_name');
+    public function testConstructor(): void
+    {
+        $node = new NodeEnd('var_name');
 
-    $this->assertSame('var_name', $node->getAttribute('var_name'));
-  }
+        $this->assertSame('var_name', $node->getAttribute('var_name'));
+    }
 
-  public function testCompile(): void
-  {
-    $node     = new NodeEnd('var123');
-    $compiler = $this->createMock(Compiler::class);
+    public function testCompile(): void
+    {
+        $node = new NodeEnd('var123');
+        $compiler = $this->createMock(Compiler::class);
 
-    $compiler->method('write')
-      ->willReturnCallback(function ($arg) use ($compiler) {
-        static $callCount = 0;
-        $callCount++;
-        if ($callCount === 1) {
-          $this->assertSame("\n", $arg);
-        } else {
-          $this->assertStringContainsString('$var123->end($var123_ref', $arg);
-        }
-        return $compiler;
-      });
+        $compiler->method('write')
+          ->willReturnCallback(function ($arg) use ($compiler) {
+              static $callCount = 0;
+              $callCount++;
+              if ($callCount === 1) {
+                  $this->assertSame("\n", $arg);
+              } else {
+                  $this->assertStringContainsString('$var123->end($var123_ref', $arg);
+              }
 
-    $compiler->expects($this->exactly(2))->method('write');
+              return $compiler;
+          });
 
-    $node->compile($compiler);
-  }
+        $compiler->expects($this->exactly(2))->method('write');
+
+        $node->compile($compiler);
+    }
 }
-
