@@ -103,4 +103,3 @@ final class ConfigurationTest extends TestCase
         $this->assertSame(['javascript'], $config['excluded_blocks']);
     }
 }
-
