@@ -152,7 +152,7 @@ open coverage/index.html
 - [ ] Code coverage is at least 97.5% (`make test-coverage`)
 - [ ] Added tests for new features
 - [ ] Documentation is updated (if necessary)
-- [ ] CHANGELOG.md is updated (if necessary)
+- [ ] docs/CHANGELOG.md is updated (if necessary)
 - [ ] Code is well commented
 - [ ] No warnings or errors from PHPStan/Psalm (if used)
 
@@ -221,7 +221,7 @@ cd demo/demo-symfony6 && docker-compose up -d
 
 ## Branching Policy
 
-For detailed information about branch naming conventions, workflow, and release process, see [BRANCHING.md](BRANCHING.md).
+For detailed information about branch naming conventions, workflow, and release process, see [docs/BRANCHING.md](docs/BRANCHING.md).
 
 ## Questions
 

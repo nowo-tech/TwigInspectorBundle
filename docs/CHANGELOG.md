@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Documentation Organization**: Moved all documentation files to `docs/` directory
+  - `CONFIGURATION.md` moved from root to `docs/CONFIGURATION.md`
+  - `BRANCHING.md` moved from root to `docs/BRANCHING.md`
+  - `CONTRIBUTING.md` moved from root to `docs/CONTRIBUTING.md`
+  - `CHANGELOG.md` moved from root to `docs/CHANGELOG.md`
+  - Updated all references in README.md and documentation files
+  - Better organization following standard project structure
+
 ## [1.0.6] - 2024-12-15
 
 ### Changed
