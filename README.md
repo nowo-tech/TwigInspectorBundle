@@ -370,7 +370,9 @@ composer qa
 
 ## Testing
 
-The bundle maintains **100% code coverage** for all code. All tests are located in the `tests/` directory.
+The bundle has comprehensive test coverage with **114 tests** covering all functionality. All tests are located in the `tests/` directory.
+
+**Current Coverage**: 95.10% (349/367 lines), 92.00% methods (46/50), 76.92% classes (10/13)
 
 ### Running Tests
 

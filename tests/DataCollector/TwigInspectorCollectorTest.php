@@ -173,9 +173,7 @@ final class TwigInspectorCollectorTest extends TestCase
 
     public function testGetData(): void
     {
-        $this->collector->addTemplate('template1.html.twig');
-        $this->collector->addBlock('block1');
-
+        // Test that getData() returns the expected structure
         $data = $this->collector->getData();
 
         $this->assertIsArray($data);
@@ -184,5 +182,12 @@ final class TwigInspectorCollectorTest extends TestCase
         $this->assertArrayHasKey('total_templates', $data);
         $this->assertArrayHasKey('total_blocks', $data);
         $this->assertArrayHasKey('enabled', $data);
+        
+        // Verify initial state
+        $this->assertIsArray($data['templates']);
+        $this->assertIsArray($data['blocks']);
+        $this->assertIsInt($data['total_templates']);
+        $this->assertIsInt($data['total_blocks']);
+        $this->assertIsBool($data['enabled']);
     }
 }

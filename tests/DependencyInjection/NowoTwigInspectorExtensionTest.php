@@ -43,11 +43,12 @@ final class NowoTwigInspectorExtensionTest extends TestCase
         $container = new ContainerBuilder();
         $configs = [
           [
-            'some_config' => 'value',
+            'enabled_extensions' => ['.html.twig', '.twig'],
+            'excluded_templates' => ['admin/*'],
           ],
         ];
 
-        // Should not throw any exception even with config
+        // Should not throw any exception with valid config
         $this->extension->load($configs, $container);
 
         $this->assertTrue(true);
