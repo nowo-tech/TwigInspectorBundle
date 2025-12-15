@@ -49,15 +49,15 @@ final class InstallCommandTest extends TestCase
     {
         // Test that configure() sets up options correctly
         $command = new InstallCommand();
-        
+
         $definition = $command->getDefinition();
         $this->assertTrue($definition->hasOption('env'));
         $this->assertTrue($definition->hasOption('force'));
-        
+
         $envOption = $definition->getOption('env');
         $this->assertFalse($envOption->isValueRequired());
         $this->assertSame('dev', $envOption->getDefault());
-        
+
         $forceOption = $definition->getOption('force');
         $this->assertTrue($forceOption->isValueRequired() === false);
         $this->assertFalse($forceOption->acceptValue());
@@ -68,7 +68,7 @@ final class InstallCommandTest extends TestCase
         // Test constructor with projectDir
         $command1 = new InstallCommand('/test/project');
         $this->assertInstanceOf(InstallCommand::class, $command1);
-        
+
         // Test constructor without projectDir
         $command2 = new InstallCommand();
         $this->assertInstanceOf(InstallCommand::class, $command2);
@@ -252,10 +252,10 @@ final class InstallCommandTest extends TestCase
     public function testHelpTextIsDisplayed(): void
     {
         $command = new InstallCommand($this->testProjectDir);
-        
+
         // Verify command description and help text
         $this->assertStringContainsString('Creates the Twig Inspector Bundle configuration file', $command->getDescription());
-        
+
         // Verify options exist
         $definition = $command->getDefinition();
         $this->assertTrue($definition->hasOption('env'));
@@ -347,13 +347,13 @@ final class InstallCommandTest extends TestCase
         // Create a directory that we can't read
         $routesFile = $this->testProjectDir . '/config/routes.yaml';
         $this->filesystem->dumpFile($routesFile, 'existing content');
-        
+
         // Make the file unreadable by changing permissions (if possible)
         // Note: This test may not work on all systems, but we try
         if (file_exists($routesFile)) {
             // Try to make it unreadable - this might not work on all systems
             @chmod($routesFile, 0o000);
-            
+
             $command = new InstallCommand($this->testProjectDir);
             $commandTester = new CommandTester($command);
 
@@ -362,11 +362,11 @@ final class InstallCommandTest extends TestCase
             // Should show warning about not being able to read
             $display = $commandTester->getDisplay();
             $this->assertTrue(
-                str_contains($display, 'Could not read') || 
+                str_contains($display, 'Could not read') ||
                 str_contains($display, 'Routes file') ||
                 $commandTester->getStatusCode() === 0
             );
-            
+
             // Restore permissions for cleanup
             @chmod($routesFile, 0o644);
         }
@@ -377,24 +377,24 @@ final class InstallCommandTest extends TestCase
         // Test the ensureRoutesFile method directly using reflection
         $routesFile = $this->testProjectDir . '/config/routes.yaml';
         $this->filesystem->dumpFile($routesFile, 'existing content');
-        
+
         // Make file unreadable
         if (file_exists($routesFile)) {
             @chmod($routesFile, 0o000);
-            
+
             $command = new InstallCommand($this->testProjectDir);
             $commandTester = new CommandTester($command);
-            
+
             $commandTester->execute([]);
-            
+
             // Should handle the error gracefully
             $display = $commandTester->getDisplay();
             $this->assertTrue(
-                str_contains($display, 'Could not read') || 
+                str_contains($display, 'Could not read') ||
                 str_contains($display, 'Routes file') ||
                 $commandTester->getStatusCode() === 0
             );
-            
+
             @chmod($routesFile, 0o644);
         }
     }
@@ -403,24 +403,24 @@ final class InstallCommandTest extends TestCase
     {
         // Test error handling when dumpFile throws exception using reflection
         $routesFile = $this->testProjectDir . '/config/routes.yaml';
-        
+
         // Ensure routes file doesn't exist
         if (file_exists($routesFile)) {
             unlink($routesFile);
         }
-        
+
         $command = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
-        
+
         // Use reflection to test ensureRoutesFile with a mock Filesystem that throws exception
         $reflection = new \ReflectionClass($command);
         $method = $reflection->getMethod('ensureRoutesFile');
         $method->setAccessible(true);
-        
+
         $input = new ArrayInput([]);
         $output = new BufferedOutput();
         $io = new SymfonyStyle($input, $output);
-        
+
         $mockFilesystem = $this->createMock(Filesystem::class);
         $mockFilesystem->expects($this->once())
             ->method('exists')
@@ -429,10 +429,10 @@ final class InstallCommandTest extends TestCase
         $mockFilesystem->expects($this->once())
             ->method('dumpFile')
             ->willThrowException(new IOException('Permission denied'));
-        
+
         // Should handle the exception gracefully
         $method->invoke($command, $io, $mockFilesystem, $routesFile);
-        
+
         // Verify that the method completed without throwing (exception was caught)
         // Check that the output contains the warning message
         $outputContent = $output->fetch();
@@ -446,19 +446,19 @@ final class InstallCommandTest extends TestCase
         $routesFile = $this->testProjectDir . '/config/routes.yaml';
         $initialContent = "existing_route:\n    path: /existing\n";
         $this->filesystem->dumpFile($routesFile, $initialContent);
-        
+
         $command = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
-        
+
         // Use reflection to test ensureRoutesFile with a mock Filesystem that throws exception
         $reflection = new \ReflectionClass($command);
         $method = $reflection->getMethod('ensureRoutesFile');
         $method->setAccessible(true);
-        
+
         $input = new ArrayInput([]);
         $output = new BufferedOutput();
         $io = new SymfonyStyle($input, $output);
-        
+
         $mockFilesystem = $this->createMock(Filesystem::class);
         $mockFilesystem->expects($this->once())
             ->method('exists')
@@ -467,14 +467,14 @@ final class InstallCommandTest extends TestCase
         $mockFilesystem->expects($this->once())
             ->method('appendToFile')
             ->willThrowException(new IOException('Permission denied'));
-        
+
         // Ensure file_get_contents will return content without the bundle import
         // Since we can't mock file_get_contents, we ensure the file doesn't have the import
         $content = file_get_contents($routesFile);
         if (!str_contains($content, 'NowoTwigInspectorBundle')) {
             // Test that the method handles the appendToFile exception
             $method->invoke($command, $io, $mockFilesystem, $routesFile);
-            
+
             // Verify that the method completed without throwing (exception was caught)
             // Check that the output contains the warning message
             $outputContent = $output->fetch();
@@ -493,7 +493,7 @@ final class InstallCommandTest extends TestCase
         // We can't directly mock file_get_contents, but we can use a wrapper class
         // or test with a directory path (file_get_contents on directory returns false)
         $routesFile = $this->testProjectDir . '/config/routes.yaml';
-        
+
         // Create a directory with the same name as the routes file
         // This will make file_get_contents return false
         if (file_exists($routesFile)) {
@@ -502,24 +502,24 @@ final class InstallCommandTest extends TestCase
         if (!is_dir(dirname($routesFile))) {
             mkdir(dirname($routesFile), 0o777, true);
         }
-        
+
         // Create a directory instead of a file - file_get_contents will return false
         // Actually, we can't create a directory with the same name as a file path
         // Let's use a different approach: create a file, then use a wrapper
-        
+
         // Better approach: Use a file that exists but we'll intercept file_get_contents
         // using a namespace trick or by creating a scenario where it fails
-        
+
         // Actually, the best way: create a file, then use reflection to replace
         // the file_get_contents call with a mock, or use a wrapper class
-        
+
         // For now, let's test by creating a file and then using a custom wrapper
         // that makes file_get_contents fail. We can use runkit7 or uopz if available,
         // but those are not standard.
-        
+
         // Alternative: Create a file, then remove read permissions (if possible)
         $this->filesystem->dumpFile($routesFile, 'test content');
-        
+
         // Note: The case where file_get_contents returns false is difficult to test
         // without advanced PHP extensions (uopz/runkit7) or system-level permission changes.
         // Even with chmod 000, the file owner can still read the file on most Unix systems.
