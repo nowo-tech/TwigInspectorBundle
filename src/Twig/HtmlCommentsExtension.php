@@ -7,6 +7,7 @@ namespace Nowo\TwigInspectorBundle\Twig;
 use Nowo\TwigInspectorBundle\BoxDrawings;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Extension\AbstractExtension;
 
@@ -257,19 +258,26 @@ class HtmlCommentsExtension extends AbstractExtension
 
     /**
      * Gets the link URL for a node.
+     * Returns a fallback URL if the route is not available (e.g., in production).
      *
      * @param NodeReference $ref The node reference
      *
-     * @return string The link URL
+     * @return string The link URL or a fallback
      */
     protected function getLink(NodeReference $ref): string
     {
-        return $this->urlGenerator->generate(
-            'nowo_twig_inspector_template_link',
-            [
-            'template' => $ref->getTemplate(),
-            'line' => $ref->getLine(),
-      ]
-        );
+        try {
+            return $this->urlGenerator->generate(
+                'nowo_twig_inspector_template_link',
+                [
+                    'template' => $ref->getTemplate(),
+                    'line' => $ref->getLine(),
+                ]
+            );
+        } catch (RouteNotFoundException $e) {
+            // Route not available (e.g., in production or routes not loaded)
+            // Return a fallback that won't break the HTML comment
+            return '/_template/' . urlencode($ref->getTemplate()) . '?line=' . $ref->getLine();
+        }
     }
 }

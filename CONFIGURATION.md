@@ -12,8 +12,9 @@
 
 **For this bundle**:
 - A Flex Recipe is available in `.symfony/recipe/` (when published to Packagist)
-- **If installing from Packagist**: The file is created automatically - no command needed
+- **If installing from Packagist**: Both configuration and routes files are created automatically - no command needed
 - **If installing from Git/private repo**: Use `php bin/console nowo:twig-inspector:install` (Flex Recipes don't work for private bundles)
+- The install command creates both `config/packages/nowo_twig_inspector.yaml` and updates `config/routes.yaml`
 
 ### 2. Configuration File Loading
 
@@ -88,10 +89,31 @@ rm config/packages/dev/nowo_twig_inspector.yaml
 rm config/packages/nowo_twig_inspector.yaml
 ```
 
+## Routes Configuration
+
+The bundle requires routes to be imported in `config/routes.yaml` for the template links to work. This is handled automatically:
+
+**Automatic Setup**:
+- **Flex Recipe**: Creates `config/routes.yaml` if it doesn't exist, or adds the import if the file exists
+- **Install Command**: Creates or updates `config/routes.yaml` automatically
+- **Manual**: If needed, add the following to `config/routes.yaml`:
+
+```yaml
+# Twig Inspector Bundle routes
+when@dev:
+    nowo_twig_inspector:
+        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
+```
+
+**Important**: 
+- Routes are restricted to `dev` and `test` environments for security
+- The bundle handles route generation gracefully if routes aren't available (e.g., in production)
+- The route pattern allows slashes in template names to support templates in subdirectories (e.g., `admin/users/list.html.twig`). Security validations in the controller prevent path traversal attacks
+
 ## Best Practices
 
-1. **Use Flex Recipe** (if available): Automatically creates config file during installation
-2. **Use Install Command**: `php bin/console nowo:twig-inspector:install` for manual setup
+1. **Use Flex Recipe** (if available): Automatically creates config and routes files during installation
+2. **Use Install Command**: `php bin/console nowo:twig-inspector:install` for manual setup (handles both config and routes)
 3. **Keep it simple**: Only configure what you need to change from defaults
 4. **Version control**: Commit your config file to track customizations
 5. **Document changes**: Add comments explaining why you changed defaults

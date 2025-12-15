@@ -10,6 +10,7 @@ use Nowo\TwigInspectorBundle\Twig\NodeReference;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -567,5 +568,26 @@ final class HtmlCommentsExtensionTest extends TestCase
         $result = $method->invoke($this->extension, $ref);
 
         $this->assertSame('/_template/template.html.twig?line=5', $result);
+    }
+
+    public function testGetLinkWithRouteNotFoundException(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 10);
+
+        $this->urlGenerator->expects($this->once())
+          ->method('generate')
+          ->with('nowo_twig_inspector_template_link', ['template' => 'template.html.twig', 'line' => 10])
+          ->willThrowException(new RouteNotFoundException('Route not found'));
+
+        $reflection = new \ReflectionClass($this->extension);
+        $method = $reflection->getMethod('getLink');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->extension, $ref);
+
+        // Should return fallback URL
+        $this->assertStringContainsString('/_template/', $result);
+        $this->assertStringContainsString('template.html.twig', $result);
+        $this->assertStringContainsString('line=10', $result);
     }
 }

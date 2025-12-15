@@ -97,12 +97,13 @@ YAML;
             )
             ->setHelp(
                 <<<'HELP'
-The <info>%command.name%</info> command creates the Twig Inspector Bundle configuration file.
+The <info>%command.name%</info> command creates the Twig Inspector Bundle configuration file and ensures routes are set up.
 
   <info>php %command.full_name%</info>
 
-This command creates a configuration file at:
-  <comment>config/packages/{env}/nowo_twig_inspector.yaml</comment>
+This command:
+  - Creates a configuration file at <comment>config/packages/{env}/nowo_twig_inspector.yaml</comment>
+  - Creates or updates <comment>config/routes.yaml</comment> with the bundle route import
 
 By default, it creates the file for the <comment>dev</comment> environment.
 You can specify a different environment:
@@ -114,8 +115,8 @@ unless you use the <comment>--force</comment> option:
 
   <info>php %command.full_name% --force</info>
 
-The bundle works without this configuration file using default values.
-This file is only needed if you want to customize the bundle behavior.
+The bundle works without the configuration file using default values.
+The routes file is required for the bundle to work properly.
 HELP
             );
     }
@@ -158,14 +159,81 @@ HELP
         try {
             $filesystem->dumpFile($configFile, self::CONFIG_TEMPLATE);
             $io->success(sprintf('Configuration file created successfully: %s', $configFile));
-            $io->note('You can now customize the configuration according to your needs.');
-            $io->note('The bundle works with default values if you delete this file.');
-
-            return Command::SUCCESS;
         } catch (\Exception $e) {
             $io->error(sprintf('Failed to create configuration file: %s', $e->getMessage()));
 
             return Command::FAILURE;
+        }
+
+        // Create or update routes.yaml
+        $routesFile = $projectDir . '/config/routes.yaml';
+        $this->ensureRoutesFile($io, $filesystem, $routesFile);
+
+        $io->note('You can now customize the configuration according to your needs.');
+        $io->note('The bundle works with default values if you delete the config file.');
+
+        return Command::SUCCESS;
+    }
+
+    /**
+     * Ensures routes.yaml exists and contains the bundle route import.
+     *
+     * @param SymfonyStyle $io         The IO helper
+     * @param Filesystem   $filesystem The filesystem helper
+     * @param string       $routesFile The path to routes.yaml
+     *
+     * @return void
+     */
+    private function ensureRoutesFile(SymfonyStyle $io, Filesystem $filesystem, string $routesFile): void
+    {
+        $routeImport = <<<'YAML'
+
+# Twig Inspector Bundle routes
+when@dev:
+    nowo_twig_inspector:
+        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
+
+YAML;
+
+        // If routes.yaml doesn't exist, create it
+        if (!$filesystem->exists($routesFile)) {
+            try {
+                $filesystem->dumpFile($routesFile, $routeImport);
+                $io->success(sprintf('Routes file created: %s', $routesFile));
+            } catch (\Exception $e) {
+                $io->warning(sprintf('Could not create routes file: %s', $e->getMessage()));
+                $io->note('Please manually add the route import to config/routes.yaml:');
+                $io->text($routeImport);
+            }
+
+            return;
+        }
+
+        // If routes.yaml exists, check if import is already there
+        $content = file_get_contents($routesFile);
+        if (false === $content) {
+            $io->warning('Could not read routes.yaml file.');
+            $io->note('Please manually add the route import to config/routes.yaml:');
+            $io->text($routeImport);
+
+            return;
+        }
+
+        // Check if the import already exists
+        if (str_contains($content, 'NowoTwigInspectorBundle') || str_contains($content, 'nowo_twig_inspector')) {
+            $io->info('Routes file already contains Twig Inspector Bundle import.');
+
+            return;
+        }
+
+        // Append the import to existing file
+        try {
+            $filesystem->appendToFile($routesFile, $routeImport);
+            $io->success('Added Twig Inspector Bundle route import to routes.yaml');
+        } catch (\Exception $e) {
+            $io->warning(sprintf('Could not update routes file: %s', $e->getMessage()));
+            $io->note('Please manually add the route import to config/routes.yaml:');
+            $io->text($routeImport);
         }
     }
 }

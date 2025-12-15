@@ -304,15 +304,17 @@ Supported IDEs:
 
 #### Automatic Installation
 
-**If installing from Packagist**: The configuration file is created automatically by Symfony Flex during `composer require`. No command needed.
+**If installing from Packagist**: Both the configuration file and routes are created automatically by Symfony Flex during `composer require`. No command needed.
 
-**If installing manually or from Git**: You can create the configuration file using the install command:
+**If installing manually or from Git**: You can create the configuration file and set up routes using the install command:
 
 ```bash
 php bin/console nowo:twig-inspector:install
 ```
 
-This command creates a configuration file with all available options and helpful comments.
+This command creates:
+- Configuration file with all available options and helpful comments
+- Routes file (`config/routes.yaml`) with the bundle route import (if needed)
 
 #### Example Configuration
 
