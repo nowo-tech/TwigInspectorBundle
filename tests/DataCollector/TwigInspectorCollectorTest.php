@@ -182,7 +182,7 @@ final class TwigInspectorCollectorTest extends TestCase
         $this->assertArrayHasKey('total_templates', $data);
         $this->assertArrayHasKey('total_blocks', $data);
         $this->assertArrayHasKey('enabled', $data);
-        
+
         // Verify initial state
         $this->assertIsArray($data['templates']);
         $this->assertIsArray($data['blocks']);
