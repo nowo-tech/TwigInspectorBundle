@@ -29,6 +29,7 @@ cd demo/demo-symfony6
 cp .env.example .env
 # Optionally generate a new APP_SECRET: openssl rand -hex 32
 # The .env.example includes: APP_ENV=dev, APP_SECRET (placeholder), APP_DEBUG=1, PORT=8001
+# Note: Symfony 7.0 and 8.0 also include DEFAULT_URI for routing configuration
 ```
 
 ### Symfony 6.4 Demo
@@ -262,6 +263,7 @@ cp .env.example .env
 # - APP_SECRET=change_this_secret_key_to_a_random_value (replace with your secret)
 # - APP_DEBUG=1
 # - PORT=8001 (change if needed for multiple demos)
+# - DEFAULT_URI=http://localhost (required for Symfony 7.0 and 8.0 routing configuration)
 ```
 
 ## How It Works
