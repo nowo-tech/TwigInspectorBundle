@@ -1,230 +1,233 @@
-# Guía de Contribución
+# Contributing Guide
 
-¡Gracias por tu interés en contribuir a Twig Inspector Bundle! Este documento proporciona directrices para contribuir al proyecto.
+Thank you for your interest in contributing to Twig Inspector Bundle! This document provides guidelines for contributing to the project.
 
-## Código de Conducta
+## Code of Conduct
 
-Este proyecto se adhiere a un código de conducta. Al participar, se espera que mantengas este código. Por favor, reporta comportamientos inaceptables a hectorfranco@nowo.com.
+This project adheres to a code of conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to hectorfranco@nowo.com.
 
-## ¿Cómo puedo contribuir?
+## How can I contribute?
 
-### Reportar Bugs
+### Reporting Bugs
 
-Si encuentras un bug, por favor:
+If you find a bug, please:
 
-1. **Verifica que el bug no haya sido reportado ya** en los [issues](https://github.com/nowo-tech/twig-inspector-bundle/issues)
-2. **Crea un nuevo issue** con:
-   - Un título descriptivo
-   - Pasos para reproducir el problema
-   - Comportamiento esperado vs. comportamiento actual
-   - Versión de PHP, Symfony y del bundle
-   - Capturas de pantalla si es relevante
+1. **Check that the bug hasn't already been reported** in the [issues](https://github.com/nowo-tech/twig-inspector-bundle/issues)
+2. **Create a new issue** with:
+   - A descriptive title
+   - Steps to reproduce the problem
+   - Expected behavior vs. actual behavior
+   - PHP, Symfony, and bundle versions
+   - Screenshots if relevant
 
-### Sugerir Mejoras
+### Suggesting Enhancements
 
-Las sugerencias de mejoras son bienvenidas:
+Enhancement suggestions are welcome:
 
-1. **Verifica que la mejora no haya sido sugerida** en los [issues](https://github.com/nowo-tech/twig-inspector-bundle/issues)
-2. **Crea un nuevo issue** con:
-   - Un título descriptivo
-   - Descripción detallada de la mejora propuesta
-   - Casos de uso y beneficios
-   - Posibles implementaciones (si las tienes)
+1. **Check that the enhancement hasn't already been suggested** in the [issues](https://github.com/nowo-tech/twig-inspector-bundle/issues)
+2. **Create a new issue** with:
+   - A descriptive title
+   - Detailed description of the proposed enhancement
+   - Use cases and benefits
+   - Possible implementations (if you have them)
 
-### Contribuir con Código
+### Contributing Code
 
-#### Configuración del Entorno de Desarrollo
+#### Development Environment Setup
 
-1. **Fork el repositorio** en GitHub
-2. **Clona tu fork**:
+1. **Fork the repository** on GitHub
+2. **Clone your fork**:
    ```bash
-   git clone https://github.com/tu-usuario/twig-inspector-bundle.git
+   git clone https://github.com/your-username/twig-inspector-bundle.git
    cd twig-inspector-bundle
    ```
-3. **Instala las dependencias**:
+3. **Install dependencies**:
    ```bash
-   # Con Docker (recomendado)
+   # With Docker (recommended)
    make install
    
-   # Sin Docker
+   # Without Docker
    composer install
    ```
 
-#### Estándares de Código
+#### Code Standards
 
-El proyecto sigue estos estándares:
+The project follows these standards:
 
-- **PSR-12**: Estilo de código PHP
-- **PHP 8.1+**: Características modernas de PHP
-- **Type hints estrictos**: `declare(strict_types=1);` en todos los archivos
-- **PHP-CS-Fixer**: Se usa para mantener la consistencia del código
+- **PSR-12**: PHP code style
+- **PHP 8.1+**: Modern PHP features
+- **Strict type hints**: `declare(strict_types=1);` in all files
+- **PHP-CS-Fixer**: Used to maintain code consistency
 
-**Antes de hacer commit**:
+**Before committing**:
 
 ```bash
-# Verificar el estilo de código
+# Check code style
 make cs-check
-# o
+# or
 composer cs-check
 
-# Corregir automáticamente el estilo
+# Automatically fix code style
 make cs-fix
-# o
+# or
 composer cs-fix
 ```
 
 #### Tests
 
-**El proyecto requiere 100% de cobertura de código**. Todos los tests deben pasar antes de hacer merge.
+**The project requires 100% code coverage**. All tests must pass before merging.
 
 ```bash
-# Ejecutar todos los tests
+# Run all tests
 make test
-# o
+# or
 composer test
 
-# Ejecutar tests con cobertura
+# Run tests with coverage
 make test-coverage
-# o
+# or
 composer test-coverage
 
-# Ver el reporte de cobertura
+# View coverage report
 open coverage/index.html
 ```
 
-**Estructura de tests**:
-- Los tests deben estar en el directorio `tests/`
-- Cada clase debe tener su test correspondiente
-- Los tests deben ser descriptivos y cubrir casos edge
-- Usa mocks cuando sea apropiado
+**Test structure**:
+- Tests must be in the `tests/` directory
+- Each class must have its corresponding test
+- Tests must be descriptive and cover edge cases
+- Use mocks when appropriate
 
-#### Proceso de Pull Request
+#### Pull Request Process
 
-1. **Crea una rama** desde `main`:
+1. **Create a branch** from `main`:
    ```bash
-   git checkout -b feature/mi-nueva-funcionalidad
-   # o
-   git checkout -b fix/mi-correccion
+   git checkout -b feature/my-new-feature
+   # or
+   git checkout -b fix/my-fix
    ```
 
-2. **Haz tus cambios**:
-   - Escribe código limpio y bien documentado
-   - Añade tests para nuevas funcionalidades
-   - Asegúrate de que todos los tests pasen
-   - Verifica que la cobertura sea 100%
-   - Ejecuta `make qa` para verificar todo
+2. **Make your changes**:
+   - Write clean and well-documented code
+   - Add tests for new features
+   - Make sure all tests pass
+   - Verify that coverage is 100%
+   - Run `make qa` to verify everything
 
-3. **Commit tus cambios**:
+3. **Commit your changes**:
    ```bash
    git add .
-   git commit -m "feat: descripción de la funcionalidad"
-   # o
-   git commit -m "fix: descripción de la corrección"
+   git commit -m "feat: feature description"
+   # or
+   git commit -m "fix: fix description"
    ```
    
-   **Convenciones de commits**:
-   - `feat:` Nueva funcionalidad
-   - `fix:` Corrección de bug
-   - `docs:` Cambios en documentación
-   - `test:` Añadir o modificar tests
-   - `refactor:` Refactorización de código
-   - `style:` Cambios de formato (no afectan funcionalidad)
-   - `chore:` Tareas de mantenimiento
+   **Commit conventions**:
+   - `feat:` New feature
+   - `fix:` Bug fix
+   - `docs:` Documentation changes
+   - `test:` Add or modify tests
+   - `refactor:` Code refactoring
+   - `style:` Formatting changes (no functionality impact)
+   - `chore:` Maintenance tasks
 
-4. **Push a tu fork**:
+4. **Push to your fork**:
    ```bash
-   git push origin feature/mi-nueva-funcionalidad
+   git push origin feature/my-new-feature
    ```
 
-5. **Crea un Pull Request** en GitHub:
-   - Describe claramente los cambios
-   - Menciona cualquier issue relacionado
-   - Añade capturas de pantalla si es relevante
-   - Asegúrate de que el CI pase
+5. **Create a Pull Request** on GitHub:
+   - Clearly describe the changes
+   - Mention any related issues
+   - Add screenshots if relevant
+   - Make sure CI passes
 
-#### Checklist antes de hacer PR
+#### Checklist before PR
 
-- [ ] El código sigue los estándares PSR-12
-- [ ] Se ejecutó `make cs-fix` (o `composer cs-fix`)
-- [ ] Todos los tests pasan (`make test`)
-- [ ] La cobertura de código es 100% (`make test-coverage`)
-- [ ] Se añadieron tests para nuevas funcionalidades
-- [ ] La documentación está actualizada (si es necesario)
-- [ ] El CHANGELOG.md está actualizado (si es necesario)
-- [ ] El código está bien comentado
-- [ ] No hay warnings o errores de PHPStan/Psalm (si se usan)
+- [ ] Code follows PSR-12 standards
+- [ ] Ran `make cs-fix` (or `composer cs-fix`)
+- [ ] All tests pass (`make test`)
+- [ ] Code coverage is 100% (`make test-coverage`)
+- [ ] Added tests for new features
+- [ ] Documentation is updated (if necessary)
+- [ ] CHANGELOG.md is updated (if necessary)
+- [ ] Code is well commented
+- [ ] No warnings or errors from PHPStan/Psalm (if used)
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
 twig-inspector-bundle/
-├── src/                    # Código fuente del bundle
-│   ├── Controller/         # Controladores
-│   ├── DataCollector/      # Data collectors para Web Profiler
-│   ├── DependencyInjection/ # Configuración del bundle
-│   ├── Resources/          # Recursos (templates, assets)
-│   └── Twig/               # Extensiones y nodos de Twig
+├── src/                    # Bundle source code
+│   ├── Controller/         # Controllers
+│   ├── DataCollector/      # Data collectors for Web Profiler
+│   ├── DependencyInjection/ # Bundle configuration
+│   ├── Resources/          # Resources (templates, assets)
+│   └── Twig/               # Twig extensions and nodes
 ├── tests/                  # Tests
-├── demo/                   # Proyectos demo (Symfony 6.4, 7.0, 8.0)
-├── .github/                # Configuración de GitHub
-└── docs/                   # Documentación adicional
+├── demo/                   # Demo projects (Symfony 6.4, 7.0, 8.0)
+├── .github/                # GitHub configuration
+└── docs/                   # Additional documentation
 ```
 
-## Desarrollo de Assets
+## Asset Development
 
-El bundle incluye assets TypeScript y SCSS:
+The bundle includes TypeScript and SCSS assets:
 
 ```bash
-# Instalar dependencias de Node
+# Install Node dependencies
 npm install
 
-# Build para producción
+# Build for production
 npm run build
-# o
+# or
 make build-assets
 
-# Build para desarrollo
+# Build for development
 npm run build:dev
-# o
+# or
 make build-assets-dev
 
-# Modo watch
+# Watch mode
 npm run watch
-# o
+# or
 make watch-assets
 ```
 
-Los archivos compilados se encuentran en `src/Resources/assets/dist/` y deben ser copiados a `src/Resources/views/assets/dist/` para que Twig pueda incluirlos.
+Compiled files are located in `src/Resources/assets/dist/` and must be copied to `src/Resources/views/assets/dist/` for Twig to include them.
 
 ## Demos
 
-El proyecto incluye tres demos independientes para probar el bundle con diferentes versiones de Symfony:
+The project includes three independent demos to test the bundle with different Symfony versions:
 
 - `demo/demo-symfony6/` - Symfony 6.4
 - `demo/demo-symfony7/` - Symfony 7.0
 - `demo/demo-symfony8/` - Symfony 8.0
 
-Para ejecutar una demo:
+To run a demo:
 
 ```bash
-# Instalar dependencias
-make install-symfony6  # o install-symfony7, install-symfony8
+# Install dependencies
+make install-symfony6  # or install-symfony7, install-symfony8
 
-# Iniciar contenedores
+# Start containers
 cd demo/demo-symfony6 && docker-compose up -d
 
-# Acceder a la demo
+# Access the demo
 # http://localhost:8001
 ```
 
-## Preguntas
+## Branching Policy
 
-Si tienes preguntas sobre cómo contribuir, puedes:
+For detailed information about branch naming conventions, workflow, and release process, see [BRANCHING.md](BRANCHING.md).
 
-- Abrir un issue en GitHub
-- Contactar a los mantenedores en hectorfranco@nowo.com
+## Questions
 
-## Reconocimientos
+If you have questions about how to contribute, you can:
 
-Gracias por contribuir a Twig Inspector Bundle. Tu ayuda hace que este proyecto sea mejor para todos.
+- Open an issue on GitHub
+- Contact the maintainers at hectorfranco@nowo.com
 
+## Acknowledgments
+
+Thank you for contributing to Twig Inspector Bundle. Your help makes this project better for everyone.

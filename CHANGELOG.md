@@ -7,38 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-- **Demo Projects (Symfony 7.0 and 8.0)**: Fixed missing `DEFAULT_URI` environment variable
-  - Added `DEFAULT_URI=http://localhost` to `.env` and `.env.example` files for Symfony 7.0 and 8.0 demos
-  - Required by `config/packages/routing.yaml` for generating URLs in non-HTTP contexts (CLI commands)
-  - Resolves `EnvNotFoundException: "Environment variable not found: "DEFAULT_URI""` error
+## [1.0.3] - 2024-12-15
 
 ### Added
-- **Demo Projects**: Added code coverage configuration for all demos
-  - Added `<coverage>` section to `phpunit.xml.dist` in all demo projects
-  - Added `test-coverage` script to `composer.json` in all demo projects
-  - Added `test-coverage-symfony6`, `test-coverage-symfony7`, `test-coverage-symfony8`, and `test-coverage-all` commands to demo Makefile
-  - All demos now support generating HTML and Clover XML coverage reports
-- **Demo Makefile**: Added verification commands
-  - Added `verify-all` command to start and verify all demos respond correctly (HTTP 200)
-  - Added `verify DEMO=<demo>` command to verify a specific demo
-  - Added `check-all` as alias for `verify-all`
-  - Verification includes port checking, container startup, and HTTP response validation
+- **Tests**: Added comprehensive test coverage for new features
+  - Added `InstallCommandTest` with 15 test cases covering all command scenarios
+  - Added `ConfigurationTest` for configuration processing and validation
+  - Enhanced `HtmlCommentsExtensionTest` with tests for new configuration options (exclusions, extensions, custom cookie)
+  - Enhanced `TwigInspectorCollectorTest` with tests for metrics collection
+  - All new code has 100% test coverage
+- **Documentation**: Improved and standardized documentation
+  - Translated `CONTRIBUTING.md` to English (was in Spanish)
+  - Added `BRANCHING.md` with complete branching policy and workflow
+  - Updated all documentation to clarify Flex Recipe vs Install Command usage
+  - Improved configuration documentation clarity
+- **Branching Policy**: Added comprehensive branching strategy documentation
+  - Documented branch types (feature, fix, hotfix, release)
+  - Defined naming conventions and workflow
+  - Added release process guidelines
+  - Included best practices and common scenarios
 
 ### Changed
-- **Demo Projects**: Updated `.env` files to Symfony standard format
-  - Added `APP_ENV=dev`, `APP_SECRET`, and `APP_DEBUG=1` to all demo projects
-  - Standardized `.env` files with Symfony framework-bundle and console sections
-  - All demos use port **8001** by default (configurable via `.env` file)
-  - **Security**: Removed `.env` files from repository (now in `.gitignore`)
-  - Created `.env.example` files as templates for each demo with placeholder values
-- **Demo Makefile**: Major refactoring and improvements
-  - **Refactored**: Reduced from ~428 lines to ~252 lines (41% reduction) using template-based code generation
-  - **Maintainability**: All demo-specific commands now generated automatically from `DEMOS` variable
-  - **Port Configuration**: Help command now reads port from each demo's `.env` file (or `.env.example` as fallback)
-  - **Port Checking**: Automatically detects if port is in use (using `lsof` or `netstat`)
-  - **Port Management**: Stops existing containers using the port before starting new ones
-  - **Extensibility**: Adding a new demo only requires adding its name to `DEMOS` variable
+- **Documentation**: Clarified Flex Recipe vs Install Command usage
+  - Flex Recipe is the primary method (automatic when installing from Packagist)
+  - Install Command is only needed for private bundles or manual installations
+  - Updated README, CHANGELOG, CONFIGURATION.md, and demo/README.md for consistency
+
+## [Unreleased]
 
 ## [1.0.2] - 2024-12-12
 

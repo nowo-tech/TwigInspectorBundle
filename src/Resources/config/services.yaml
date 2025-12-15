@@ -25,11 +25,17 @@ services:
       - '@request_stack'
       - '@router'
       - '@Nowo\TwigInspectorBundle\BoxDrawings'
+      - '%nowo_twig_inspector.enabled_extensions%'
+      - '%nowo_twig_inspector.excluded_templates%'
+      - '%nowo_twig_inspector.excluded_blocks%'
+      - '%nowo_twig_inspector.cookie_name%'
     tags:
       - { name: twig.extension }
 
   Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector:
     class: Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector
+    arguments:
+      - '@request_stack'
     tags:
       -
         name: data_collector
@@ -37,4 +43,11 @@ services:
         id: 'twig_inspector'
         # just before symfony twig collector
         priority: 260
+
+  Nowo\TwigInspectorBundle\Command\InstallCommand:
+    class: Nowo\TwigInspectorBundle\Command\InstallCommand
+    arguments:
+      - '%kernel.project_dir%'
+    tags:
+      - { name: console.command }
 
