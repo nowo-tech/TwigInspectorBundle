@@ -181,6 +181,7 @@ final class InstallCommandTest extends TestCase
     public function testExecuteWithNullProjectDirUsesCurrentWorkingDirectory(): void
     {
         $originalCwd = getcwd();
+
         try {
             chdir($this->testProjectDir);
 
@@ -252,4 +253,3 @@ final class InstallCommandTest extends TestCase
         $this->assertStringContainsString('--force', $commandTester->getDisplay());
     }
 }
-

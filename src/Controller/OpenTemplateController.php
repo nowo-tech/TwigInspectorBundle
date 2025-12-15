@@ -43,7 +43,7 @@ class OpenTemplateController
      * @param Request $request  The request object containing the optional 'line' query parameter
      * @param string  $template The template name to open
      *
-     * @throws BadRequestException  When the template name is invalid or contains path traversal
+     * @throws BadRequestException   When the template name is invalid or contains path traversal
      * @throws NotFoundHttpException When the template cannot be found
      * @throws LoaderError           When the template cannot be loaded
      * @throws RuntimeError          When a runtime error occurs
