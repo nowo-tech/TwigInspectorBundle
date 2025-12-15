@@ -23,11 +23,22 @@ This directory contains three demo projects, one for each supported Symfony vers
 
 Each demo has its own `docker-compose.yml` and can be run independently. You can start any demo you want:
 
+**Important**: Before starting a demo, copy `.env.example` to `.env`:
+```bash
+cd demo/demo-symfony6
+cp .env.example .env
+# Optionally generate a new APP_SECRET: openssl rand -hex 32
+# The .env.example includes: APP_ENV=dev, APP_SECRET (placeholder), APP_DEBUG=1, PORT=8001
+```
+
 ### Symfony 6.4 Demo
 
 ```bash
 # Navigate to the demo directory
 cd demo/demo-symfony6
+
+# Copy .env.example to .env if not already done
+cp .env.example .env
 
 # Start containers
 docker-compose up -d
@@ -35,7 +46,7 @@ docker-compose up -d
 # Install dependencies
 docker-compose exec php composer install
 
-# Access at: http://localhost:8001 (default port, configurable via PORT env variable)
+# Access at: http://localhost:8001 (port configured in .env file)
 ```
 
 Or using the Makefile from the `demo/` directory:
@@ -44,6 +55,9 @@ Or using the Makefile from the `demo/` directory:
 cd demo
 make up-symfony6
 make install-symfony6
+
+# Or verify that the demo is running correctly
+make verify DEMO=symfony6
 ```
 
 ### Symfony 7.0 Demo
@@ -52,13 +66,16 @@ make install-symfony6
 # Navigate to the demo directory
 cd demo/demo-symfony7
 
+# Copy .env.example to .env if not already done
+cp .env.example .env
+
 # Start containers
 docker-compose up -d
 
 # Install dependencies
 docker-compose exec php composer install
 
-# Access at: http://localhost:8001 (default port, configurable via PORT env variable)
+# Access at: http://localhost:8001 (port configured in .env file, default: 8001)
 ```
 
 Or using the Makefile:
@@ -67,6 +84,9 @@ Or using the Makefile:
 cd demo
 make up-symfony7
 make install-symfony7
+
+# Or verify that the demo is running correctly
+make verify DEMO=symfony7
 ```
 
 ### Symfony 8.0 Demo
@@ -75,13 +95,16 @@ make install-symfony7
 # Navigate to the demo directory
 cd demo/demo-symfony8
 
+# Copy .env.example to .env if not already done
+cp .env.example .env
+
 # Start containers
 docker-compose up -d
 
 # Install dependencies
 docker-compose exec php composer install
 
-# Access at: http://localhost:8001 (default port, configurable via PORT env variable)
+# Access at: http://localhost:8001 (port configured in .env file, default: 8001)
 ```
 
 Or using the Makefile:
@@ -90,6 +113,9 @@ Or using the Makefile:
 cd demo
 make up-symfony8
 make install-symfony8
+
+# Or verify that the demo is running correctly
+make verify DEMO=symfony8
 ```
 
 ### Web Profiler
@@ -205,26 +231,38 @@ demo/
 │   ├── Dockerfile          # PHP-FPM image with Composer
 │   ├── nginx.conf          # Nginx configuration
 │   ├── composer.json       # Dependencies including Web Profiler
-│   ├── .env                # Optional: PORT variable (default: 8001)
+│   ├── .env.example        # Template for .env file (copy to .env and configure)
 │   └── ...
 ├── demo-symfony7/          # Symfony 7.0 demo (Port 8001 by default)
 │   ├── docker-compose.yml  # Independent docker-compose for this demo
 │   ├── Dockerfile          # PHP-FPM image with Composer
 │   ├── nginx.conf          # Nginx configuration
 │   ├── composer.json       # Dependencies including Web Profiler
-│   ├── .env                # Optional: PORT variable (default: 8001)
+│   ├── .env.example        # Template for .env file (copy to .env and configure)
 │   └── ...
 ├── demo-symfony8/          # Symfony 8.0 demo (Port 8001 by default)
 │   ├── docker-compose.yml  # Independent docker-compose for this demo
 │   ├── Dockerfile          # PHP-FPM image with Composer
 │   ├── nginx.conf          # Nginx configuration
 │   ├── composer.json       # Dependencies including Web Profiler
-│   ├── .env                # Optional: PORT variable (default: 8001)
+│   ├── .env.example        # Template for .env file (copy to .env and configure)
 │   └── ...
 └── Makefile                # Helper commands for all demos
 ```
 
 Each demo is completely independent with its own `docker-compose.yml` and `nginx.conf`.
+
+**Note**: Before starting a demo, copy `.env.example` to `.env` in the demo directory:
+```bash
+cd demo/demo-symfony6
+cp .env.example .env
+# Edit .env and set your APP_SECRET (or generate one with: openssl rand -hex 32)
+# The .env.example file includes standard Symfony variables:
+# - APP_ENV=dev
+# - APP_SECRET=change_this_secret_key_to_a_random_value (replace with your secret)
+# - APP_DEBUG=1
+# - PORT=8001 (change if needed for multiple demos)
+```
 
 ## How It Works
 
@@ -284,12 +322,76 @@ make test-symfony8
 make test-all
 ```
 
+### Run Tests with Code Coverage
+
+Each demo includes code coverage configuration. To generate coverage reports:
+
+```bash
+# Run tests with coverage for a specific demo
+cd demo/demo-symfony6
+docker-compose exec php composer test-coverage
+
+# Or using the Makefile
+cd demo
+make test-coverage-symfony6
+make test-coverage-symfony7
+make test-coverage-symfony8
+
+# Run all demos with coverage
+make test-coverage-all
+```
+
+Coverage reports are generated in:
+- HTML: `demo/demo-symfony6/coverage/index.html` (and similar for other demos)
+- Clover XML: `demo/demo-symfony6/coverage.xml` (and similar for other demos)
+
 ### Test Structure
 
 Each demo includes:
 
 - **Controller Tests**: Verify that the demo controller works correctly
 - **Bundle Integration Tests**: Verify that the Twig Inspector Bundle is properly integrated
+- **Code Coverage**: 100% coverage for demo application code (DemoController and Kernel are fully tested)
+
+## Verification
+
+You can verify that all demos are running and responding correctly:
+
+```bash
+cd demo
+
+# Verify all demos (starts and checks each one sequentially)
+make verify-all
+
+# Or verify a specific demo
+make verify DEMO=symfony6
+```
+
+The `verify-all` command will:
+1. Start each demo sequentially (symfony6, symfony7, symfony8)
+2. Check that each demo responds with HTTP 200
+3. Show a summary with successful/failed demos
+4. Display access URLs for successfully verified demos
+
+**Example output:**
+```
+🚀 Starting and verifying all demos...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 Processing Symfony 6.4 demo (symfony6)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 Verifying Symfony 6.4 demo...
+✅ Symfony 6.4 demo is running and responding at http://localhost:8001 (HTTP 200)
+✅ Symfony 6.4 demo verified successfully
+
+[... similar for other demos ...]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Verification Summary
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Successful: 3/3
+✅ All demos verified successfully!
+```
 
 ## Troubleshooting
 
@@ -302,8 +404,10 @@ All demos use port **8001** by default. If this port is already in use, you can 
 Create a `.env` file in the demo directory:
 
 ```bash
-# demo/demo-symfony6/.env
-PORT=8083
+# demo/demo-symfony6/.env (or demo-symfony7, demo-symfony8)
+PORT=8001  # Default port for all demos
+# Change to a different port if you need to run multiple demos simultaneously
+PORT=8002  # Example: if you want to run a second demo
 ```
 
 Then restart the containers:
@@ -322,7 +426,9 @@ ports:
   - "8083:80"  # Change to any available port
 ```
 
-**Note**: All demos use port 8001 by default. You can run multiple demos by changing the PORT variable in each demo's `.env` file.
+**Note**: All demos use port **8001** by default. If you need to run multiple demos simultaneously, you can change the PORT variable in each demo's `.env` file to use different ports (e.g., 8001, 8002, 8003).
+
+The Makefile automatically checks if a port is in use and stops any containers using it before starting a new demo.
 
 ### Web Profiler not showing
 

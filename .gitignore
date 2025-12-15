@@ -37,6 +37,7 @@ yarn-error.log
 ###> Demo projects ###
 demo/demo-symfony6/vendor/
 demo/demo-symfony6/var/
+demo/demo-symfony6/.env
 demo/demo-symfony6/.env.local
 demo/demo-symfony6/.env.local.php
 demo/demo-symfony6/.env.*.local
@@ -45,6 +46,7 @@ demo/demo-symfony6/.phpunit.cache/
 
 demo/demo-symfony7/vendor/
 demo/demo-symfony7/var/
+demo/demo-symfony7/.env
 demo/demo-symfony7/.env.local
 demo/demo-symfony7/.env.local.php
 demo/demo-symfony7/.env.*.local
@@ -53,9 +55,15 @@ demo/demo-symfony7/.phpunit.cache/
 
 demo/demo-symfony8/vendor/
 demo/demo-symfony8/var/
+demo/demo-symfony8/.env
 demo/demo-symfony8/.env.local
 demo/demo-symfony8/.env.local.php
 demo/demo-symfony8/.env.*.local
 demo/demo-symfony8/config/secrets/
 demo/demo-symfony8/.phpunit.cache/
 ###< Demo projects ###
+
+# Environment files (root)
+.env
+.env.local
+.env.*.local

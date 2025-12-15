@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Demo Projects**: Added code coverage configuration for all demos
+  - Added `<coverage>` section to `phpunit.xml.dist` in all demo projects
+  - Added `test-coverage` script to `composer.json` in all demo projects
+  - Added `test-coverage-symfony6`, `test-coverage-symfony7`, `test-coverage-symfony8`, and `test-coverage-all` commands to demo Makefile
+  - All demos now support generating HTML and Clover XML coverage reports
+- **Demo Makefile**: Added verification commands
+  - Added `verify-all` command to start and verify all demos respond correctly (HTTP 200)
+  - Added `verify DEMO=<demo>` command to verify a specific demo
+  - Added `check-all` as alias for `verify-all`
+  - Verification includes port checking, container startup, and HTTP response validation
+
+### Changed
+- **Demo Projects**: Updated `.env` files to Symfony standard format
+  - Added `APP_ENV=dev`, `APP_SECRET`, and `APP_DEBUG=1` to all demo projects
+  - Standardized `.env` files with Symfony framework-bundle and console sections
+  - All demos use port **8001** by default (configurable via `.env` file)
+  - **Security**: Removed `.env` files from repository (now in `.gitignore`)
+  - Created `.env.example` files as templates for each demo with placeholder values
+- **Demo Makefile**: Major refactoring and improvements
+  - **Refactored**: Reduced from ~428 lines to ~252 lines (41% reduction) using template-based code generation
+  - **Maintainability**: All demo-specific commands now generated automatically from `DEMOS` variable
+  - **Port Configuration**: Help command now reads port from each demo's `.env` file (or `.env.example` as fallback)
+  - **Port Checking**: Automatically detects if port is in use (using `lsof` or `netstat`)
+  - **Port Management**: Stops existing containers using the port before starting new ones
+  - **Extensibility**: Adding a new demo only requires adding its name to `DEMOS` variable
+
 ## [1.0.2] - 2024-12-12
 
 ### Fixed

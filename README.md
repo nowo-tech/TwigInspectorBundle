@@ -1,9 +1,6 @@
 # Twig Inspector Bundle
 
-[![CI](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml)
-[![Latest Stable Version](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/v)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle)
-[![License](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/license)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle)
-[![PHP Version Require](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/require/php)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle)
+[![CI](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml) [![Latest Stable Version](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/v)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![License](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/license)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![PHP Version Require](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/require/php)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle)
 
 Symfony bundle that adds the possibility to find Twig templates and blocks used for rendering HTML pages faster during development.
 
@@ -139,8 +136,38 @@ make install-symfony8
 Each demo includes:
 - Independent `docker-compose.yml` for easy setup
 - Complete test suite to verify bundle integration
+- Code coverage configuration (100% coverage for demo code)
 - Example controller and templates
 - Web Profiler integration
+
+### Running Demo Tests
+
+Each demo has its own test suite with code coverage:
+
+```bash
+cd demo
+
+# Run tests for a specific demo
+make test-symfony6
+make test-symfony7
+make test-symfony8
+
+# Run tests with coverage for a specific demo
+make test-coverage-symfony6
+make test-coverage-symfony7
+make test-coverage-symfony8
+
+# Run all tests with coverage
+make test-coverage-all
+```
+
+Or directly in each demo directory:
+
+```bash
+cd demo/demo-symfony6
+docker-compose exec php composer test
+docker-compose exec php composer test-coverage
+```
 
 See `demo/README.md` for more details.
 

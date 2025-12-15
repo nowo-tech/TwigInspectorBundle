@@ -32,14 +32,10 @@ help:
 
 # Build and start container
 up:
-	@echo "Building Docker image..."
 	docker-compose build
-	@echo "Starting container..."
 	docker-compose up -d
-	@echo "Waiting for container to be ready..."
-	@sleep 2
 	@echo "Installing dependencies..."
-	docker-compose exec -T php composer install --no-interaction
+	docker-compose exec php composer install --no-interaction
 	@echo "✅ Container ready!"
 
 # Stop container
@@ -52,26 +48,22 @@ shell:
 
 # Install dependencies
 install:
-	docker-compose exec -T php composer install
+	docker-compose exec php composer install
 
 # Run tests
 test:
-	docker-compose exec -T php composer test
+	docker-compose exec php composer test
 
 # Run tests with coverage
 test-coverage:
-	docker-compose exec -T php composer test-coverage
+	docker-compose exec php composer test-coverage
 
 # Start test container
 test-up:
-	@echo "Building test Docker image..."
 	docker-compose -f docker-compose.test.yml build
-	@echo "Starting test container..."
 	docker-compose -f docker-compose.test.yml up -d
-	@echo "Waiting for container to be ready..."
-	@sleep 2
 	@echo "Installing dependencies..."
-	docker-compose -f docker-compose.test.yml exec -T test composer install --no-interaction
+	docker-compose -f docker-compose.test.yml exec test composer install --no-interaction
 	@echo "✅ Test container ready!"
 
 # Stop test container
@@ -84,15 +76,15 @@ test-shell:
 
 # Check code style
 cs-check:
-	docker-compose exec -T php composer cs-check
+	docker-compose exec php composer cs-check
 
 # Fix code style
 cs-fix:
-	docker-compose exec -T php composer cs-fix
+	docker-compose exec php composer cs-fix
 
 # Run all QA
 qa:
-	docker-compose exec -T php composer qa
+	docker-compose exec php composer qa
 
 # Clean vendor and cache
 clean:
