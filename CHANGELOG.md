@@ -7,13 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.4] - 2024-12-15
+## [1.0.5] - 2024-12-15
 
 ### Fixed
-- **Route Pattern**: Updated route requirements to allow slashes in template names
-  - Changed from `"[^/\\0]+"` to `"[^\\0]+"` to support templates in subdirectories (e.g., `admin/users/list.html.twig`)
-  - Security validations in `OpenTemplateController` already prevent path traversal attacks
-  - Added test for templates in subdirectories
 - **Wildcard Pattern Matching**: Fixed regex pattern matching in `HtmlCommentsExtension::isExcluded()`
   - Changed from `str_replace` to `preg_quote()` for proper escaping of special regex characters
   - Now correctly handles wildcard patterns like `admin/*` and `email/*.html.twig`
@@ -24,6 +20,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed test for non-numeric line numbers to handle Symfony 7.0+ exceptions
   - Fixed help text test to verify command definition instead of output
   - All 114 tests now pass with 95.10% code coverage
+
+## [1.0.4] - 2024-12-15
+
+### Fixed
+- **Route Pattern**: Updated route requirements to allow slashes in template names
+  - Changed from `"[^/\\0]+"` to `"[^\\0]+"` to support templates in subdirectories (e.g., `admin/users/list.html.twig`)
+  - Security validations in `OpenTemplateController` already prevent path traversal attacks
+  - Added test for templates in subdirectories
 
 ## [1.0.3] - 2024-12-15
 
