@@ -344,7 +344,7 @@ final class OpenTemplateControllerTest extends TestCase
         // Create a temporary directory structure for templates
         $tempDir = sys_get_temp_dir() . '/twig_inspector_test_' . uniqid();
         $subDir = $tempDir . '/admin/users';
-        mkdir($subDir, 0777, true);
+        mkdir($subDir, 0o777, true);
         $templateFile = $subDir . '/list.html.twig';
         file_put_contents($templateFile, 'template content');
 
