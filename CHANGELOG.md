@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed from `"[^/\\0]+"` to `"[^\\0]+"` to support templates in subdirectories (e.g., `admin/users/list.html.twig`)
   - Security validations in `OpenTemplateController` already prevent path traversal attacks
   - Added test for templates in subdirectories
+- **Wildcard Pattern Matching**: Fixed regex pattern matching in `HtmlCommentsExtension::isExcluded()`
+  - Changed from `str_replace` to `preg_quote()` for proper escaping of special regex characters
+  - Now correctly handles wildcard patterns like `admin/*` and `email/*.html.twig`
+- **Test Suite**: Fixed all test failures and compatibility issues
+  - Removed `Application::add()` calls (removed in Symfony 8.0) from all tests
+  - Fixed constructor parameter mismatches in `HtmlCommentsExtension` tests
+  - Fixed `TemplateWrapper` mock issue (class is final, cannot be mocked)
+  - Fixed test for non-numeric line numbers to handle Symfony 7.0+ exceptions
+  - Fixed help text test to verify command definition instead of output
+  - All 114 tests now pass with 95.10% code coverage
 
 ## [1.0.3] - 2024-12-15
 

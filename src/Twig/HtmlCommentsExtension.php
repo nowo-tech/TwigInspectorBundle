@@ -172,7 +172,9 @@ class HtmlCommentsExtension extends AbstractExtension
     {
         foreach ($patterns as $pattern) {
             // Support wildcard patterns
-            $regex = '/^' . str_replace(['*', '.'], ['.*', '\.'], $pattern) . '$/';
+            // Escape special regex characters, then replace * with .*
+            $escaped = preg_quote($pattern, '/');
+            $regex = '/^' . str_replace('\*', '.*', $escaped) . '$/';
             if (preg_match($regex, $name)) {
                 return true;
             }

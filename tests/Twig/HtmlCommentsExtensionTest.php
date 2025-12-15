@@ -278,8 +278,6 @@ final class HtmlCommentsExtensionTest extends TestCase
             ['.html.twig'],
             [],
             [],
-            true,
-            true,
             'custom_cookie_name'
         );
 
@@ -353,7 +351,9 @@ final class HtmlCommentsExtensionTest extends TestCase
             $this->urlGenerator,
             $this->boxDrawings,
             ['.html.twig'],
-            ['admin/*'] // Exclude admin templates
+            ['admin/*'], // Exclude admin templates
+            [],
+            'twig_inspector_is_active'
         );
 
         $reflection = new \ReflectionClass($extension);
@@ -405,7 +405,8 @@ final class HtmlCommentsExtensionTest extends TestCase
             $this->boxDrawings,
             ['.html.twig'],
             [],
-            ['head_*'] // Exclude blocks starting with head_
+            ['head_*'], // Exclude blocks starting with head_
+            'twig_inspector_is_active'
         );
 
         $reflection = new \ReflectionClass($extension);
@@ -424,7 +425,9 @@ final class HtmlCommentsExtensionTest extends TestCase
             $this->urlGenerator,
             $this->boxDrawings,
             ['.html.twig'],
-            ['admin/*', 'email/*.html.twig']
+            ['admin/*', 'email/*.html.twig'],
+            [],
+            'twig_inspector_is_active'
         );
 
         $reflection = new \ReflectionClass($extension);

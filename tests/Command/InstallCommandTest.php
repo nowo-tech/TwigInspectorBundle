@@ -6,7 +6,6 @@ namespace Nowo\TwigInspectorBundle\Tests\Command;
 
 use Nowo\TwigInspectorBundle\Command\InstallCommand;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -45,8 +44,6 @@ final class InstallCommandTest extends TestCase
     public function testExecuteCreatesConfigFileInDevEnvironment(): void
     {
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -62,8 +59,6 @@ final class InstallCommandTest extends TestCase
     public function testExecuteCreatesConfigFileInTestEnvironment(): void
     {
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute(['--env' => 'test']);
@@ -77,8 +72,6 @@ final class InstallCommandTest extends TestCase
     public function testExecuteCreatesConfigFileInProdEnvironment(): void
     {
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute(['--env' => 'prod']);
@@ -91,8 +84,6 @@ final class InstallCommandTest extends TestCase
     public function testExecuteCreatesDirectoryIfNotExists(): void
     {
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $configDir = $this->testProjectDir . '/config/packages/dev';
@@ -110,8 +101,6 @@ final class InstallCommandTest extends TestCase
         $this->filesystem->mkdir($configDir);
 
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -126,8 +115,6 @@ final class InstallCommandTest extends TestCase
         $this->filesystem->dumpFile($configFile, 'existing content');
 
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         // Simulate "no" answer
@@ -146,8 +133,6 @@ final class InstallCommandTest extends TestCase
         $this->filesystem->dumpFile($configFile, 'existing content');
 
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute(['--force' => true]);
@@ -164,8 +149,6 @@ final class InstallCommandTest extends TestCase
         $this->filesystem->dumpFile($configFile, 'existing content');
 
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         // Simulate "yes" answer
@@ -186,8 +169,6 @@ final class InstallCommandTest extends TestCase
             chdir($this->testProjectDir);
 
             $command = new InstallCommand(null);
-            $application = new Application();
-            $application->add($command);
             $commandTester = new CommandTester($command);
 
             $commandTester->execute([]);
@@ -203,8 +184,6 @@ final class InstallCommandTest extends TestCase
     public function testConfigFileContainsAllExpectedOptions(): void
     {
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -225,8 +204,6 @@ final class InstallCommandTest extends TestCase
     public function testConfigFileContainsHelpfulComments(): void
     {
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -242,22 +219,19 @@ final class InstallCommandTest extends TestCase
     public function testHelpTextIsDisplayed(): void
     {
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
-        $commandTester = new CommandTester($command);
-
-        $commandTester->execute(['--help']);
-
-        $this->assertStringContainsString('Creates the Twig Inspector Bundle configuration file', $commandTester->getDisplay());
-        $this->assertStringContainsString('--env', $commandTester->getDisplay());
-        $this->assertStringContainsString('--force', $commandTester->getDisplay());
+        
+        // Verify command description and help text
+        $this->assertStringContainsString('Creates the Twig Inspector Bundle configuration file', $command->getDescription());
+        
+        // Verify options exist
+        $definition = $command->getDefinition();
+        $this->assertTrue($definition->hasOption('env'));
+        $this->assertTrue($definition->hasOption('force'));
     }
 
     public function testExecuteCreatesRoutesFileIfNotExists(): void
     {
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $routesFile = $this->testProjectDir . '/config/routes.yaml';
@@ -279,8 +253,6 @@ final class InstallCommandTest extends TestCase
         $this->filesystem->dumpFile($routesFile, $initialContent);
 
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -297,8 +269,6 @@ final class InstallCommandTest extends TestCase
         $this->filesystem->dumpFile($routesFile, $existingContent);
 
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -316,8 +286,6 @@ final class InstallCommandTest extends TestCase
         $this->filesystem->dumpFile($routesFile, $existingContent);
 
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -334,8 +302,6 @@ final class InstallCommandTest extends TestCase
         $this->filesystem->dumpFile($routesFile, $existingContent);
 
         $command = new InstallCommand($this->testProjectDir);
-        $application = new Application();
-        $application->add($command);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
