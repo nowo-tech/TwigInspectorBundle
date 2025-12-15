@@ -222,6 +222,9 @@ Each demo includes:
   - Enabled in `dev` and `test` environments
   - Accessible at `/_profiler` route
   - Toolbar visible at the bottom of pages
+- **Twig Inspector Configuration**: Example configuration file showing all available options
+  - Located at `config/packages/nowo_twig_inspector.yaml`
+  - Demonstrates exclusion patterns, metrics, and performance options
 
 ## Demo Structure
 
@@ -233,6 +236,7 @@ demo/
 │   ├── nginx.conf          # Nginx configuration
 │   ├── composer.json       # Dependencies including Web Profiler
 │   ├── .env.example        # Template for .env file (copy to .env and configure)
+│   ├── config/packages/nowo_twig_inspector.yaml  # Bundle configuration example
 │   └── ...
 ├── demo-symfony7/          # Symfony 7.0 demo (Port 8001 by default)
 │   ├── docker-compose.yml  # Independent docker-compose for this demo
@@ -240,6 +244,7 @@ demo/
 │   ├── nginx.conf          # Nginx configuration
 │   ├── composer.json       # Dependencies including Web Profiler
 │   ├── .env.example        # Template for .env file (copy to .env and configure)
+│   ├── config/packages/nowo_twig_inspector.yaml  # Bundle configuration example
 │   └── ...
 ├── demo-symfony8/          # Symfony 8.0 demo (Port 8001 by default)
 │   ├── docker-compose.yml  # Independent docker-compose for this demo
@@ -247,6 +252,7 @@ demo/
 │   ├── nginx.conf          # Nginx configuration
 │   ├── composer.json       # Dependencies including Web Profiler
 │   ├── .env.example        # Template for .env file (copy to .env and configure)
+│   ├── config/packages/nowo_twig_inspector.yaml  # Bundle configuration example
 │   └── ...
 └── Makefile                # Helper commands for all demos
 ```
@@ -275,7 +281,9 @@ The bundle automatically:
 3. Allows clicking on elements to open templates in your IDE
 4. Integrates with Symfony Web Profiler toolbar
 
-## IDE Configuration
+## Configuration
+
+### IDE Configuration
 
 To open templates in your IDE, configure the `ide` option in each demo's `config/packages/framework.yaml`:
 
@@ -289,6 +297,62 @@ Supported IDEs:
 - **VS Code**: `vscode://file/%%f:%%l`
 - **Sublime Text**: `subl://open?url=file://%%f&line=%%l`
 - **Atom**: `atom://core/open/file?filename=%%f&line=%%l`
+
+### Twig Inspector Bundle Configuration
+
+**Note**: The configuration file is **optional**. The bundle works with default settings without any configuration file.
+
+#### Automatic Installation
+
+**If installing from Packagist**: The configuration file is created automatically by Symfony Flex during `composer require`. No command needed.
+
+**If installing manually or from Git**: You can create the configuration file using the install command:
+
+```bash
+php bin/console nowo:twig-inspector:install
+```
+
+This command creates a configuration file with all available options and helpful comments.
+
+#### Example Configuration
+
+Each demo includes an **example** configuration file at `config/packages/nowo_twig_inspector.yaml` that demonstrates all available configuration options. This file is provided as a reference - you can delete it or modify it as needed.
+
+The example configuration shows:
+
+```yaml
+nowo_twig_inspector:
+    # Template extensions to inspect
+    enabled_extensions:
+        - '.html.twig'
+    
+    # Templates to exclude (supports wildcards)
+    excluded_templates:
+        # - 'admin/*'
+        # - 'email/*.html.twig'
+    
+    # Blocks to exclude (supports wildcards)
+    excluded_blocks:
+        # - 'javascript'
+        # - 'head_*'
+    
+    # Enable template usage metrics
+    enable_metrics: true
+    
+    # Performance optimization
+    optimize_output_buffering: true
+    
+    # Custom cookie name
+    cookie_name: 'twig_inspector_is_active'
+```
+
+**Key Features:**
+- **Exclude templates/blocks**: Use wildcards (`*`) to exclude specific templates or blocks from inspection
+- **Template metrics**: View template and block usage statistics in the Web Profiler
+- **Performance**: Automatic optimization when inspector is disabled
+- **Flexible configuration**: Customize which templates are inspected
+
+For more details, see the main [README.md](../README.md#configuration).
 
 ## Testing
 

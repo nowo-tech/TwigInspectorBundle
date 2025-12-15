@@ -12,11 +12,15 @@ Symfony bundle that adds the possibility to find Twig templates and blocks used 
 - ✅ Works with Symfony Web Profiler
 - ✅ Cookie-based activation (no code changes needed)
 - ✅ Supports nested blocks and templates
+- ✅ **Configurable template/block exclusion** (with wildcard support)
+- ✅ **Template usage metrics** in Web Profiler
+- ✅ **Performance optimized** (skips processing when disabled)
+- ✅ **Flexible configuration** for different use cases
 
 ## Installation
 
 ```bash
-composer require nowo-tech/twig-inspector-bundle:^1.0.2 --dev
+composer require nowo-tech/twig-inspector-bundle:^1.0.3 --dev
 ```
 
 Then, register the bundle in your `config/bundles.php`:
@@ -58,7 +62,125 @@ When enabled, a JavaScript overlay shows which templates correspond to which HTM
 
 ## Configuration
 
-The bundle works out of the box with default settings. No configuration is required.
+The bundle works out of the box with default settings. **No configuration file is required** - the bundle uses sensible defaults defined in `Configuration.php`.
+
+**Important**: The configuration file (`nowo_twig_inspector.yaml`) is **optional**. You only need to create it if you want to customize the default behavior.
+
+### How Configuration Works
+
+1. **Default Values**: The bundle uses default values from `Configuration.php` if no config file exists
+2. **YAML Merging**: If a YAML file exists, Symfony automatically merges it with default values
+3. **No Auto-Deletion**: When uninstalling the bundle, the YAML file is **not** automatically deleted (you may want to keep your custom configuration)
+
+### Bundle Configuration
+
+#### Symfony Flex Recipe (Automatic - Recommended)
+
+**If the bundle is installed via Symfony Flex** (from Packagist), the configuration file will be created **automatically** during `composer require`. **You don't need to do anything else** - the file is created for you.
+
+**Note**: Flex Recipes only work when the bundle is published in the official Symfony Flex repository (Packagist). If you're using a private bundle or installing from a Git repository, Flex Recipes won't work and you'll need to use the install command below.
+
+#### Install Command (For manual installation or private bundles)
+
+**Only use this command if:**
+- You're installing a private bundle (not from Packagist)
+- The Flex Recipe didn't create the file automatically
+- You want to regenerate the configuration file for a different environment
+- You want to recreate the file after deleting it
+
+To create the configuration file manually:
+
+```bash
+php bin/console nowo:twig-inspector:install
+```
+
+This command will:
+- Create the configuration file at `config/packages/dev/nowo_twig_inspector.yaml`
+- Include all available options with comments
+- Ask for confirmation if the file already exists (use `--force` to overwrite)
+
+You can also specify a different environment:
+
+```bash
+# For test environment
+php bin/console nowo:twig-inspector:install --env=test
+
+# Overwrite existing file
+php bin/console nowo:twig-inspector:install --force
+```
+
+#### Manual Installation
+
+Alternatively, you can create the configuration file manually:
+
+```bash
+# Create the configuration file (optional)
+touch config/packages/dev/nowo_twig_inspector.yaml
+```
+
+Then configure the bundle behavior:
+
+```yaml
+# config/packages/dev/nowo_twig_inspector.yaml
+nowo_twig_inspector:
+    # List of template file extensions to inspect
+    enabled_extensions:
+        - '.html.twig'
+        # - '.twig'  # Uncomment to also inspect .twig files
+    
+    # Templates to exclude from inspection (supports wildcards with *)
+    excluded_templates:
+        - 'admin/*'           # Exclude all admin templates
+        - 'email/*.html.twig' # Exclude email templates
+    
+    # Blocks to exclude from inspection (supports wildcards with *)
+    excluded_blocks:
+        - 'javascript'        # Exclude 'javascript' block
+        - 'head_*'            # Exclude blocks starting with 'head_'
+    
+    # Enable template usage metrics in Web Profiler
+    enable_metrics: true
+    
+    # Optimize performance by skipping output buffering when disabled
+    optimize_output_buffering: true
+    
+    # Custom cookie name for enabling/disabling inspector
+    cookie_name: 'twig_inspector_is_active'
+```
+
+**Default Values** (used when no config file exists):
+
+- `enabled_extensions`: `['.html.twig']` - Only `.html.twig` files are inspected
+- `excluded_templates`: `[]` - No templates excluded by default
+- `excluded_blocks`: `[]` - No blocks excluded by default
+- `enable_metrics`: `true` - Metrics collection enabled
+- `optimize_output_buffering`: `true` - Performance optimization enabled
+- `cookie_name`: `'twig_inspector_is_active'` - Default cookie name
+
+**Configuration Options:**
+
+- `enabled_extensions`: Array of template file extensions to inspect (default: `['.html.twig']`)
+- `excluded_templates`: Array of template names or patterns to exclude (supports `*` wildcard)
+- `excluded_blocks`: Array of block names or patterns to exclude (supports `*` wildcard)
+- `enable_metrics`: Enable collection of template usage statistics (default: `true`)
+- `optimize_output_buffering`: Skip output buffering when inspector is disabled (default: `true`)
+- `cookie_name`: Name of the cookie used to enable/disable inspector (default: `'twig_inspector_is_active'`)
+
+**Note**: All configuration options are optional. If you don't create a config file, the bundle will use the default values listed above.
+
+### Configuration File Behavior
+
+**If YAML exists**: Symfony automatically loads and merges it with default values. Your custom configuration takes precedence over defaults.
+
+**If YAML doesn't exist**: The bundle uses default values from `Configuration.php`. No file is required.
+
+**When uninstalling**: The YAML file is **not automatically deleted**. This is intentional because:
+- You may have customized the configuration
+- You might want to keep it for reference
+- Symfony cannot determine if the file is still needed
+- You can manually delete it if desired: `rm config/packages/dev/nowo_twig_inspector.yaml`
+
+For detailed information about how configuration works, see [CONFIGURATION.md](CONFIGURATION.md).
 
 ### IDE Integration
 
@@ -75,6 +197,42 @@ Supported IDEs:
 - VS Code: `vscode://file/%%f:%%l`
 - Sublime Text: `subl://open?url=file://%%f&line=%%l`
 - Atom: `atom://core/open/file?filename=%%f&line=%%l`
+
+### Security
+
+The bundle includes comprehensive security measures to prevent path traversal attacks and unauthorized access:
+
+- **Template name validation**: Rejects path traversal attempts (`..`), null bytes, and absolute paths
+- **File path verification**: Ensures resolved template paths are within allowed Twig template directories
+- **Parameter validation**: Line numbers must be positive integers
+- **Route restrictions**: Routes should only be available in `dev` and `test` environments
+
+**Important**: Always ensure the bundle routes are restricted to development environments:
+
+```yaml
+# config/routes.yaml
+when@dev:
+    nowo_twig_inspector:
+        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
+```
+
+The bundle automatically registers only in `dev` and `test` environments when configured in `bundles.php`, but it's recommended to also restrict routes explicitly.
+
+### Template Usage Metrics
+
+When `enable_metrics` is set to `true` (default), the bundle collects template usage statistics that are available in the Symfony Web Profiler:
+
+- **Templates used**: List of all templates rendered in the request
+- **Blocks used**: List of all blocks rendered in the request
+- **Usage counts**: How many times each template/block was used
+- **Totals**: Total number of unique templates and blocks
+
+Access the metrics by:
+1. Opening the Symfony Web Profiler toolbar
+2. Clicking on the `</>` (Twig Inspector) icon
+3. Viewing the collected statistics
+
+**Note**: Metrics are only collected when the inspector is enabled (cookie is set to `true`).
 
 ## Requirements
 
