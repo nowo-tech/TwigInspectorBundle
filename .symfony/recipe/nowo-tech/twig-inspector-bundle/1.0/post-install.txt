@@ -1,13 +1,17 @@
 Twig Inspector Bundle has been installed!
 
-The configuration file has been created at:
-  config/packages/nowo_twig_inspector.yaml
+The following files have been created:
+  - config/packages/nowo_twig_inspector.yaml (configuration)
+  - config/routes.yaml (routes import, if file didn't exist)
 
 You can customize the configuration according to your needs.
-The bundle works with default values if you delete this file.
+The bundle works with default values if you delete the config file.
 
 To use the bundle:
 1. Make sure Symfony Web Profiler is enabled
 2. Access your application in dev environment
 3. Enable the inspector via the Web Profiler toolbar (</> icon)
+
+Note: If routes.yaml already existed, the route import was added automatically.
+If you need to add it manually, see the README for instructions.
 

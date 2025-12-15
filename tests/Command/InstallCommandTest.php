@@ -251,5 +251,95 @@ final class InstallCommandTest extends TestCase
         $this->assertStringContainsString('--env', $commandTester->getDisplay());
         $this->assertStringContainsString('--force', $commandTester->getDisplay());
     }
+
+    public function testExecuteCreatesRoutesFileIfNotExists(): void
+    {
+        $command = new InstallCommand($this->testProjectDir);
+        $application = new Application();
+        $application->add($command);
+        $commandTester = new CommandTester($command);
+
+        $routesFile = $this->testProjectDir . '/config/routes.yaml';
+        $this->assertFileDoesNotExist($routesFile);
+
+        $commandTester->execute([]);
+
+        $this->assertFileExists($routesFile);
+        $content = file_get_contents($routesFile);
+        $this->assertStringContainsString('NowoTwigInspectorBundle', $content);
+        $this->assertStringContainsString('when@dev', $content);
+        $this->assertStringContainsString('nowo_twig_inspector', $content);
+    }
+
+    public function testExecuteAppendsToExistingRoutesFile(): void
+    {
+        $routesFile = $this->testProjectDir . '/config/routes.yaml';
+        $initialContent = "existing_route:\n    path: /existing\n";
+        $this->filesystem->dumpFile($routesFile, $initialContent);
+
+        $command = new InstallCommand($this->testProjectDir);
+        $application = new Application();
+        $application->add($command);
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([]);
+
+        $content = file_get_contents($routesFile);
+        $this->assertStringContainsString('existing_route', $content);
+        $this->assertStringContainsString('NowoTwigInspectorBundle', $content);
+    }
+
+    public function testExecuteDoesNotDuplicateRoutesImport(): void
+    {
+        $routesFile = $this->testProjectDir . '/config/routes.yaml';
+        $existingContent = "# Twig Inspector Bundle routes\nwhen@dev:\n    nowo_twig_inspector:\n        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'\n";
+        $this->filesystem->dumpFile($routesFile, $existingContent);
+
+        $command = new InstallCommand($this->testProjectDir);
+        $application = new Application();
+        $application->add($command);
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([]);
+
+        $content = file_get_contents($routesFile);
+        $matches = substr_count($content, 'NowoTwigInspectorBundle');
+        $this->assertSame(1, $matches, 'Routes import should not be duplicated');
+        $this->assertStringContainsString('Routes file already contains', $commandTester->getDisplay());
+    }
+
+    public function testExecuteDetectsExistingImportByBundleName(): void
+    {
+        $routesFile = $this->testProjectDir . '/config/routes.yaml';
+        $existingContent = "some_route:\n    path: /test\n\n# Some comment about NowoTwigInspectorBundle\n";
+        $this->filesystem->dumpFile($routesFile, $existingContent);
+
+        $command = new InstallCommand($this->testProjectDir);
+        $application = new Application();
+        $application->add($command);
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([]);
+
+        $content = file_get_contents($routesFile);
+        // Should not add duplicate
+        $this->assertStringContainsString('Routes file already contains', $commandTester->getDisplay());
+    }
+
+    public function testExecuteDetectsExistingImportByRouteName(): void
+    {
+        $routesFile = $this->testProjectDir . '/config/routes.yaml';
+        $existingContent = "nowo_twig_inspector:\n    path: /test\n";
+        $this->filesystem->dumpFile($routesFile, $existingContent);
+
+        $command = new InstallCommand($this->testProjectDir);
+        $application = new Application();
+        $application->add($command);
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([]);
+
+        $this->assertStringContainsString('Routes file already contains', $commandTester->getDisplay());
+    }
 }
 

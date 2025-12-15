@@ -76,7 +76,11 @@ The bundle works out of the box with default settings. **No configuration file i
 
 #### Symfony Flex Recipe (Automatic - Recommended)
 
-**If the bundle is installed via Symfony Flex** (from Packagist), the configuration file will be created **automatically** during `composer require`. **You don't need to do anything else** - the file is created for you.
+**If the bundle is installed via Symfony Flex** (from Packagist), both the configuration file and routes will be created **automatically** during `composer require`:
+- `config/packages/nowo_twig_inspector.yaml` (configuration)
+- `config/routes.yaml` (route import, if file doesn't exist)
+
+**You don't need to do anything else** - everything is set up automatically.
 
 **Note**: Flex Recipes only work when the bundle is published in the official Symfony Flex repository (Packagist). If you're using a private bundle or installing from a Git repository, Flex Recipes won't work and you'll need to use the install command below.
 
@@ -96,8 +100,9 @@ php bin/console nowo:twig-inspector:install
 
 This command will:
 - Create the configuration file at `config/packages/dev/nowo_twig_inspector.yaml`
+- Create or update `config/routes.yaml` with the bundle route import (if needed)
 - Include all available options with comments
-- Ask for confirmation if the file already exists (use `--force` to overwrite)
+- Ask for confirmation if the config file already exists (use `--force` to overwrite)
 
 You can also specify a different environment:
 
@@ -207,16 +212,20 @@ The bundle includes comprehensive security measures to prevent path traversal at
 - **Parameter validation**: Line numbers must be positive integers
 - **Route restrictions**: Routes should only be available in `dev` and `test` environments
 
-**Important**: Always ensure the bundle routes are restricted to development environments:
+**Important**: The bundle routes are automatically added to `config/routes.yaml` during installation (via Flex Recipe or Install Command). The routes are restricted to `dev` and `test` environments:
 
 ```yaml
-# config/routes.yaml
+# config/routes.yaml (created automatically)
 when@dev:
     nowo_twig_inspector:
         resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
 ```
 
-The bundle automatically registers only in `dev` and `test` environments when configured in `bundles.php`, but it's recommended to also restrict routes explicitly.
+**Note**: 
+- If routes aren't configured or available (e.g., in production), the bundle handles this gracefully by using fallback URLs. This prevents "route does not exist" errors when generating template links.
+- The route pattern allows slashes in template names to support templates in subdirectories (e.g., `admin/users/list.html.twig`). Security validations in the controller prevent path traversal attacks.
+
+If you need to add the routes manually, add the above configuration to your `config/routes.yaml` file.
 
 ### Template Usage Metrics
 
@@ -361,7 +370,7 @@ composer qa
 
 ## Testing
 
-The bundle has **100% code coverage** (144/144 lines, 35/35 methods, 11/11 classes). All tests are located in the `tests/` directory.
+The bundle maintains **100% code coverage** for all code. All tests are located in the `tests/` directory.
 
 ### Running Tests
 

@@ -339,6 +339,46 @@ final class OpenTemplateControllerTest extends TestCase
         }
     }
 
+    public function testInvokeWorksWithTemplateInSubdirectory(): void
+    {
+        // Create a temporary directory structure for templates
+        $tempDir = sys_get_temp_dir() . '/twig_inspector_test_' . uniqid();
+        $subDir = $tempDir . '/admin/users';
+        mkdir($subDir, 0777, true);
+        $templateFile = $subDir . '/list.html.twig';
+        file_put_contents($templateFile, 'template content');
+
+        try {
+            $loader = new FilesystemLoader([$tempDir]);
+            $twig = new Environment($loader);
+            $templateWrapper = $twig->load('admin/users/list.html.twig');
+
+            $realFileLinkFormatter = $this->createMock(FileLinkFormatter::class);
+            $realFileLinkFormatter->expects($this->once())
+              ->method('format')
+              ->with($this->stringContains($templateFile), 1)
+              ->willReturn('phpstorm://open?file=' . $templateFile . '&line=1');
+
+            $realController = new OpenTemplateController($twig, $realFileLinkFormatter);
+
+            $request = new Request();
+            $response = ($realController)($request, 'admin/users/list.html.twig');
+
+            $this->assertInstanceOf(RedirectResponse::class, $response);
+        } finally {
+            // Cleanup
+            if (file_exists($templateFile)) {
+                unlink($templateFile);
+            }
+            if (is_dir($subDir)) {
+                rmdir($subDir);
+            }
+            if (is_dir($tempDir)) {
+                rmdir($tempDir);
+            }
+        }
+    }
+
     public function testInvokeWorksWithArrayLoader(): void
     {
         // ArrayLoader doesn't have getPaths(), so validation should pass

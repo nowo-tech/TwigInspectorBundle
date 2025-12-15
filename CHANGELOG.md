@@ -7,13 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.4] - 2024-12-15
+
+### Fixed
+- **Route Pattern**: Updated route requirements to allow slashes in template names
+  - Changed from `"[^/\\0]+"` to `"[^\\0]+"` to support templates in subdirectories (e.g., `admin/users/list.html.twig`)
+  - Security validations in `OpenTemplateController` already prevent path traversal attacks
+  - Added test for templates in subdirectories
+
 ## [1.0.3] - 2024-12-15
 
 ### Added
+- **Automatic Routes Setup**: Install command and Flex Recipe now automatically create/update `routes.yaml`
+  - Creates `config/routes.yaml` if it doesn't exist
+  - Adds route import to existing `routes.yaml` if not already present
+  - Prevents duplicate route imports
+  - Resolves "route does not exist" errors when routes aren't configured
 - **Tests**: Added comprehensive test coverage for new features
-  - Added `InstallCommandTest` with 15 test cases covering all command scenarios
+  - Added `InstallCommandTest` with 18 test cases covering all command scenarios
+    - Tests for configuration file creation in different environments
+    - Tests for routes.yaml creation and updates (5 tests)
+    - Tests for duplicate detection and error handling
   - Added `ConfigurationTest` for configuration processing and validation
-  - Enhanced `HtmlCommentsExtensionTest` with tests for new configuration options (exclusions, extensions, custom cookie)
+  - Enhanced `HtmlCommentsExtensionTest` with tests for new configuration options
+    - Tests for exclusions, extensions, custom cookie
+    - Test for `RouteNotFoundException` handling in `getLink()` method
   - Enhanced `TwigInspectorCollectorTest` with tests for metrics collection
   - All new code has 100% test coverage
 - **Documentation**: Improved and standardized documentation
@@ -32,8 +50,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Flex Recipe is the primary method (automatic when installing from Packagist)
   - Install Command is only needed for private bundles or manual installations
   - Updated README, CHANGELOG, CONFIGURATION.md, and demo/README.md for consistency
-
-## [Unreleased]
+- **InstallCommand**: Enhanced to automatically create/update routes.yaml
+  - Now handles both configuration file and routes file setup
+  - Prevents "route does not exist" errors by ensuring routes are configured
+  - Updated help text to reflect new functionality
+- **HtmlCommentsExtension**: Improved error handling for route generation
+  - Added `RouteNotFoundException` handling in `getLink()` method
+  - Returns fallback URL if route is not available (e.g., in production)
+  - Prevents exceptions when routes aren't configured or in non-dev environments
 
 ## [1.0.2] - 2024-12-12
 
