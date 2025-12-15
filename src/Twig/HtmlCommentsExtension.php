@@ -28,10 +28,10 @@ class HtmlCommentsExtension extends AbstractExtension
      *
      * @param RequestStack          $requestStack      The request stack
      * @param UrlGeneratorInterface $urlGenerator      The URL generator
-     * @param BoxDrawings           $boxDrawings      The box drawings helper
+     * @param BoxDrawings           $boxDrawings       The box drawings helper
      * @param array<string>         $enabledExtensions List of template extensions to inspect
-     * @param array<string>         $excludedTemplates  List of template names/patterns to exclude
-     * @param array<string>         $excludedBlocks     List of block names/patterns to exclude
+     * @param array<string>         $excludedTemplates List of template names/patterns to exclude
+     * @param array<string>         $excludedBlocks    List of block names/patterns to exclude
      * @param string                $cookieName        Name of the cookie to check
      */
     public function __construct(
@@ -164,7 +164,7 @@ class HtmlCommentsExtension extends AbstractExtension
      * Checks if a name matches any exclusion pattern.
      *
      * @param string        $name     The name to check
-     * @param array<string> $patterns  List of patterns (supports wildcards with *)
+     * @param array<string> $patterns List of patterns (supports wildcards with *)
      *
      * @return bool True if excluded, false otherwise
      */

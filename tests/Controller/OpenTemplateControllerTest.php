@@ -246,7 +246,7 @@ final class OpenTemplateControllerTest extends TestCase
     {
         // Create a temporary directory for templates
         $tempDir = sys_get_temp_dir() . '/twig_inspector_test_' . uniqid();
-        mkdir($tempDir, 0777, true);
+        mkdir($tempDir, 0o777, true);
         $templateFile = $tempDir . '/test.html.twig';
         file_put_contents($templateFile, 'test content');
 
@@ -284,8 +284,8 @@ final class OpenTemplateControllerTest extends TestCase
         // Create a temporary directory for templates
         $allowedDir = sys_get_temp_dir() . '/twig_inspector_allowed_' . uniqid();
         $outsideDir = sys_get_temp_dir() . '/twig_inspector_outside_' . uniqid();
-        mkdir($allowedDir, 0777, true);
-        mkdir($outsideDir, 0777, true);
+        mkdir($allowedDir, 0o777, true);
+        mkdir($outsideDir, 0o777, true);
 
         $outsideFile = $outsideDir . '/outside.html.twig';
         file_put_contents($outsideFile, 'outside content');
