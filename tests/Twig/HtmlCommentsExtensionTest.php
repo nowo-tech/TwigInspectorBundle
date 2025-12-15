@@ -535,6 +535,60 @@ final class HtmlCommentsExtensionTest extends TestCase
         $this->assertFalse($result2);
     }
 
+    public function testIsSupportedWithBackboneTemplate(): void
+    {
+        $reflection = new \ReflectionClass($this->extension);
+        $method = $reflection->getMethod('isSupported');
+        $method->setAccessible(true);
+
+        // Test with Backbone template (contains <% %>)
+        $result = $method->invoke($this->extension, '<div><%= variable %></div>');
+
+        // Should return false because it contains Backbone template syntax
+        $this->assertFalse($result);
+    }
+
+    public function testIsSupportedWithValidHTML(): void
+    {
+        $reflection = new \ReflectionClass($this->extension);
+        $method = $reflection->getMethod('isSupported');
+        $method->setAccessible(true);
+
+        // Test with valid HTML that doesn't start with brackets and doesn't contain Backbone syntax
+        $result = $method->invoke($this->extension, '<div>Hello World</div>');
+
+        // Should return true because it's valid HTML
+        $this->assertTrue($result);
+    }
+
+    public function testIsSupportedWithHTMLStartingWithWhitespace(): void
+    {
+        $reflection = new \ReflectionClass($this->extension);
+        $method = $reflection->getMethod('isSupported');
+        $method->setAccessible(true);
+
+        // Test with HTML that starts with whitespace (trimmed will be empty, so trimmed[0] won't be accessed)
+        $result1 = $method->invoke($this->extension, '   <div>Hello</div>   ');
+        $result2 = $method->invoke($this->extension, "\n<div>Hello</div>\n");
+
+        // Should return true because it's valid HTML (whitespace is trimmed)
+        $this->assertTrue($result1);
+        $this->assertTrue($result2);
+    }
+
+    public function testIsSupportedWithEmptyStringAfterTrim(): void
+    {
+        $reflection = new \ReflectionClass($this->extension);
+        $method = $reflection->getMethod('isSupported');
+        $method->setAccessible(true);
+
+        // Test with string that is empty after trim - this tests the trimmed !== '' check
+        $result = $method->invoke($this->extension, '   ');
+
+        // Should return false because after trim it's empty
+        $this->assertFalse($result);
+    }
+
     public function testGetComment(): void
     {
         $ref = new NodeReference('block_name', 'template.html.twig', 10);

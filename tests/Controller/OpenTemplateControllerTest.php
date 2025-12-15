@@ -356,6 +356,64 @@ final class OpenTemplateControllerTest extends TestCase
         }
     }
 
+    public function testInvokeRejectsUnresolvableFilePath(): void
+    {
+        // Test case where realpath() returns false using reflection
+        $loader = new FilesystemLoader([sys_get_temp_dir()]);
+        $twig = new Environment($loader);
+        
+        $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
+        $controller = new OpenTemplateController($twig, $fileLinkFormatter);
+        
+        // Use reflection to test validateFilePath directly with a non-existent path
+        $reflection = new \ReflectionClass($controller);
+        $method = $reflection->getMethod('validateFilePath');
+        $method->setAccessible(true);
+        
+        // Test with a path that realpath() will return false for
+        $nonExistentPath = '/nonexistent/path/to/template.html.twig';
+        
+        $this->expectException(BadRequestException::class);
+        $this->expectExceptionMessage('Template file path could not be resolved');
+        
+        $method->invoke($controller, $nonExistentPath);
+    }
+
+    public function testValidateFilePathWithValidPath(): void
+    {
+        // Test case where validateFilePath works correctly with a valid path
+        $tempDir = sys_get_temp_dir() . '/twig_inspector_test_' . uniqid();
+        mkdir($tempDir, 0o777, true);
+        $templateFile = $tempDir . '/test.html.twig';
+        file_put_contents($templateFile, 'test content');
+        
+        try {
+            $loader = new FilesystemLoader([$tempDir]);
+            $twig = new Environment($loader);
+            
+            $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
+            $controller = new OpenTemplateController($twig, $fileLinkFormatter);
+            
+            // Use reflection to test validateFilePath
+            $reflection = new \ReflectionClass($controller);
+            $method = $reflection->getMethod('validateFilePath');
+            $method->setAccessible(true);
+            
+            // Test with a valid file path - should not throw exception
+            $method->invoke($controller, $templateFile);
+            
+            // Should not throw exception because the file is in a valid path
+            $this->assertTrue(true);
+        } finally {
+            if (file_exists($templateFile)) {
+                unlink($templateFile);
+            }
+            if (is_dir($tempDir)) {
+                rmdir($tempDir);
+            }
+        }
+    }
+
     public function testInvokeWorksWithArrayLoader(): void
     {
         // ArrayLoader doesn't have getPaths(), so validation should pass
@@ -383,5 +441,57 @@ final class OpenTemplateControllerTest extends TestCase
         $response = ($this->controller)($request, $template);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
+    }
+
+    public function testValidateFilePathWithInvalidPathInLoop(): void
+    {
+        // Test case where one path in the loop has realpath() returning false
+        // We need to create a FilesystemLoader with a path that realpath() will return false for
+        // But FilesystemLoader requires existing directories, so we'll use a different approach:
+        // Create a valid path, then use reflection to manipulate the loader's paths
+        
+        $tempDir = sys_get_temp_dir() . '/twig_inspector_test_' . uniqid();
+        mkdir($tempDir, 0o777, true);
+        $templateFile = $tempDir . '/test.html.twig';
+        file_put_contents($templateFile, 'test content');
+        
+        // Create a FilesystemLoader with a valid path
+        $loader = new FilesystemLoader([$tempDir]);
+        $twig = new Environment($loader);
+        
+        try {
+            $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
+            $controller = new OpenTemplateController($twig, $fileLinkFormatter);
+            
+            // Use reflection to test validateFilePath
+            $reflection = new \ReflectionClass($controller);
+            $method = $reflection->getMethod('validateFilePath');
+            $method->setAccessible(true);
+            
+            // Get the loader and manipulate its paths using reflection
+            $loaderReflection = new \ReflectionClass($loader);
+            $pathsProperty = $loaderReflection->getProperty('paths');
+            $pathsProperty->setAccessible(true);
+            
+            // Get current paths and add an invalid one
+            $currentPaths = $pathsProperty->getValue($loader);
+            $invalidPath = '/nonexistent/path/that/does/not/exist';
+            $currentPaths[] = $invalidPath;
+            $pathsProperty->setValue($loader, $currentPaths);
+            
+            // Now test validateFilePath - it should skip the invalid path (realpath returns false)
+            // and use the valid path instead
+            $method->invoke($controller, $templateFile);
+            
+            // If we get here, the validation passed (which is correct)
+            $this->assertTrue(true);
+        } finally {
+            if (file_exists($templateFile)) {
+                unlink($templateFile);
+            }
+            if (is_dir($tempDir)) {
+                rmdir($tempDir);
+            }
+        }
     }
 }
