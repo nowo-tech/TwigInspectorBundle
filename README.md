@@ -185,7 +185,7 @@ nowo_twig_inspector:
 - Symfony cannot determine if the file is still needed
 - You can manually delete it if desired: `rm config/packages/dev/nowo_twig_inspector.yaml`
 
-For detailed information about how configuration works, see [CONFIGURATION.md](CONFIGURATION.md).
+For detailed information about how configuration works, see [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
 ### IDE Integration
 
