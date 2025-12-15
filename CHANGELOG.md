@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Demo Projects (Symfony 7.0 and 8.0)**: Fixed missing `DEFAULT_URI` environment variable
+  - Added `DEFAULT_URI=http://localhost` to `.env` and `.env.example` files for Symfony 7.0 and 8.0 demos
+  - Required by `config/packages/routing.yaml` for generating URLs in non-HTTP contexts (CLI commands)
+  - Resolves `EnvNotFoundException: "Environment variable not found: "DEFAULT_URI""` error
+
 ### Added
 - **Demo Projects**: Added code coverage configuration for all demos
   - Added `<coverage>` section to `phpunit.xml.dist` in all demo projects
