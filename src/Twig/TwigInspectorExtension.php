@@ -10,7 +10,7 @@ use Twig\Extension\AbstractExtension;
  * Registers DebugInfoNodeVisitor to add comments to Twig templates.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2024 Nowo.tech
+ * @copyright 2025 Nowo.tech
  */
 class TwigInspectorExtension extends AbstractExtension
 {

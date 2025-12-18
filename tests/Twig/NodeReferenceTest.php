@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
  * Tests for NodeReference.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2024 Nowo.tech
+ * @copyright 2025 Nowo.tech
  */
 final class NodeReferenceTest extends TestCase
 {

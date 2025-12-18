@@ -15,7 +15,7 @@ use Throwable;
  * Collects template usage statistics and provides them to the Web Profiler.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2024 Nowo.tech
+ * @copyright 2025 Nowo.tech
  */
 class TwigInspectorCollector implements DataCollectorInterface
 {

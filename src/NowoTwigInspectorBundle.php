@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  * Adds the possibility to find Twig templates and blocks used for rendering HTML pages faster during development.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2024 Nowo.tech
+ * @copyright 2025 Nowo.tech
  */
 class NowoTwigInspectorBundle extends Bundle
 {

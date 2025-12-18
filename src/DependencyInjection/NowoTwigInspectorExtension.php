@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\Reference;
  * Handles service definitions and configuration processing.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2024 Nowo.tech
+ * @copyright 2025 Nowo.tech
  */
 class NowoTwigInspectorExtension extends Extension
 {
