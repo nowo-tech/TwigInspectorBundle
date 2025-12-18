@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
  * Tests for TwigInspectorExtension.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2024 Nowo.tech
+ * @copyright 2025 Nowo.tech
  */
 final class TwigInspectorExtensionTest extends TestCase
 {

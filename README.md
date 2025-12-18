@@ -1,6 +1,8 @@
 # Twig Inspector Bundle
 
-[![CI](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml) [![Latest Stable Version](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/v)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![License](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/license)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![PHP Version Require](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/require/php)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle)
+[![CI](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml) [![Latest Stable Version](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/v)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![License](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/license)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![PHP Version Require](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/require/php)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/twig-inspector-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/twig-inspector-bundle)
+
+> ⭐ **Found this project useful?** Give it a star on GitHub! It helps us maintain and improve the project.
 
 Symfony bundle that adds the possibility to find Twig templates and blocks used for rendering HTML pages faster during development.
 

@@ -15,7 +15,7 @@ use Twig\Extension\AbstractExtension;
  * Adds comments before and after every Twig block and template.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2024 Nowo.tech
+ * @copyright 2025 Nowo.tech
  */
 class HtmlCommentsExtension extends AbstractExtension
 {

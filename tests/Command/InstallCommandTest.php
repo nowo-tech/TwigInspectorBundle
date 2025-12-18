@@ -17,7 +17,7 @@ use Symfony\Component\Filesystem\Filesystem;
  * Tests for InstallCommand.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2024 Nowo.tech
+ * @copyright 2025 Nowo.tech
  */
 final class InstallCommandTest extends TestCase
 {

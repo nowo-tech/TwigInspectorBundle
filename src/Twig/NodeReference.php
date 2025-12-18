@@ -8,7 +8,7 @@ namespace Nowo\TwigInspectorBundle\Twig;
  * Model for storing data required for referencing to the Twig Node source code.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2024 Nowo.tech
+ * @copyright 2025 Nowo.tech
  */
 class NodeReference
 {

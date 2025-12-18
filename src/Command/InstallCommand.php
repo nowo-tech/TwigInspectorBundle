@@ -16,7 +16,7 @@ use Symfony\Component\Filesystem\Filesystem;
  * Command to install Twig Inspector Bundle configuration file.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2024 Nowo.tech
+ * @copyright 2025 Nowo.tech
  */
 #[AsCommand(
     name: 'nowo:twig-inspector:install',
