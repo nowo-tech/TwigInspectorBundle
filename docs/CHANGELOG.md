@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.7] - 2024-12-15
+
 ### Changed
 - **Documentation Organization**: Moved all documentation files to `docs/` directory
   - `CONFIGURATION.md` moved from root to `docs/CONFIGURATION.md`
@@ -17,12 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Better organization following standard project structure
 
 ### Fixed
-- **Code Quality**: Removed duplicate PHPDoc comment in `HtmlCommentsExtension::isSupported()`
-- **Tests**: Updated `DebugInfoNodeVisitorTest` to use `BodyNode` instead of `Node` to avoid deprecation warnings in Twig 3.15+
-
-## [1.0.7] - 2024-12-15
-
-### Fixed
 - **Twig 3.15+ Compatibility**: Fixed deprecation warning when instantiating `Twig\Node\Node` directly
   - Replaced direct `Node` instantiation with `BodyNode` in `DebugInfoNodeVisitor` for wrapping template display nodes
   - Added `createBodyNode()` helper method for better code organization and future-proofing
@@ -30,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Backward Compatible**: No breaking changes, works with all supported Twig versions (3.8+)
   - Fixes: "User Deprecated: Since twig/twig 3.15: Instantiating "Twig\Node\Node" directly is deprecated"
   - See [UPGRADING.md](UPGRADING.md) for upgrade instructions
+- **Code Quality**: Removed duplicate PHPDoc comment in `HtmlCommentsExtension::isSupported()`
+- **Tests**: Updated `DebugInfoNodeVisitorTest` to use `BodyNode` instead of `Node` to avoid deprecation warnings in Twig 3.15+
 
 ## [1.0.6] - 2024-12-15
 
