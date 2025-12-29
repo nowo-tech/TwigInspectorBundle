@@ -80,7 +80,7 @@ final class DebugInfoNodeVisitorTest extends TestCase
 
         $blockNode->expects($this->once())
           ->method('setNode')
-          ->with('body', $this->isInstanceOf(\Twig\Node\BodyNode::class));
+          ->with('body', $this->isInstanceOf(BodyNode::class));
 
         $result = $this->visitor->leaveNode($blockNode, $this->env);
 
