@@ -54,7 +54,7 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
         if ($node instanceof ModuleNode) {
             $node->setNode(
                 'display_start',
-                new Node(
+                new BodyNode(
                     [
             new NodeStart(
                 self::EXTENSION_NAME,
@@ -68,7 +68,7 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
             );
             $node->setNode(
                 'display_end',
-                new Node(
+                new BodyNode(
                     [
             new NodeEnd($varName),
             $node->getNode('display_end'),
