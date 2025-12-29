@@ -185,13 +185,6 @@ class HtmlCommentsExtension extends AbstractExtension
 
     /**
      * Checks if the content is supported for inspection.
-     *
-     * @param string $string The content string
-     *
-     * @return bool True if supported, false otherwise
-     */
-    /**
-     * Checks if the content is supported for inspection.
      * Only HTML content is supported, not plain text, JSON, or Backbone templates.
      *
      * @param string $string The content string

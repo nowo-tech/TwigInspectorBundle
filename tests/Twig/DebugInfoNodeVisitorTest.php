@@ -8,6 +8,7 @@ use Nowo\TwigInspectorBundle\Twig\DebugInfoNodeVisitor;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Node\BlockNode;
+use Twig\Node\BodyNode;
 use Twig\Node\ModuleNode;
 use Twig\Node\Node;
 use Twig\Node\TextNode;
@@ -41,11 +42,12 @@ final class DebugInfoNodeVisitorTest extends TestCase
     public function testLeaveNodeWithModuleNode(): void
     {
         // Create a real ModuleNode instance
-        $body = new Node([]);
+        // Use BodyNode instead of Node to avoid deprecation warnings in Twig 3.15+
+        $body = new BodyNode([]);
         $parent = null;
-        $blocks = new Node([]);
-        $macros = new Node([]);
-        $traits = new Node([]);
+        $blocks = new BodyNode([]);
+        $macros = new BodyNode([]);
+        $traits = new BodyNode([]);
         $embeddedTemplates = [];
         $source = new \Twig\Source('', 'test.html.twig');
         $moduleNode = new ModuleNode($body, $parent, $blocks, $macros, $traits, $embeddedTemplates, $source);
@@ -69,7 +71,8 @@ final class DebugInfoNodeVisitorTest extends TestCase
         $blockNode->method('getAttribute')->with('name')->willReturn('block_name');
         $blockNode->method('getTemplateLine')->willReturn(5);
 
-        $bodyNode = new Node([]);
+        // Use BodyNode instead of Node to avoid deprecation warnings in Twig 3.15+
+        $bodyNode = new BodyNode([]);
 
         $blockNode->method('getNode')
           ->with('body')
@@ -104,11 +107,12 @@ final class DebugInfoNodeVisitorTest extends TestCase
         $visitor2 = new DebugInfoNodeVisitor();
 
         // Create a real ModuleNode instance
-        $body = new Node([]);
+        // Use BodyNode instead of Node to avoid deprecation warnings in Twig 3.15+
+        $body = new BodyNode([]);
         $parent = null;
-        $blocks = new Node([]);
-        $macros = new Node([]);
-        $traits = new Node([]);
+        $blocks = new BodyNode([]);
+        $macros = new BodyNode([]);
+        $traits = new BodyNode([]);
         $embeddedTemplates = [];
         $source = new \Twig\Source('', 'test.html.twig');
         $moduleNode = new ModuleNode($body, $parent, $blocks, $macros, $traits, $embeddedTemplates, $source);
