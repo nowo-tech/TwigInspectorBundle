@@ -189,6 +189,16 @@ nowo_twig_inspector:
 
 For detailed information about how configuration works, see [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
+## Documentation
+
+The bundle includes comprehensive documentation:
+
+- **[Configuration Guide](docs/CONFIGURATION.md)** - Complete configuration reference
+- **[Contributing Guide](docs/CONTRIBUTING.md)** - How to contribute to the project
+- **[Branching Policy](docs/BRANCHING.md)** - Git workflow and branching strategy
+- **[Changelog](docs/CHANGELOG.md)** - Detailed list of changes for each version
+- **[Upgrading Guide](docs/UPGRADING.md)** - How to upgrade between versions
+
 ### IDE Integration
 
 To open templates in your IDE, configure the `ide` option in your Symfony configuration:
@@ -251,6 +261,11 @@ Access the metrics by:
 - Symfony >= 6.0 || >= 7.0 || >= 8.0
 - Symfony Web Profiler Bundle (for development)
 - Twig >= 3.8 || >= 4.0
+
+**Compatibility Notes:**
+- The bundle is fully compatible with Twig 3.8 through 4.0
+- Twig 3.15+ deprecation warnings are handled automatically
+- See [UPGRADING.md](docs/UPGRADING.md) for version-specific upgrade instructions
 
 ## Demo Projects
 

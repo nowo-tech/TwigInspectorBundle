@@ -54,25 +54,25 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
         if ($node instanceof ModuleNode) {
             $node->setNode(
                 'display_start',
-                new BodyNode(
+                $this->createBodyNode(
                     [
-            new NodeStart(
-                self::EXTENSION_NAME,
-                $node->getTemplateName(),
-                $node->getTemplateLine(),
-                $varName
-            ),
-            $node->getNode('display_start'),
-          ]
+                        new NodeStart(
+                            self::EXTENSION_NAME,
+                            $node->getTemplateName(),
+                            $node->getTemplateLine(),
+                            $varName
+                        ),
+                        $node->getNode('display_start'),
+                    ]
                 )
             );
             $node->setNode(
                 'display_end',
-                new BodyNode(
+                $this->createBodyNode(
                     [
-            new NodeEnd($varName),
-            $node->getNode('display_end'),
-          ]
+                        new NodeEnd($varName),
+                        $node->getNode('display_end'),
+                    ]
                 )
             );
         }
@@ -80,22 +80,37 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
         elseif ($node instanceof BlockNode) {
             $node->setNode(
                 'body',
-                new BodyNode(
+                $this->createBodyNode(
                     [
-            new NodeStart(
-                self::EXTENSION_NAME,
-                $node->getAttribute('name'),
-                $node->getTemplateLine(),
-                $varName
-            ),
-            $node->getNode('body'),
-            new NodeEnd($varName),
-          ]
+                        new NodeStart(
+                            self::EXTENSION_NAME,
+                            $node->getAttribute('name'),
+                            $node->getTemplateLine(),
+                            $varName
+                        ),
+                        $node->getNode('body'),
+                        new NodeEnd($varName),
+                    ]
                 )
             );
         }
 
         return $node;
+    }
+
+    /**
+     * Creates a body node for wrapping child nodes.
+     * Uses BodyNode (available since Twig 3.8) for compatibility with Twig 3.15+.
+     *
+     * @param array<Node> $nodes Child nodes to wrap
+     *
+     * @return Node The body node instance
+     */
+    private function createBodyNode(array $nodes): Node
+    {
+        // BodyNode exists since Twig 3.8 and is the recommended way to wrap nodes
+        // This avoids deprecation warnings in Twig 3.15+ where Node cannot be instantiated directly
+        return new BodyNode($nodes);
     }
 
     /**
