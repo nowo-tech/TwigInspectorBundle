@@ -19,10 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.7] - 2024-12-15
 
 ### Fixed
-- **Twig 3.15 Compatibility**: Fixed deprecation warning when instantiating `Twig\Node\Node` directly
-  - Replaced `new Node()` with `new BodyNode()` in `DebugInfoNodeVisitor` for wrapping template display nodes
-  - This ensures compatibility with Twig 3.15+ and future Twig 4.0 where `Node` will become abstract
+- **Twig 3.15+ Compatibility**: Fixed deprecation warning when instantiating `Twig\Node\Node` directly
+  - Replaced direct `Node` instantiation with `BodyNode` in `DebugInfoNodeVisitor` for wrapping template display nodes
+  - Added `createBodyNode()` helper method for better code organization and future-proofing
+  - This ensures full compatibility with Twig 3.8 through 4.0
+  - **Backward Compatible**: No breaking changes, works with all supported Twig versions (3.8+)
   - Fixes: "User Deprecated: Since twig/twig 3.15: Instantiating "Twig\Node\Node" directly is deprecated"
+  - See [UPGRADING.md](UPGRADING.md) for upgrade instructions
 
 ## [1.0.6] - 2024-12-15
 
