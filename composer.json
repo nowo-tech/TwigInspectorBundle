@@ -1,6 +1,6 @@
 {
     "name": "nowo-tech/twig-inspector-bundle",
-    "description": "Symfony bundle that adds the possibility to find Twig templates and blocks used for rendering HTML pages faster during development",
+    "description": "Symfony bundle for debugging and inspecting Twig templates in the browser. Visual overlay showing which templates render HTML elements, click to open in IDE, Web Profiler integration, development tool",
     "type": "symfony-bundle",
     "license": "MIT",
     "keywords": [
@@ -8,10 +8,22 @@
         "bundle",
         "twig",
         "debug",
+        "debugging",
         "inspect",
+        "inspector",
         "template",
+        "templates",
+        "twig-inspector",
+        "twig-debug",
+        "template-inspector",
+        "development",
+        "dev-tool",
         "toolbar-extension",
-        "web-profiler"
+        "web-profiler",
+        "symfony-profiler",
+        "ide-integration",
+        "template-finder",
+        "block-inspector"
     ],
     "homepage": "https://github.com/nowo-tech/twig-inspector-bundle",
     "support": {

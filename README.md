@@ -4,7 +4,7 @@
 
 > ⭐ **Found this project useful?** Give it a star on GitHub! It helps us maintain and improve the project.
 
-Symfony bundle that adds the possibility to find Twig templates and blocks used for rendering HTML pages faster during development.
+**Twig Inspector Bundle** - A powerful Symfony development tool for debugging and inspecting Twig templates directly in your browser. Find which templates and blocks render specific HTML elements, click to open templates in your IDE, and integrate seamlessly with Symfony Web Profiler. Perfect for Symfony developers working with Twig templates who need to debug template rendering faster during development.
 
 ## Features
 
