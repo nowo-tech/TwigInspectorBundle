@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.8] - 2024-12-15
+
+### Changed
+- **Packagist Search Optimization**: Improved package discoverability on Packagist
+  - Enhanced `composer.json` description with more searchable terms (debugging, inspecting, visual overlay, IDE integration, development tool)
+  - Expanded keywords array with additional relevant terms:
+    - `debugging`, `inspector`, `templates`, `twig-inspector`, `twig-debug`
+    - `template-inspector`, `development`, `dev-tool`
+    - `symfony-profiler`, `ide-integration`, `template-finder`, `block-inspector`
+  - Updated README.md introduction with more descriptive and searchable content
+  - These changes improve search results when users search for terms like "twig debug", "twig inspector", "symfony template debug", "template inspector", etc.
+
 ## [1.0.7] - 2024-12-15
 
 ### Changed
