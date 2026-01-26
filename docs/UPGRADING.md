@@ -2,6 +2,24 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
+## Upgrading from 1.0.8 to 1.0.9
+
+### Twig 4.0+ Compatibility
+
+**No action required** - This is a backward-compatible fix.
+
+The bundle has been updated to add the `#[\Twig\Attribute\YieldReady]` attribute to the `NodeStart` class to maintain compatibility with Twig 4.0+ and eliminate deprecation warnings.
+
+**What changed:**
+- Added `YieldReady` attribute to `NodeStart` class (matching `NodeEnd` which already had it)
+- Internal implementation updated to avoid deprecation warnings in Twig 4.0+
+- No breaking changes to the public API
+- All existing functionality remains the same
+
+**If you see deprecation warnings:**
+- Update to version 1.0.9 or later
+- The bundle is fully compatible with Twig 3.8 through 4.0
+
 ## Upgrading from 1.0.6 to 1.0.7
 
 ### Twig 3.15+ Compatibility

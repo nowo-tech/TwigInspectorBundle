@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.9] - 2025-01-26
+
+### Fixed
+- **Twig 4.0+ Compatibility**: Fixed deprecation warning for `NodeStart` class
+  - Added `#[\Twig\Attribute\YieldReady]` attribute to `NodeStart` class to resolve Twig 4.0+ deprecation warnings
+  - This attribute is required for custom Twig nodes in Twig 4.0+ to indicate they are ready for generator/yield support
+  - **Backward Compatible**: No breaking changes, works with all supported Twig versions (3.8+)
+  - The `NodeEnd` class already had this attribute, now both node classes are consistent
+  - Fixes: "User Deprecated: NodeStart requires #[\Twig\Attribute\YieldReady] attribute"
+  - See [UPGRADING.md](UPGRADING.md) for upgrade instructions
+
 ## [1.0.8] - 2024-12-15
 
 ### Changed
