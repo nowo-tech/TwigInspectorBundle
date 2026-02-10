@@ -8,6 +8,10 @@ import type { Block } from './types';
 /**
  * Returns true if the block matches the filter query.
  * Filter can be comma-separated; each part matches against template name or link (case-insensitive).
+ *
+ * @param block - Block (element + templates) to test
+ * @param filterQuery - Filter string (e.g. "header, footer" or a single template name/path)
+ * @returns True if any template name or link contains any of the comma-separated terms (case-insensitive), or if filter is empty
  */
 export function blockMatchesFilter(block: Block, filterQuery: string): boolean {
   const raw = filterQuery.trim();

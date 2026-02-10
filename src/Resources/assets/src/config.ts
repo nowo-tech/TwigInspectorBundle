@@ -15,7 +15,8 @@ export const defaultConfig: InspectorConfig = {
 
 /**
  * Returns the current inspector config (from toolbar or defaults).
- * @returns Merged config object (cookie name, theme, compact, reduced motion, shortcut).
+ *
+ * @returns Merged config object (cookie name, theme, compact, reduced motion, shortcut)
  */
 export function getConfig(): InspectorConfig {
   const c = window.__twig_inspector_config || {};
@@ -30,7 +31,8 @@ export function getConfig(): InspectorConfig {
 
 /**
  * Whether the user prefers reduced motion (accessibility).
- * @returns True if the system or user preference requests reduced motion.
+ *
+ * @returns True if the system or user preference requests reduced motion
  */
 export function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -38,7 +40,9 @@ export function prefersReducedMotion(): boolean {
 
 /**
  * Applies theme and accessibility settings to the document root (data attributes).
- * @param config - Current inspector config (theme, compact, reduced_motion).
+ *
+ * @param config - Current inspector config (theme, compact, reduced_motion)
+ * @returns void
  */
 export function applyThemeAndAccessibility(config: InspectorConfig): void {
   const root = document.documentElement;

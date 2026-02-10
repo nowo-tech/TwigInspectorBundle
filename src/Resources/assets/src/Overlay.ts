@@ -7,6 +7,10 @@ import type { Block } from './types';
 import { BlockStorage } from './BlockStorage';
 import { blockMatchesFilter } from './filterMatch';
 
+/**
+ * Overlay that shows which Twig template (or controller) rendered the element under the cursor.
+ * Provides a highlight box, tooltip with template names, and click-to-open in IDE.
+ */
 export class Overlay {
   /** Whether the overlay is currently tracking mouse and showing tooltips. */
   public isEnabled: boolean = false;
@@ -22,8 +26,10 @@ export class Overlay {
   public filterQuery: string = '';
 
   /**
-   * @param storage - Block storage (element–template map).
-   * @param statusIcon - Toolbar icon element (used to toggle green/yellow state).
+   * Creates the overlay and appends highlight/tooltip divs to the document body.
+   *
+   * @param storage - Block storage (element–template map) populated by scanning HTML comments
+   * @param statusIcon - Toolbar icon element (used to toggle green/yellow state when overlay is enabled/disabled)
    */
   constructor(
     private storage: BlockStorage,
@@ -53,7 +59,12 @@ export class Overlay {
     }, 50);
   };
 
-  /** Returns true if the block matches the current filter (delegates to blockMatchesFilter). */
+  /**
+   * Returns true if the block matches the current filter (delegates to blockMatchesFilter).
+   *
+   * @param layoutItem - Block (element + templates) to test
+   * @returns True if the block matches this.filterQuery (or filter is empty)
+   */
   matchesFilter(layoutItem: Block): boolean {
     return blockMatchesFilter(layoutItem, this.filterQuery);
   }
@@ -61,6 +72,8 @@ export class Overlay {
   /**
    * Draws or clears the persistent highlight boxes around blocks that match the current filter.
    * When filter is non-empty, each matching block gets a colored frame (veil); when empty, frames are removed.
+   *
+   * @returns void
    */
   updateFilterHighlights(): void {
     this.filterHighlightLayer.innerHTML = '';
@@ -86,7 +99,11 @@ export class Overlay {
     }
   }
 
-  /** Hides the overlay block and info tooltip. */
+  /**
+   * Hides the overlay block and info tooltip (keeps highlight layer unchanged).
+   *
+   * @returns void
+   */
   hide(): void {
     this.info.classList.remove('_twig_inspector__visible');
     this.block.classList.remove('_twig_inspector__visible');
@@ -95,6 +112,8 @@ export class Overlay {
   /**
    * Call when the filter text changes: hides the overlay and clears last focused element
    * so the next mousemove re-evaluates which block (if any) matches the new filter.
+   *
+   * @returns void
    */
   onFilterChange(): void {
     this.lastFocusedElement = null;
@@ -104,7 +123,9 @@ export class Overlay {
 
   /**
    * Positions the overlay and tooltip over the given block and shows them.
-   * @param layoutItem - Block to show (element + templates).
+   *
+   * @param layoutItem - Block to show (element + templates)
+   * @returns void
    */
   show(layoutItem: Block): void {
     const element = layoutItem.element;
@@ -144,6 +165,8 @@ export class Overlay {
   /**
    * Stops tracking mouse and hides the info panel.
    * Block stays visible so the user can click to open the template.
+   *
+   * @returns void
    */
   freeze(): void {
     this.info.classList.remove('_twig_inspector__visible');
@@ -153,6 +176,8 @@ export class Overlay {
   /**
    * Re-scans the DOM for Twig Inspector comments (e.g. after AJAX or ESI content loaded).
    * No-op if the overlay is not enabled.
+   *
+   * @returns void
    */
   rescan(): void {
     if (this.isEnabled) {
@@ -161,7 +186,11 @@ export class Overlay {
     }
   }
 
-  /** Enables mouse tracking and shows the overlay on hover; updates toolbar icon to green. */
+  /**
+   * Enables mouse tracking and shows the overlay on hover; updates toolbar icon to green.
+   *
+   * @returns void
+   */
   enable(): void {
     document.body.addEventListener('mousemove', this.onMouseMove);
     this.isEnabled = true;
@@ -172,7 +201,11 @@ export class Overlay {
     this.statusIcon.classList.remove('sf-toolbar-status-yellow');
   }
 
-  /** Disables overlay, clears state, removes static picker, resets toolbar icon to yellow. */
+  /**
+   * Disables overlay, clears state, removes static picker, resets toolbar icon to yellow.
+   *
+   * @returns void
+   */
   reset(): void {
     this.freeze();
     this.info.classList.remove('_twig_inspector__visible');
@@ -214,6 +247,8 @@ export class Overlay {
   /**
    * Binds click on the overlay: single template navigates to link; multiple show a static picker.
    * Entries with link '#' (e.g. controller-only blocks) do not navigate.
+   *
+   * @returns void
    */
   initClickHandler(): void {
     this.block.addEventListener('click', (event: MouseEvent) => {

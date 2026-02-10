@@ -1,6 +1,15 @@
 /**
  * Twig Inspector Bundle: template inspection overlay and interaction.
+ *
  * Only runs when the Web Profiler toolbar is present; exits immediately otherwise to avoid consuming resources.
+ * When enabled:
+ * - Scans the document for Twig Inspector HTML comments (template/block and controller comments)
+ * - Shows a highlight and tooltip over the element under the cursor with template (and controller) info
+ * - Click on the overlay opens the template in the IDE (or shows a picker when multiple templates)
+ * - Filter input restricts overlay to blocks whose template name or path matches (comma-separated)
+ * - Ctrl+Shift+R rescans the DOM (e.g. after AJAX); Escape resets the overlay
+ *
+ * @module index
  */
 
 import './style.scss';

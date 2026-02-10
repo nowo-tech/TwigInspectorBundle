@@ -20,7 +20,7 @@ class NodeEnd extends Node
     /**
      * Constructor.
      *
-     * @param string $varName Variable name of the extension instance (must match NodeStart)
+     * @param string $varName Variable name of the extension instance in compiled code (must match NodeStart)
      */
     public function __construct(string $varName)
     {

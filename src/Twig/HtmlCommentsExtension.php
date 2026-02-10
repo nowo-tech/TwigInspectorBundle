@@ -58,6 +58,9 @@ class HtmlCommentsExtension extends AbstractExtension
     ) {
     }
 
+    /** Request attribute key for the root template name (controller render); set on first template of each request. */
+    public const REQUEST_ATTR_ROOT_TEMPLATE = '_twig_inspector_root_template';
+
     /**
      * Starts output buffering for a node.
      * Only starts buffering if the inspector is enabled and the node should be inspected.
@@ -66,9 +69,6 @@ class HtmlCommentsExtension extends AbstractExtension
      *
      * @return void
      */
-    /** Request attribute key for the root template name (controller render); set on first template of each request. */
-    public const REQUEST_ATTR_ROOT_TEMPLATE = '_twig_inspector_root_template';
-
     public function start(NodeReference $ref): void
     {
         if (!$this->shouldInspect($ref)) {
