@@ -15,7 +15,7 @@
 
         <!-- ###+ symfony/framework-bundle ### -->
         <env name="APP_ENV" value="test"/>
-        <env name="APP_SECRET" value="83c20940db89fcb25d0ed7415a6789a5"/>
+        <env name="APP_SECRET" value="test_secret_do_not_use_in_prod"/>
         <!-- ###- symfony/framework-bundle ### -->
     </php>
     <testsuites>
