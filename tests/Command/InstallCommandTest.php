@@ -534,6 +534,7 @@ final class InstallCommandTest extends TestCase
                 if (str_ends_with($path, 'routes.yaml')) {
                     return true;
                 }
+
                 return false;
             });
         $mockFilesystem->method('mkdir');

@@ -901,5 +901,4 @@ final class HtmlCommentsExtensionTest extends TestCase
         $this->assertSame('<div>nested</div>', $output);
         $this->assertStringNotContainsString('<!--', $output);
     }
-
 }
