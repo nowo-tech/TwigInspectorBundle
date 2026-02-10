@@ -37,14 +37,14 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     /**
      * Constructor.
      *
-     * @param RequestStack  $requestStack     The request stack
-     * @param Environment|null $twig         The Twig environment (for template times; null after unserialize)
-     * @param string       $cookieName       Cookie name used to enable the inspector
-     * @param bool         $enableMetrics     Whether to collect template render times from Twig profiler
-     * @param string       $overlayTheme      Overlay theme: "light", "dark", or "auto"
-     * @param bool         $overlayCompact    Use compact tooltip style
-     * @param bool         $reducedMotion     Respect reduced-motion preference
-     * @param string       $keyboardShortcut  Keyboard shortcut to toggle inspector (e.g. "Ctrl+Shift+T")
+     * @param RequestStack     $requestStack     The request stack
+     * @param Environment|null $twig             The Twig environment (for template times; null after unserialize)
+     * @param string           $cookieName       Cookie name used to enable the inspector
+     * @param bool             $enableMetrics    Whether to collect template render times from Twig profiler
+     * @param string           $overlayTheme     Overlay theme: "light", "dark", or "auto"
+     * @param bool             $overlayCompact   Use compact tooltip style
+     * @param bool             $reducedMotion    Respect reduced-motion preference
+     * @param string           $keyboardShortcut Keyboard shortcut to toggle inspector (e.g. "Ctrl+Shift+T")
      */
     public function __construct(
         private readonly RequestStack $requestStack,
@@ -225,7 +225,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
             $actives = $r->getValue($extension);
 
             return \is_array($actives) && isset($actives[0]) && $actives[0] instanceof Profile ? $actives[0] : null;
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return null;
         }
     }
