@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment;
 
 /**
  * Tests for TwigInspectorCollector.
@@ -24,7 +25,18 @@ final class TwigInspectorCollectorTest extends TestCase
     protected function setUp(): void
     {
         $this->requestStack = new RequestStack();
-        $this->collector = new TwigInspectorCollector($this->requestStack);
+        $twig = $this->createMock(Environment::class);
+        $twig->method('hasExtension')->willReturn(false);
+        $this->collector = new TwigInspectorCollector(
+            $this->requestStack,
+            $twig,
+            'twig_inspector_is_active',
+            true,
+            'light',
+            false,
+            false,
+            'Ctrl+Shift+T'
+        );
     }
 
     public function testCollect(): void
@@ -80,7 +92,7 @@ final class TwigInspectorCollectorTest extends TestCase
     public function testCollectWithTemplateComments(): void
     {
         $request = new Request();
-        $request->cookies->set('twig_inspector_is_active', '1');
+        $request->cookies->set('twig_inspector_is_active', '1'); // matches collector cookie_name
         $response = new Response();
         $response->setContent('<!-- ┏━ template1.html.twig [/_template/template1.html.twig?line=1] #id1-->');
 
@@ -96,7 +108,7 @@ final class TwigInspectorCollectorTest extends TestCase
     public function testCollectWithBlockComments(): void
     {
         $request = new Request();
-        $request->cookies->set('twig_inspector_is_active', '1');
+        $request->cookies->set('twig_inspector_is_active', '1'); // matches collector cookie_name
         $response = new Response();
         $response->setContent('<!-- ┏━ block1 [/_template/template1.html.twig?line=1] #id1-->');
 
@@ -113,7 +125,7 @@ final class TwigInspectorCollectorTest extends TestCase
     public function testCollectWithMultipleTemplates(): void
     {
         $request = new Request();
-        $request->cookies->set('twig_inspector_is_active', '1');
+        $request->cookies->set('twig_inspector_is_active', '1'); // matches collector cookie_name
         $response = new Response();
         $content = '<!-- ┏━ template1.html.twig [/_template/template1.html.twig?line=1] #id1-->';
         $content .= '<!-- ┏━ template2.html.twig [/_template/template2.html.twig?line=1] #id2-->';
@@ -127,7 +139,7 @@ final class TwigInspectorCollectorTest extends TestCase
     public function testIsEnabledWithCookie(): void
     {
         $request = new Request();
-        $request->cookies->set('twig_inspector_is_active', '1');
+        $request->cookies->set('twig_inspector_is_active', '1'); // matches collector cookie_name
         $response = new Response();
 
         $this->collector->collect($request, $response);
@@ -148,7 +160,7 @@ final class TwigInspectorCollectorTest extends TestCase
     public function testCollectWithEmptyContent(): void
     {
         $request = new Request();
-        $request->cookies->set('twig_inspector_is_active', '1');
+        $request->cookies->set('twig_inspector_is_active', '1'); // matches collector cookie_name
         $response = new Response();
         $response->setContent('');
 
@@ -161,7 +173,7 @@ final class TwigInspectorCollectorTest extends TestCase
     public function testCollectWithFalseContent(): void
     {
         $request = new Request();
-        $request->cookies->set('twig_inspector_is_active', '1');
+        $request->cookies->set('twig_inspector_is_active', '1'); // matches collector cookie_name
         $response = $this->createMock(Response::class);
         $response->method('getContent')->willReturn(false);
 
@@ -182,6 +194,8 @@ final class TwigInspectorCollectorTest extends TestCase
         $this->assertArrayHasKey('total_templates', $data);
         $this->assertArrayHasKey('total_blocks', $data);
         $this->assertArrayHasKey('enabled', $data);
+        $this->assertArrayHasKey('template_times', $data);
+        $this->assertArrayHasKey('config', $data);
 
         // Verify initial state
         $this->assertIsArray($data['templates']);
@@ -189,5 +203,99 @@ final class TwigInspectorCollectorTest extends TestCase
         $this->assertIsInt($data['total_templates']);
         $this->assertIsInt($data['total_blocks']);
         $this->assertIsBool($data['enabled']);
+        $this->assertIsArray($data['template_times']);
+        $this->assertIsArray($data['config']);
+    }
+
+    public function testGetTemplateTimes(): void
+    {
+        $this->assertSame([], $this->collector->getTemplateTimes());
+    }
+
+    public function testGetConfig(): void
+    {
+        $request = new Request();
+        $response = new Response();
+        $this->collector->collect($request, $response);
+        $config = $this->collector->getConfig();
+        $this->assertIsArray($config);
+        $this->assertArrayHasKey('overlay_theme', $config);
+        $this->assertArrayHasKey('keyboard_shortcut', $config);
+        $this->assertArrayHasKey('cookie_name', $config);
+        $this->assertArrayHasKey('overlay_compact', $config);
+        $this->assertArrayHasKey('reduced_motion', $config);
+        $this->assertSame('Ctrl+Shift+T', $config['keyboard_shortcut']);
+        $this->assertSame('light', $config['overlay_theme']);
+    }
+
+    public function testLateCollectWhenMetricsDisabled(): void
+    {
+        $collector = new TwigInspectorCollector(
+            $this->requestStack,
+            $this->createMock(Environment::class),
+            'twig_inspector_is_active',
+            false, // enableMetrics = false
+            'light',
+            false,
+            false,
+            'Ctrl+Shift+T'
+        );
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $response = new Response();
+        $collector->collect($request, $response);
+        $collector->lateCollect();
+        $this->assertSame([], $collector->getTemplateTimes());
+    }
+
+    public function testLateCollectWhenNotEnabled(): void
+    {
+        $request = new Request();
+        $response = new Response();
+        $this->collector->collect($request, $response);
+        $this->collector->lateCollect();
+        $this->assertSame([], $this->collector->getTemplateTimes());
+    }
+
+    public function testLateCollectWhenTwigIsNull(): void
+    {
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $response = new Response();
+        $this->collector->collect($request, $response);
+        $this->collector->__wakeup();
+        $this->collector->lateCollect();
+        $this->assertSame([], $this->collector->getTemplateTimes());
+    }
+
+    public function testSleepAndWakeup(): void
+    {
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $response = new Response();
+        $response->setContent('<!-- ┏━ t [/_template/t.html.twig?line=1] #id-->');
+        $this->collector->collect($request, $response);
+        $dataBefore = $this->collector->getData();
+        $serialized = serialize($this->collector);
+        $restored = unserialize($serialized);
+        $this->assertInstanceOf(TwigInspectorCollector::class, $restored);
+        $dataAfter = $restored->getData();
+        $this->assertSame($dataBefore['templates'], $dataAfter['templates']);
+        $this->assertSame($dataBefore['total_templates'], $dataAfter['total_templates']);
+        $this->assertSame([], $restored->getTemplateTimes());
+    }
+
+    public function testCollectWithMultipleBlocksSameTemplate(): void
+    {
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $response = new Response();
+        $content = '<!-- ┏━ base [/_template/base.html.twig?line=1] #a-->';
+        $content .= '<!-- ┏━ content [/_template/base.html.twig?line=2] #b-->';
+        $content .= '<!-- ┏━ sidebar [/_template/base.html.twig?line=3] #c-->';
+        $response->setContent($content);
+        $this->collector->collect($request, $response);
+        $this->assertSame(1, $this->collector->getTotalTemplates());
+        $this->assertSame(2, $this->collector->getTotalBlocks());
     }
 }

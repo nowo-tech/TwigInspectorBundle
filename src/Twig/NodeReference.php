@@ -5,21 +5,23 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle\Twig;
 
 /**
- * Model for storing data required for referencing to the Twig Node source code.
+ * Value object holding template name, block/template name, line number, and a unique id.
+ * Passed from compiled Twig code to HtmlCommentsExtension::start() and ::end().
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
  */
 class NodeReference
 {
+    /** @var string Unique identifier for this node instance */
     private readonly string $id;
 
     /**
      * Constructor.
      *
-     * @param string $name     The node name
-     * @param string $template The template name
-     * @param int    $line     The line number
+     * @param string $name     Block or template name
+     * @param string $template Template name (e.g. @App/demo/home.html.twig)
+     * @param int    $line     Line number in the template
      */
     public function __construct(
         private readonly string $name,

@@ -9,7 +9,7 @@ use Twig\Compiler;
 use Twig\Node\Node;
 
 /**
- * Modify generated Twig template to call the `start` method of HtmlCommentsExtension extension.
+ * Twig AST node that compiles to a call to HtmlCommentsExtension::start() with a NodeReference.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
@@ -20,10 +20,10 @@ class NodeStart extends Node
     /**
      * Constructor.
      *
-     * @param string $extensionName The extension name
-     * @param string $name          The node name
-     * @param int    $line          The line number
-     * @param string $varName       The variable name
+     * @param string $extensionName Extension class name (HtmlCommentsExtension::class)
+     * @param string $name          Block or template name
+     * @param int    $line          Line number in the template
+     * @param string $varName       Variable name for the extension instance in compiled code
      */
     public function __construct(string $extensionName, string $name, int $line, string $varName)
     {
@@ -34,9 +34,9 @@ class NodeStart extends Node
     }
 
     /**
-     * Compiles the node.
+     * Compiles the node to PHP that calls the extension's start() with a NodeReference.
      *
-     * @param Compiler $compiler The Twig compiler
+     * @param Compiler $compiler Twig compiler
      *
      * @return void
      */

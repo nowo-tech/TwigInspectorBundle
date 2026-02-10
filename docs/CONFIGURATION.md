@@ -110,6 +110,25 @@ when@dev:
 - The bundle handles route generation gracefully if routes aren't available (e.g., in production)
 - The route pattern allows slashes in template names to support templates in subdirectories (e.g., `admin/users/list.html.twig`). Security validations in the controller prevent path traversal attacks
 
+## All configuration options (reference)
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled_extensions` | array | `['.html.twig']` | Template file extensions to inspect |
+| `excluded_templates` | array | `[]` | Template names/patterns to exclude (wildcards `*`) |
+| `excluded_blocks` | array | `[]` | Block names/patterns to exclude (wildcards `*`) |
+| `excluded_templates_regex` | array | `[]` | Regex patterns for template exclusion |
+| `excluded_templates_prefixes` | array | `[]` | Template name prefixes to exclude (e.g. `['@Admin/']`) |
+| `excluded_blocks_regex` | array | `[]` | Regex patterns for block exclusion |
+| `enable_metrics` | bool | `true` | Collect template/block metrics and render times in Web Profiler |
+| `optimize_output_buffering` | bool | `true` | Skip output buffering when inspector is disabled |
+| `cookie_name` | string | `'twig_inspector_is_active'` | Cookie used to enable/disable the inspector |
+| `max_injection_depth` | int | `0` | Max nesting depth for comments (0 = unlimited) |
+| `overlay_theme` | string | `'light'` | Overlay theme: `light`, `dark`, or `auto` |
+| `overlay_compact` | bool | `false` | Use compact tooltip style |
+| `reduced_motion` | bool | `false` | Respect reduced motion (accessibility) |
+| `keyboard_shortcut` | string | `'Ctrl+Shift+T'` | Shortcut to toggle inspector (empty = disabled) |
+
 ## Best Practices
 
 1. **Use Flex Recipe** (if available): Automatically creates config and routes files during installation

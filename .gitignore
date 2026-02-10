@@ -23,6 +23,7 @@ coverage.xml
 node_modules/
 npm-debug.log
 yarn-error.log
+.pnpm-store/
 ###< node ###
 
 ###> IDE ###
@@ -35,32 +36,32 @@ yarn-error.log
 ###< IDE ###
 
 ###> Demo projects ###
-demo/demo-symfony6/vendor/
-demo/demo-symfony6/var/
-demo/demo-symfony6/.env
-demo/demo-symfony6/.env.local
-demo/demo-symfony6/.env.local.php
-demo/demo-symfony6/.env.*.local
-demo/demo-symfony6/config/secrets/
-demo/demo-symfony6/.phpunit.cache/
+demo/symfony6/vendor/
+demo/symfony6/var/
+demo/symfony6/.env
+demo/symfony6/.env.local
+demo/symfony6/.env.local.php
+demo/symfony6/.env.*.local
+demo/symfony6/config/secrets/
+demo/symfony6/.phpunit.cache/
 
-demo/demo-symfony7/vendor/
-demo/demo-symfony7/var/
-demo/demo-symfony7/.env
-demo/demo-symfony7/.env.local
-demo/demo-symfony7/.env.local.php
-demo/demo-symfony7/.env.*.local
-demo/demo-symfony7/config/secrets/
-demo/demo-symfony7/.phpunit.cache/
+demo/symfony7/vendor/
+demo/symfony7/var/
+demo/symfony7/.env
+demo/symfony7/.env.local
+demo/symfony7/.env.local.php
+demo/symfony7/.env.*.local
+demo/symfony7/config/secrets/
+demo/symfony7/.phpunit.cache/
 
-demo/demo-symfony8/vendor/
-demo/demo-symfony8/var/
-demo/demo-symfony8/.env
-demo/demo-symfony8/.env.local
-demo/demo-symfony8/.env.local.php
-demo/demo-symfony8/.env.*.local
-demo/demo-symfony8/config/secrets/
-demo/demo-symfony8/.phpunit.cache/
+demo/symfony8/vendor/
+demo/symfony8/var/
+demo/symfony8/.env
+demo/symfony8/.env.local
+demo/symfony8/.env.local.php
+demo/symfony8/.env.*.local
+demo/symfony8/config/secrets/
+demo/symfony8/.phpunit.cache/
 ###< Demo projects ###
 
 # Environment files (root)

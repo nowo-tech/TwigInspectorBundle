@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle;
 
 /**
- * Generates prefixes for start and end comment tags.
+ * Generates box-drawing character prefixes for start and end HTML comment tags.
+ * Used to visually distinguish nested Twig blocks in the inspector overlay.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
  */
 class BoxDrawings
 {
+    /** @var array<int, array<int, string>> Box-drawing character sets: [start, line, end] per set */
     protected const CHARSETS = [
       ['┏', '━', '┗'],
       ['╭', '─', '╰'],
@@ -19,8 +21,10 @@ class BoxDrawings
       ['┎', '─', '┖'],
     ];
 
+    /** @var int Current character set index (0–3) */
     private int $charsetIndex = 0;
 
+    /** @var int Repeat count for the line character between start/end */
     private int $length = 0;
 
     /**

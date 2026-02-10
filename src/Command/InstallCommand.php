@@ -13,7 +13,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Command to install Twig Inspector Bundle configuration file.
+ * Console command that creates the Twig Inspector config file and ensures routes are imported.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
@@ -66,6 +66,22 @@ class InstallCommand extends Command
             # Default: 'twig_inspector_is_active'
             cookie_name: 'twig_inspector_is_active'
 
+            # Max nesting depth for comment injection (0 = unlimited). Reduces overhead on deep template trees.
+            max_injection_depth: 0
+
+            # Additional template exclusions: regex patterns and name prefixes (e.g. ["@Admin/", "components/"])
+            excluded_templates_regex: []
+            excluded_templates_prefixes: []
+
+            # Additional block exclusions: regex patterns
+            excluded_blocks_regex: []
+
+            # Overlay UI: theme (light / dark / auto), compact tooltip, reduced motion, keyboard shortcut
+            overlay_theme: light
+            overlay_compact: false
+            reduced_motion: false
+            keyboard_shortcut: 'Ctrl+Shift+T'
+
         YAML;
 
     /**
@@ -79,6 +95,11 @@ class InstallCommand extends Command
         parent::__construct();
     }
 
+    /**
+     * Configures the command options (env, force).
+     *
+     * @return void
+     */
     protected function configure(): void
     {
         $this
@@ -121,6 +142,14 @@ class InstallCommand extends Command
             );
     }
 
+    /**
+     * Creates the config file for the chosen environment and updates routes.yaml if needed.
+     *
+     * @param InputInterface  $input  The input instance
+     * @param OutputInterface $output The output instance
+     *
+     * @return int Command::SUCCESS or Command::FAILURE
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

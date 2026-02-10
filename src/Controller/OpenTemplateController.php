@@ -17,7 +17,8 @@ use Twig\Loader\FilesystemLoader;
 use Twig\TemplateWrapper;
 
 /**
- * Open Twig template in an IDE by template name at the line.
+ * Controller that redirects to an IDE file link for a given Twig template and line.
+ * Used by the inspector overlay when clicking "open in IDE".
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
@@ -27,8 +28,8 @@ class OpenTemplateController
     /**
      * Constructor.
      *
-     * @param Environment       $twig              The Twig environment
-     * @param FileLinkFormatter $fileLinkFormatter The file link formatter
+     * @param Environment       $twig              The Twig environment (to resolve template path)
+     * @param FileLinkFormatter $fileLinkFormatter  Formats file path and line into an IDE URL
      */
     public function __construct(
         private readonly Environment $twig,
@@ -79,11 +80,11 @@ class OpenTemplateController
     }
 
     /**
-     * Validates the template name to prevent path traversal attacks.
+     * Validates the template name: non-empty, no path traversal (.. or NUL), no absolute paths.
      *
-     * @param string $template The template name to validate
+     * @param string $template Template name (e.g. @App/demo/home.html.twig or demo/home.html.twig)
      *
-     * @throws BadRequestException When the template name is invalid
+     * @throws BadRequestException When the template name is empty or contains invalid characters
      *
      * @return void
      */
@@ -106,11 +107,11 @@ class OpenTemplateController
     }
 
     /**
-     * Validates that the resolved file path is within allowed Twig template directories.
+     * Validates that the resolved file path lies inside one of the Twig loader paths.
      *
-     * @param string $filePath The resolved file path
+     * @param string $filePath Absolute path to the template file
      *
-     * @throws BadRequestException When the file path is outside allowed directories
+     * @throws BadRequestException When the path cannot be resolved or is outside allowed directories
      *
      * @return void
      */

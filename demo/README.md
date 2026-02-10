@@ -2,6 +2,10 @@
 
 This directory contains three demo projects, one for each supported Symfony version (6.4, 7.0, and 8.0), demonstrating the usage of the Twig Inspector Bundle.
 
+**Bundle source:** Each demo uses the bundle from the **parent repository** (path repository in `composer.json`), not from Packagist. When you run `composer install` or `composer update` inside a demo, `nowo-tech/twig-inspector-bundle` is resolved from the bundle root (`../../`), so you always test against the current code in the repo.
+
+**Makefiles:** The `demo/` directory has a central [Makefile](Makefile) (e.g. `make up-symfony8`). Each demo also has its **own Makefile** inside `demo/symfony6/`, `demo/symfony7/`, and `demo/symfony8/`, so you can run `make up`, `make install`, `make link-bundle`, etc. from inside any demo folder.
+
 ## Features
 
 - Three separate demo projects for Symfony 6.4, 7.0, and 8.0
@@ -25,7 +29,7 @@ Each demo has its own `docker-compose.yml` and can be run independently. You can
 
 **Important**: Before starting a demo, copy `.env.example` to `.env`:
 ```bash
-cd demo/demo-symfony6
+cd demo/symfony6
 cp .env.example .env
 # Optionally generate a new APP_SECRET: openssl rand -hex 32
 # The .env.example includes: APP_ENV=dev, APP_SECRET (placeholder), APP_DEBUG=1, PORT=8001
@@ -36,7 +40,7 @@ cp .env.example .env
 
 ```bash
 # Navigate to the demo directory
-cd demo/demo-symfony6
+cd demo/symfony6
 
 # Copy .env.example to .env if not already done
 cp .env.example .env
@@ -65,7 +69,7 @@ make verify DEMO=symfony6
 
 ```bash
 # Navigate to the demo directory
-cd demo/demo-symfony7
+cd demo/symfony7
 
 # Copy .env.example to .env if not already done
 cp .env.example .env
@@ -94,7 +98,7 @@ make verify DEMO=symfony7
 
 ```bash
 # Navigate to the demo directory
-cd demo/demo-symfony8
+cd demo/symfony8
 
 # Copy .env.example to .env if not already done
 cp .env.example .env
@@ -141,13 +145,30 @@ For each demo:
 5. Hover over HTML elements to see which templates rendered them
 6. Click on elements to open templates in your IDE
 
+### Seeing bundle changes in Docker (menu, toolbar link, templates)
+
+Each demo mounts the **bundle root** at `/var/twig-inspector-bundle` so code and template changes in the repo are visible in the container. If you ran `composer install` on the **host**, the symlink in `vendor/` points to a path that does not exist inside the container, so the demo won’t show your latest changes.
+
+**Do this once per demo** (from the demo directory, e.g. `demo/symfony8`):
+
+```bash
+# Use the mounted bundle inside the container
+docker-compose exec php composer config repositories.0.url /var/twig-inspector-bundle
+docker-compose exec php composer update nowo-tech/twig-inspector-bundle --no-interaction
+
+# Clear Symfony cache so templates and config are refreshed
+docker-compose exec php php bin/console cache:clear
+```
+
+After that, changes in the bundle (e.g. collector menu, toolbar link, templates) will appear after reloading the page. If they don’t, run `cache:clear` again.
+
 ### Stop Containers
 
 Stop a specific demo:
 
 ```bash
 # Stop Symfony 6.4 demo
-cd demo/demo-symfony6
+cd demo/symfony6
 docker-compose down
 
 # Or using Makefile
@@ -163,7 +184,7 @@ Similar commands for Symfony 7.0 (`make down-symfony7`) and Symfony 8.0 (`make d
 
 1. **Navigate to the demo directory:**
    ```bash
-   cd demo/demo-symfony6
+   cd demo/symfony6
    ```
 
 2. **Install dependencies:**
@@ -180,7 +201,7 @@ Similar commands for Symfony 7.0 (`make down-symfony7`) and Symfony 8.0 (`make d
 
 1. **Navigate to the demo directory:**
    ```bash
-   cd demo/demo-symfony7
+   cd demo/symfony7
    ```
 
 2. **Install dependencies:**
@@ -197,7 +218,7 @@ Similar commands for Symfony 7.0 (`make down-symfony7`) and Symfony 8.0 (`make d
 
 1. **Navigate to the demo directory:**
    ```bash
-   cd demo/demo-symfony8
+   cd demo/symfony8
    ```
 
 2. **Install dependencies:**
@@ -230,7 +251,7 @@ Each demo includes:
 
 ```
 demo/
-├── demo-symfony6/          # Symfony 6.4 demo (Port 8001 by default)
+├── symfony6/               # Symfony 6.4 demo (Port 8001 by default)
 │   ├── docker-compose.yml  # Independent docker-compose for this demo
 │   ├── Dockerfile          # PHP-FPM image with Composer
 │   ├── nginx.conf          # Nginx configuration
@@ -238,7 +259,7 @@ demo/
 │   ├── .env.example        # Template for .env file (copy to .env and configure)
 │   ├── config/packages/nowo_twig_inspector.yaml  # Bundle configuration example
 │   └── ...
-├── demo-symfony7/          # Symfony 7.0 demo (Port 8001 by default)
+├── symfony7/               # Symfony 7.0 demo (Port 8001 by default)
 │   ├── docker-compose.yml  # Independent docker-compose for this demo
 │   ├── Dockerfile          # PHP-FPM image with Composer
 │   ├── nginx.conf          # Nginx configuration
@@ -246,7 +267,7 @@ demo/
 │   ├── .env.example        # Template for .env file (copy to .env and configure)
 │   ├── config/packages/nowo_twig_inspector.yaml  # Bundle configuration example
 │   └── ...
-├── demo-symfony8/          # Symfony 8.0 demo (Port 8001 by default)
+├── symfony8/               # Symfony 8.0 demo (Port 8001 by default)
 │   ├── docker-compose.yml  # Independent docker-compose for this demo
 │   ├── Dockerfile          # PHP-FPM image with Composer
 │   ├── nginx.conf          # Nginx configuration
@@ -261,7 +282,7 @@ Each demo is completely independent with its own `docker-compose.yml` and `nginx
 
 **Note**: Before starting a demo, copy `.env.example` to `.env` in the demo directory:
 ```bash
-cd demo/demo-symfony6
+cd demo/symfony6
 cp .env.example .env
 # Edit .env and set your APP_SECRET (or generate one with: openssl rand -hex 32)
 # The .env.example file includes standard Symfony variables:
@@ -304,13 +325,17 @@ Supported IDEs:
 
 #### Automatic Installation
 
-**If installing from Packagist**: Both the configuration file and routes are created automatically by Symfony Flex during `composer require`. No command needed.
+**In these demos**: The bundle is loaded from the repo via the path repository in each demo's `composer.json` (`repositories` → `path` `../../`). No Packagist install is used.
 
-**If installing manually or from Git**: You can create the configuration file and set up routes using the install command:
+**If you install the bundle from Packagist** in your own project: Flex will create the config and routes during `composer require`. No command needed.
+
+**If installing manually or from Git** (without path repo): You can create the configuration file and set up routes using the install command:
 
 ```bash
 php bin/console nowo:twig-inspector:install
 ```
+
+**Note (Docker):** The bundle is only loaded in `dev` and `test`. Each demo's `docker-compose.yml` sets `APP_ENV=dev` so the command is available when you run `docker-compose exec php php bin/console ...`. If you see *"There are no commands defined in the nowo:twig-inspector namespace"*, run with `--env=dev` or ensure `APP_ENV=dev` in the container.
 
 This command creates:
 - Configuration file with all available options and helpful comments
@@ -364,15 +389,15 @@ Each demo includes its own test suite to verify that the Twig Inspector Bundle w
 
 ```bash
 # Run tests for Symfony 6.4 demo
-cd demo/demo-symfony6
+cd demo/symfony6
 vendor/bin/phpunit
 
 # Run tests for Symfony 7.0 demo
-cd demo/demo-symfony7
+cd demo/symfony7
 vendor/bin/phpunit
 
 # Run tests for Symfony 8.0 demo
-cd demo/demo-symfony8
+cd demo/symfony8
 vendor/bin/phpunit
 ```
 
@@ -396,7 +421,7 @@ Each demo includes code coverage configuration. To generate coverage reports:
 
 ```bash
 # Run tests with coverage for a specific demo
-cd demo/demo-symfony6
+cd demo/symfony6
 docker-compose exec php composer test-coverage
 
 # Or using the Makefile
@@ -410,8 +435,8 @@ make test-coverage-all
 ```
 
 Coverage reports are generated in:
-- HTML: `demo/demo-symfony6/coverage/index.html` (and similar for other demos)
-- Clover XML: `demo/demo-symfony6/coverage.xml` (and similar for other demos)
+- HTML: `demo/symfony6/coverage/index.html` (and similar for other demos)
+- Clover XML: `demo/symfony6/coverage.xml` (and similar for other demos)
 
 ### Test Structure
 
@@ -472,7 +497,7 @@ All demos use port **8001** by default. If this port is already in use, you can 
 Create a `.env` file in the demo directory:
 
 ```bash
-# demo/demo-symfony6/.env (or demo-symfony7, demo-symfony8)
+# demo/symfony6/.env (or symfony7, symfony8)
 PORT=8001  # Default port for all demos
 # Change to a different port if you need to run multiple demos simultaneously
 PORT=8002  # Example: if you want to run a second demo

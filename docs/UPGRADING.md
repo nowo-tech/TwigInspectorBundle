@@ -2,6 +2,18 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
+## Upgrading from 1.0.9 to 1.0.10
+
+**No action required** — backward-compatible release.
+
+### What’s new
+- **Panel**: “How to use” is now a **tab** in the full collector panel (first tab). The toolbar dropdown no longer shows the long “How to use” text.
+- **Filter**: You can filter by template **path** (not only name) and use **comma-separated** terms (e.g. `header, footer`). When the filter is active, matching blocks get persistent highlight frames.
+- **Template timing**: If you saw “No template timing data” in the panel, it should now show times when the Twig profiler is enabled (Symfony Bridge extension is now detected).
+- **Docs**: New [USAGE.md](USAGE.md), screenshots in README (`docs/img/`), and clearer overlay instructions.
+
+No breaking changes; existing configuration and behavior are unchanged.
+
 ## Upgrading from 1.0.8 to 1.0.9
 
 ### Twig 4.0+ Compatibility

@@ -9,8 +9,7 @@ use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Symfony bundle for Twig Inspector functionality.
- * Adds the possibility to find Twig templates and blocks used for rendering HTML pages faster during development.
+ * Symfony bundle that adds Twig Inspector: HTML comments and overlay to map rendered output to templates.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
@@ -18,10 +17,9 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 class NowoTwigInspectorBundle extends Bundle
 {
     /**
-     * Overridden to allow for the custom extension alias.
-     * Creates and returns the container extension instance if not already created.
+     * Returns the DI extension for this bundle (NowoTwigInspectorExtension).
      *
-     * @return ExtensionInterface|null The container extension instance, or null if not available
+     * @return ExtensionInterface|null The extension instance
      */
     public function getContainerExtension(): ?ExtensionInterface
     {

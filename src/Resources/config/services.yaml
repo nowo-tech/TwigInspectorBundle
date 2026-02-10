@@ -29,6 +29,11 @@ services:
       - '%nowo_twig_inspector.excluded_templates%'
       - '%nowo_twig_inspector.excluded_blocks%'
       - '%nowo_twig_inspector.cookie_name%'
+      - '%nowo_twig_inspector.max_injection_depth%'
+      - '%nowo_twig_inspector.excluded_templates_regex%'
+      - '%nowo_twig_inspector.excluded_templates_prefixes%'
+      - '%nowo_twig_inspector.excluded_blocks_regex%'
+      - '%kernel.debug%'
     tags:
       - { name: twig.extension }
 
@@ -36,6 +41,13 @@ services:
     class: Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector
     arguments:
       - '@request_stack'
+      - '@twig'
+      - '%nowo_twig_inspector.cookie_name%'
+      - '%nowo_twig_inspector.enable_metrics%'
+      - '%nowo_twig_inspector.overlay_theme%'
+      - '%nowo_twig_inspector.overlay_compact%'
+      - '%nowo_twig_inspector.reduced_motion%'
+      - '%nowo_twig_inspector.keyboard_shortcut%'
     tags:
       -
         name: data_collector

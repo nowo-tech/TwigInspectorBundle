@@ -1,10 +1,30 @@
 # Twig Inspector Bundle
 
-[![CI](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml) [![Latest Stable Version](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/v)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![License](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/license)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![PHP Version Require](https://poser.pugx.org/nowo-tech/twig-inspector-bundle/require/php)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/twig-inspector-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/twig-inspector-bundle)
+[![CI](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/twig-inspector-bundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/twig-inspector-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/twig-inspector-bundle.svg)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-6%20%7C%207%20%7C%208-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/twig-inspector-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/twig-inspector-bundle)
 
-> ⭐ **Found this project useful?** Give it a star on GitHub! It helps us maintain and improve the project.
+> ⭐ **Found this useful?** [Install from Packagist](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) · Give it a **star** on [GitHub](https://github.com/nowo-tech/TwigInspectorBundle) so more developers can find it.
 
-**Twig Inspector Bundle** - A powerful Symfony development tool for debugging and inspecting Twig templates directly in your browser. Find which templates and blocks render specific HTML elements, click to open templates in your IDE, and integrate seamlessly with Symfony Web Profiler. Perfect for Symfony developers working with Twig templates who need to debug template rendering faster during development.
+**Twig Inspector Bundle** — Debug Twig templates directly in the browser. See which template or block rendered each HTML element, click to open it in your IDE, and use it from the Symfony Web Profiler. For Symfony 6, 7 and 8 · PHP 8.1+.
+
+## Table of contents
+
+- [Quick search terms](#quick-search-terms)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Screenshots](#screenshots)
+- [Configuration](#configuration)
+- [Documentation](#documentation)
+- [Requirements](#requirements)
+- [Demo](#demo-projects)
+- [Development & testing](#development)
+- [Building assets](#building-assets)
+- [CI/CD](#cicd)
+- [License & author](#license)
+
+## Quick search terms
+
+Looking for **Twig debug**, **Twig inspector**, **Symfony template debug**, **template inspector**, **which template rendered this**, **Twig block finder**, **Web Profiler Twig**, **IDE open template**, **Twig development tool**? You're in the right place.
 
 ## Features
 
@@ -22,10 +42,14 @@
 ## Installation
 
 ```bash
-composer require nowo-tech/twig-inspector-bundle:^1.0.7 --dev
+composer require nowo-tech/twig-inspector-bundle --dev
 ```
 
-Then, register the bundle in your `config/bundles.php`:
+[![Install from Packagist](https://img.shields.io/badge/Packagist-install-777BB4?logo=composer)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle)
+
+With **Symfony Flex**, the recipe registers the bundle and adds config/routes automatically. Without Flex, see [docs/INSTALLATION.md](docs/INSTALLATION.md) for manual steps.
+
+**Manual registration** in `config/bundles.php`:
 
 ```php
 <?php
@@ -38,17 +62,37 @@ return [
 
 ## Usage
 
-1. **Enable the bundle** (only in `dev` and `test` environments)
+1. **Enable the bundle** (only in `dev` and `test` environments).
 
-2. **Access your application** with Symfony Web Profiler enabled
+2. **Open your app** in the browser with the Symfony Web Profiler toolbar visible.
 
-3. **In the Web Profiler toolbar**, you'll see a new icon `</>`
+3. **In the toolbar**, find the **`</>`** icon (Twig Inspector) and open its dropdown.
 
-4. **Enable Twig Inspector** by checking the checkbox in the toolbar
+4. **Enable the inspector**: check the **“Enable”** checkbox, then **reload the page** (the page reloads so Twig can inject the inspection comments).
 
-5. **Hover over HTML elements** in your page to see which Twig templates rendered them
+5. **Turn on the overlay**: click the **`</>`** icon so it turns **green**.  
+   - **Green** = overlay on (hover shows highlight and popup).  
+   - **Yellow** = overlay off (click the icon again to turn it green and show the overlay).
 
-6. **Click on elements** to open the template in your IDE
+6. **Move the mouse** over the page: each element under the cursor gets a **blue highlight** and a **popup** with the template name(s) that rendered it.
+
+7. **Click an element** to open that template in your IDE (if several templates apply, you’ll pick one from a list). Press **Esc** to close the overlay picker.
+
+**Summary:** Enable → reload → click `</>` so it’s green → hover to see templates (blue highlight + popup) → click to open in IDE. Use the **Filter** field to show only blocks whose template name or path matches (e.g. `header, footer`). See [docs/USAGE.md](docs/USAGE.md) for more detail.
+
+### Screenshots
+
+| Overlay tooltip (hover) | Toolbar dropdown |
+|-------------------------|------------------|
+| [![Overlay tooltip](docs/img/overlay-tooltip.png)](docs/img/overlay-tooltip.png) | [![Toolbar dropdown](docs/img/toolbar-dropdown.png)](docs/img/toolbar-dropdown.png) |
+
+When the overlay is on (green icon), hovering over an element shows a **tooltip** with the template name(s). The **toolbar dropdown** lets you enable the inspector, filter by template name or path, and rescan the DOM.
+
+| DevTools: HTML comments |
+|-------------------------|
+| [![DevTools HTML comments](docs/img/devtools-html-comments.png)](docs/img/devtools-html-comments.png) |
+
+The bundle injects HTML comments around each Twig-rendered block so the overlay can map elements to templates. You can see them in the Elements panel (`data-twig-inspector-*` on `<html>` and comment nodes).
 
 ## How It Works
 
@@ -191,13 +235,17 @@ For detailed information about how configuration works, see [docs/CONFIGURATION.
 
 ## Documentation
 
-The bundle includes comprehensive documentation:
-
-- **[Configuration Guide](docs/CONFIGURATION.md)** - Complete configuration reference
-- **[Contributing Guide](docs/CONTRIBUTING.md)** - How to contribute to the project
-- **[Branching Policy](docs/BRANCHING.md)** - Git workflow and branching strategy
-- **[Changelog](docs/CHANGELOG.md)** - Detailed list of changes for each version
-- **[Upgrading Guide](docs/UPGRADING.md)** - How to upgrade between versions
+| Document | Description |
+|----------|-------------|
+| [**Installation**](docs/INSTALLATION.md) | Step-by-step install (Flex and manual), routes, IDE setup |
+| [**Usage**](docs/USAGE.md) | How to use the overlay (green/yellow icon, highlight, popup, open in IDE) |
+| [**Configuration**](docs/CONFIGURATION.md) | All options, defaults, and exclusion rules |
+| [**Changelog**](docs/CHANGELOG.md) | Version history and changes |
+| [**Upgrading**](docs/UPGRADING.md) | Upgrade notes between versions |
+| [**Roadmap**](docs/ROADMAP.md) | Vision, 1.x focus, and future ideas |
+| [**Security**](docs/SECURITY.md) | Reporting vulnerabilities and security notes |
+| [**Contributing**](docs/CONTRIBUTING.md) | How to contribute and code style |
+| [**Branching**](docs/BRANCHING.md) | Git workflow and release strategy |
 
 ### IDE Integration
 
@@ -217,7 +265,9 @@ Supported IDEs:
 
 ### Security
 
-The bundle includes comprehensive security measures to prevent path traversal attacks and unauthorized access:
+See [docs/SECURITY.md](docs/SECURITY.md) for supported versions and how to report vulnerabilities.
+
+The bundle includes security measures to prevent path traversal attacks and unauthorized access:
 
 - **Template name validation**: Rejects path traversal attempts (`..`), null bytes, and absolute paths
 - **File path verification**: Ensures resolved template paths are within allowed Twig template directories
@@ -267,13 +317,13 @@ Access the metrics by:
 - Twig 3.15+ deprecation warnings are handled automatically
 - See [UPGRADING.md](docs/UPGRADING.md) for version-specific upgrade instructions
 
-## Demo Projects
+## Demo projects
 
 The bundle includes three demo projects, one for each supported Symfony version. Each demo has its own `docker-compose.yml` and can be run independently:
 
-- **Symfony 6.4 Demo**: `demo/demo-symfony6/` (Port 8001 by default, configurable via PORT env variable)
-- **Symfony 7.0 Demo**: `demo/demo-symfony7/` (Port 8001 by default, configurable via PORT env variable)
-- **Symfony 8.0 Demo**: `demo/demo-symfony8/` (Port 8001 by default, configurable via PORT env variable)
+- **Symfony 6.4 Demo**: `demo/symfony6/` (Port 8001 by default, configurable via PORT env variable)
+- **Symfony 7.0 Demo**: `demo/symfony7/` (Port 8001 by default, configurable via PORT env variable)
+- **Symfony 8.0 Demo**: `demo/symfony8/` (Port 8001 by default, configurable via PORT env variable)
 
 ### Quick Start with Docker
 
@@ -281,19 +331,19 @@ Each demo can be started independently:
 
 ```bash
 # Symfony 6.4 Demo
-cd demo/demo-symfony6
+cd demo/symfony6
 docker-compose up -d
 docker-compose exec php composer install
 # Access at: http://localhost:8001 (default port)
 
 # Symfony 7.0 Demo
-cd demo/demo-symfony7
+cd demo/symfony7
 docker-compose up -d
 docker-compose exec php composer install
 # Access at: http://localhost:8001 (default port)
 
 # Symfony 8.0 Demo
-cd demo/demo-symfony8
+cd demo/symfony8
 docker-compose up -d
 docker-compose exec php composer install
 # Access at: http://localhost:8001 (default port)
@@ -348,7 +398,7 @@ make test-coverage-all
 Or directly in each demo directory:
 
 ```bash
-cd demo/demo-symfony6
+cd demo/symfony6
 docker-compose exec php composer test
 docker-compose exec php composer test-coverage
 ```
@@ -387,13 +437,11 @@ composer qa
 
 ## Testing
 
-The bundle has comprehensive test coverage with **128 tests** covering all functionality. All tests are located in the `tests/` directory.
+The bundle has **128 tests** and targets **97.5%+ code coverage**. CI runs tests on every push (PHP 8.1–8.5 × Symfony 6.4, 7.0, 8.0), plus code style and asset build. All tests are in `tests/`.
 
-**Current Coverage**: 97.55% (358/367 lines), 92.00% methods (46/50), 76.92% classes (10/13)
+**Current coverage**: 97.55% (358/367 lines). The remaining lines are edge cases (e.g. filesystem or `file_get_contents` failures) that are hard to test without system-level stubs; the code handles them correctly.
 
-**Note**: The remaining uncovered lines are edge cases that require system-level conditions (e.g., `file_get_contents` returning false, filesystem permission errors) that are difficult to test without advanced PHP extensions. The code handles these cases correctly, and 97.5% is our realistic coverage target.
-
-### Running Tests
+### Running tests
 
 ```bash
 # Run all tests
@@ -429,36 +477,31 @@ composer cs-fix
 
 ## CI/CD
 
-The bundle uses GitHub Actions for continuous integration:
+[GitHub Actions](.github/workflows/ci.yml) run on every push and pull request:
 
-- **Tests**: Runs on PHP 8.1, 8.2, 8.3, 8.4, and 8.5 with Symfony 6.4, 7.0, and 8.0
-  - PHP 8.1: Symfony 6.4 only (Symfony 7.0+ requires PHP 8.2+, Symfony 8.0 requires PHP 8.4+)
-  - PHP 8.2: Symfony 6.4 and 7.0 (Symfony 8.0 requires PHP 8.4+)
-  - PHP 8.3: Symfony 6.4 and 7.0 (Symfony 8.0 requires PHP 8.4+)
-  - PHP 8.4: Symfony 6.4, 7.0, and 8.0
-  - PHP 8.5: Symfony 6.4, 7.0, and 8.0
-- **Code Style**: Automatically fixes code style on push
-- **Coverage**: Validates minimum 97.5% code coverage requirement (realistic target given edge case limitations)
-- **Dependabot**: Automatically updates dependencies
-
-See `.github/workflows/ci.yml` for details.
+- **Tests**: PHP 8.1–8.5 × Symfony 6.4, 7.0, 8.0 (matrix excludes invalid combinations)
+- **Code style**: PHP-CS-Fixer; auto-fix on push to `main`/`master`
+- **Coverage**: 97.5% minimum (validated on one matrix job)
+- **Assets**: Frontend build (TypeScript + SCSS) verified in CI
+- **Dependabot**: Dependency update PRs
 
 ## Building Assets
 
-The bundle uses TypeScript and SCSS for its frontend assets. To build them:
+The bundle uses **TypeScript** and **SCSS** with **Vite**. To build:
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
-# Build for production
-npm run build
+# Production build (minified)
+pnpm run build
 
-# Build for development
-npm run build:dev
+# Development build (unminified)
+pnpm run build:dev
 
 # Watch for changes
-npm run watch
+pnpm run dev
+# or: pnpm run watch
 ```
 
 Or using Make:
@@ -469,9 +512,10 @@ make build-assets-dev  # Development build
 make watch-assets      # Watch mode
 ```
 
-The built files are located in `src/Resources/assets/dist/`:
-- `index.min.js` - Compiled TypeScript
-- `style.min.css` - Compiled SCSS
+Output is written to `src/Resources/views/assets/dist/` (used by the Twig template):
+
+- `index.min.js` — bundled TypeScript (IIFE)
+- `style.min.css` — compiled SCSS
 
 ## License
 

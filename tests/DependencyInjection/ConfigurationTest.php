@@ -102,4 +102,60 @@ final class ConfigurationTest extends TestCase
         $this->assertSame(['admin/*'], $config['excluded_templates']);
         $this->assertSame(['javascript'], $config['excluded_blocks']);
     }
+
+    public function testDefaultConfigurationIncludesNewOptions(): void
+    {
+        $config = $this->processor->processConfiguration($this->configuration, []);
+
+        $this->assertSame(0, $config['max_injection_depth']);
+        $this->assertSame([], $config['excluded_templates_regex']);
+        $this->assertSame([], $config['excluded_templates_prefixes']);
+        $this->assertSame([], $config['excluded_blocks_regex']);
+        $this->assertSame('light', $config['overlay_theme']);
+        $this->assertFalse($config['overlay_compact']);
+        $this->assertFalse($config['reduced_motion']);
+        $this->assertSame('Ctrl+Shift+T', $config['keyboard_shortcut']);
+    }
+
+    public function testCustomOverlayAndKeyboardConfig(): void
+    {
+        $configs = [
+            [
+                'overlay_theme' => 'dark',
+                'overlay_compact' => true,
+                'reduced_motion' => true,
+                'keyboard_shortcut' => 'Ctrl+Alt+I',
+                'max_injection_depth' => 3,
+                'excluded_templates_regex' => ['/^email\\//'],
+                'excluded_templates_prefixes' => ['@Admin/', 'components/'],
+                'excluded_blocks_regex' => ['/^head_/'],
+            ],
+        ];
+
+        $config = $this->processor->processConfiguration($this->configuration, $configs);
+
+        $this->assertSame('dark', $config['overlay_theme']);
+        $this->assertTrue($config['overlay_compact']);
+        $this->assertTrue($config['reduced_motion']);
+        $this->assertSame('Ctrl+Alt+I', $config['keyboard_shortcut']);
+        $this->assertSame(3, $config['max_injection_depth']);
+        $this->assertSame(['/^email\\//'], $config['excluded_templates_regex']);
+        $this->assertSame(['@Admin/', 'components/'], $config['excluded_templates_prefixes']);
+        $this->assertSame(['/^head_/'], $config['excluded_blocks_regex']);
+    }
+
+    public function testOverlayThemeValidation(): void
+    {
+        $configs = [['overlay_theme' => 'auto']];
+        $config = $this->processor->processConfiguration($this->configuration, $configs);
+        $this->assertSame('auto', $config['overlay_theme']);
+    }
+
+    public function testOverlayThemeInvalidThrows(): void
+    {
+        $this->expectException(\Symfony\Component\Config\Definition\Exception\InvalidConfigurationException::class);
+        $this->expectExceptionMessage('overlay_theme must be one of');
+
+        $this->processor->processConfiguration($this->configuration, [['overlay_theme' => 'invalid']]);
+    }
 }

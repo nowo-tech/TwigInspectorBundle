@@ -13,23 +13,24 @@ use Twig\Node\Node;
 use Twig\NodeVisitor\NodeVisitorInterface;
 
 /**
- * Inspired by {@see ProfilerNodeVisitor}
- * Modify generated Twig template to add comments before and after every block and template.
+ * Node visitor that wraps each block and the template display with NodeStart/NodeEnd
+ * so that HtmlCommentsExtension injects HTML comments (used by the inspector overlay).
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
  */
 class DebugInfoNodeVisitor implements NodeVisitorInterface
 {
+    /** @var string Extension class name (HtmlCommentsExtension) used in compiled templates */
     protected const EXTENSION_NAME = HtmlCommentsExtension::class;
 
     /**
-     * Called before child nodes are visited.
+     * Called before child nodes are visited. This visitor does not modify the node at this stage.
      *
-     * @param Node        $node The node
+     * @param Node        $node The current node
      * @param Environment $env  The Twig environment
      *
-     * @return Node The modified node
+     * @return Node The node unchanged
      */
     public function enterNode(Node $node, Environment $env): Node
     {
@@ -37,14 +38,12 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
     }
 
     /**
-     * Called after child nodes are visited.
-     * Modifies ModuleNode and BlockNode to inject NodeStart and NodeEnd nodes
-     * that will generate HTML comments during template rendering.
+     * Called after child nodes are visited. Injects NodeStart/NodeEnd around display and block body.
      *
-     * @param Node        $node The node
+     * @param Node        $node The current node (ModuleNode or BlockNode)
      * @param Environment $env  The Twig environment
      *
-     * @return Node The modified node
+     * @return Node The node with display_start/display_end or body wrapped
      */
     public function leaveNode(Node $node, Environment $env): Node
     {
@@ -99,12 +98,11 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
     }
 
     /**
-     * Creates a body node for wrapping child nodes.
-     * Uses BodyNode (available since Twig 3.8) for compatibility with Twig 3.15+.
+     * Wraps the given nodes in a BodyNode (Twig 3.8+).
      *
-     * @param array<Node> $nodes Child nodes to wrap
+     * @param array<int, Node> $nodes Child nodes to wrap
      *
-     * @return Node The body node instance
+     * @return Node A BodyNode containing the children
      */
     private function createBodyNode(array $nodes): Node
     {
@@ -114,10 +112,9 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
     }
 
     /**
-     * Gets a unique variable name for the inspector extension instance.
-     * The variable name is based on a hash of the extension class name to ensure consistency.
+     * Returns a stable variable name for the extension instance in compiled code.
      *
-     * @return string The variable name (e.g., '__inspector_abc123...')
+     * @return string Variable name (e.g. __inspector_<hash>)
      */
     private function getVarName(): string
     {
@@ -125,9 +122,9 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
     }
 
     /**
-     * Gets the priority of the visitor.
+     * Visitor priority (0 = default).
      *
-     * @return int The priority
+     * @return int Priority value
      */
     public function getPriority(): int
     {

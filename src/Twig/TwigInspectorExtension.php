@@ -7,7 +7,7 @@ namespace Nowo\TwigInspectorBundle\Twig;
 use Twig\Extension\AbstractExtension;
 
 /**
- * Registers DebugInfoNodeVisitor to add comments to Twig templates.
+ * Twig extension that registers the node visitor used to inject inspector comments.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
@@ -15,9 +15,9 @@ use Twig\Extension\AbstractExtension;
 class TwigInspectorExtension extends AbstractExtension
 {
     /**
-     * Returns the node visitors.
+     * Returns the list of node visitors (DebugInfoNodeVisitor) that wrap blocks and template display.
      *
-     * @return array<int, DebugInfoNodeVisitor> Array of node visitors
+     * @return array<int, DebugInfoNodeVisitor> Node visitors
      */
     public function getNodeVisitors(): array
     {

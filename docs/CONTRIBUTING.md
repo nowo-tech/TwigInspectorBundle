@@ -178,20 +178,20 @@ The bundle includes TypeScript and SCSS assets:
 
 ```bash
 # Install Node dependencies
-npm install
+pnpm install
 
 # Build for production
-npm run build
+pnpm run build
 # or
 make build-assets
 
 # Build for development
-npm run build:dev
+ppnpm run build:dev
 # or
 make build-assets-dev
 
 # Watch mode
-npm run watch
+pnpm run watch
 # or
 make watch-assets
 ```
@@ -202,9 +202,9 @@ Compiled files are located in `src/Resources/assets/dist/` and must be copied to
 
 The project includes three independent demos to test the bundle with different Symfony versions:
 
-- `demo/demo-symfony6/` - Symfony 6.4
-- `demo/demo-symfony7/` - Symfony 7.0
-- `demo/demo-symfony8/` - Symfony 8.0
+- `demo/symfony6/` - Symfony 6.4
+- `demo/symfony7/` - Symfony 7.0
+- `demo/symfony8/` - Symfony 8.0
 
 To run a demo:
 
@@ -213,7 +213,7 @@ To run a demo:
 make install-symfony6  # or install-symfony7, install-symfony8
 
 # Start containers
-cd demo/demo-symfony6 && docker-compose up -d
+cd demo/symfony6 && docker-compose up -d
 
 # Access the demo
 # http://localhost:8001

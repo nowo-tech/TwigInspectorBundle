@@ -1,0 +1,21 @@
+{% extends 'demo/layout.html.twig' %}
+
+{% block demo_header %}
+    {{ include('demo/_header.html.twig', { version_badge: version_badge, subtitle: subtitle }) }}
+{% endblock %}
+
+{% block demo_content %}
+    {{ include('demo/_welcome.html.twig', { message: message }) }}
+
+    {{ include('demo/_feature_list.html.twig', { items: items }) }}
+
+    {{ include('demo/_instructions.html.twig') }}
+
+    {{ include('demo/_template_structure.html.twig') }}
+
+    {{ include('demo/_twig_features.html.twig', { title: title, message: message }) }}
+{% endblock %}
+
+{% block demo_footer %}
+    {{ include('demo/_footer.html.twig') }}
+{% endblock %}

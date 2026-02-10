@@ -121,6 +121,41 @@ jobs:
           echo \"✅ Coverage confirmed: \$percentage% (target: >= 97.5%)\n\";
           "
 
+  build-assets:
+    name: Build frontend assets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build assets
+        run: pnpm run build
+
+      - name: Verify built assets
+        run: |
+          if [ ! -f src/Resources/views/assets/dist/index.min.js ]; then
+            echo "ERROR: index.min.js was not generated"
+            exit 1
+          fi
+          if [ ! -f src/Resources/views/assets/dist/style.min.css ]; then
+            echo "ERROR: style.min.css was not generated"
+            exit 1
+          fi
+          echo "Assets built successfully"
+
   code-style:
     name: Code Style
     runs-on: ubuntu-latest

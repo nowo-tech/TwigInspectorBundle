@@ -8,33 +8,75 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
+use Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface;
 use Throwable;
+use Twig\Environment;
+use Twig\Extension\ProfilerExtension;
+use Twig\Profiler\Profile;
 
 /**
- * Data collector for Twig Inspector Bundle.
- * Collects template usage statistics and provides them to the Web Profiler.
+ * Web Profiler data collector for the Twig Inspector.
+ * Collects template and block usage from HTML comments and optional Twig profiler timings.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
  */
-class TwigInspectorCollector implements DataCollectorInterface
+class TwigInspectorCollector implements DataCollectorInterface, LateDataCollectorInterface
 {
+    /** @var array{templates: array, blocks: array, template_times: array, total_templates: int, total_blocks: int, enabled: bool, config: array} Collected data for the profiler panel */
     private array $data = [
         'templates' => [],
         'blocks' => [],
+        'template_times' => [],
         'total_templates' => 0,
         'total_blocks' => 0,
         'enabled' => false,
+        'config' => [],
     ];
 
     /**
      * Constructor.
      *
-     * @param RequestStack $requestStack The request stack
+     * @param RequestStack  $requestStack     The request stack
+     * @param Environment|null $twig         The Twig environment (for template times; null after unserialize)
+     * @param string       $cookieName       Cookie name used to enable the inspector
+     * @param bool         $enableMetrics     Whether to collect template render times from Twig profiler
+     * @param string       $overlayTheme      Overlay theme: "light", "dark", or "auto"
+     * @param bool         $overlayCompact    Use compact tooltip style
+     * @param bool         $reducedMotion     Respect reduced-motion preference
+     * @param string       $keyboardShortcut  Keyboard shortcut to toggle inspector (e.g. "Ctrl+Shift+T")
      */
     public function __construct(
-        private readonly RequestStack $requestStack
+        private readonly RequestStack $requestStack,
+        private ?Environment $twig = null,
+        private readonly string $cookieName = 'twig_inspector_is_active',
+        private readonly bool $enableMetrics = true,
+        private readonly string $overlayTheme = 'light',
+        private readonly bool $overlayCompact = false,
+        private readonly bool $reducedMotion = false,
+        private readonly string $keyboardShortcut = 'Ctrl+Shift+T'
     ) {
+    }
+
+    /**
+     * Exclude Twig Environment from serialization (it may contain closures).
+     * The profiler storage serializes collector instances; Environment is not serializable.
+     *
+     * @return list<string>
+     */
+    public function __sleep(): array
+    {
+        return ['data', 'requestStack', 'cookieName', 'enableMetrics', 'overlayTheme', 'overlayCompact', 'reducedMotion', 'keyboardShortcut'];
+    }
+
+    /**
+     * Restore state after unserialization. Twig environment is not serialized and is set to null here.
+     *
+     * @return void
+     */
+    public function __wakeup(): void
+    {
+        $this->twig = null;
     }
 
     /**
@@ -49,8 +91,14 @@ class TwigInspectorCollector implements DataCollectorInterface
      */
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
-        $cookieName = 'twig_inspector_is_active';
-        $this->data['enabled'] = $request->cookies->getBoolean($cookieName, false);
+        $this->data['enabled'] = $request->cookies->getBoolean($this->cookieName, false);
+        $this->data['config'] = [
+            'cookie_name' => $this->cookieName,
+            'overlay_theme' => $this->overlayTheme,
+            'overlay_compact' => $this->overlayCompact,
+            'reduced_motion' => $this->reducedMotion,
+            'keyboard_shortcut' => $this->keyboardShortcut,
+        ];
 
         if (!$this->data['enabled']) {
             return;
@@ -114,6 +162,101 @@ class TwigInspectorCollector implements DataCollectorInterface
     }
 
     /**
+     * Late collect: runs after response is sent. Used to gather Twig profiler template times.
+     *
+     * @return void
+     */
+    public function lateCollect(): void
+    {
+        if (!$this->enableMetrics || !($this->data['enabled'] ?? false)) {
+            return;
+        }
+
+        $this->data['template_times'] = $this->collectTemplateTimes();
+    }
+
+    /**
+     * Collects template render durations from Twig profiler profile.
+     *
+     * @return array<string, float> Template name => duration in milliseconds
+     */
+    private function collectTemplateTimes(): array
+    {
+        if ($this->twig === null) {
+            return [];
+        }
+
+        // Symfony registers Symfony\Bridge\Twig\Extension\ProfilerExtension (extends Twig's); look it up by that class first
+        $extension = null;
+        if (class_exists(\Symfony\Bridge\Twig\Extension\ProfilerExtension::class) && $this->twig->hasExtension(\Symfony\Bridge\Twig\Extension\ProfilerExtension::class)) {
+            $extension = $this->twig->getExtension(\Symfony\Bridge\Twig\Extension\ProfilerExtension::class);
+        }
+        if ($extension === null && $this->twig->hasExtension(ProfilerExtension::class)) {
+            $extension = $this->twig->getExtension(ProfilerExtension::class);
+        }
+        if (!$extension instanceof ProfilerExtension) {
+            return [];
+        }
+
+        $profile = $this->getProfileFromExtension($extension);
+        if (!$profile instanceof Profile) {
+            return [];
+        }
+
+        $times = [];
+        $this->aggregateTemplateTimes($profile, $times);
+        arsort($times, SORT_NUMERIC);
+
+        return $times;
+    }
+
+    /**
+     * Gets the root Profile from Twig's ProfilerExtension (it is stored in a private property).
+     *
+     * @param ProfilerExtension $extension The profiler extension
+     *
+     * @return Profile|null The root profile or null
+     */
+    private function getProfileFromExtension(ProfilerExtension $extension): ?Profile
+    {
+        try {
+            $r = new \ReflectionProperty($extension, 'actives');
+            $r->setAccessible(true);
+            $actives = $r->getValue($extension);
+
+            return \is_array($actives) && isset($actives[0]) && $actives[0] instanceof Profile ? $actives[0] : null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Recursively aggregates template durations from a Twig Profile.
+     *
+     * @param Profile              $profile The profile node
+     * @param array<string, float> $times   Accumulator: template name => total ms
+     *
+     * @return void
+     */
+    private function aggregateTemplateTimes(Profile $profile, array &$times): void
+    {
+        if ($profile->isTemplate()) {
+            $name = $profile->getTemplate();
+            $durationMs = $profile->getDuration() * 1000;
+            if (!isset($times[$name])) {
+                $times[$name] = 0.0;
+            }
+            $times[$name] += $durationMs;
+        }
+
+        foreach ($profile as $child) {
+            if ($child instanceof Profile) {
+                $this->aggregateTemplateTimes($child, $times);
+            }
+        }
+    }
+
+    /**
      * Resets the data collector.
      *
      * @return void
@@ -123,9 +266,11 @@ class TwigInspectorCollector implements DataCollectorInterface
         $this->data = [
             'templates' => [],
             'blocks' => [],
+            'template_times' => [],
             'total_templates' => 0,
             'total_blocks' => 0,
             'enabled' => false,
+            'config' => [],
         ];
     }
 
@@ -197,5 +342,26 @@ class TwigInspectorCollector implements DataCollectorInterface
     public function isEnabled(): bool
     {
         return $this->data['enabled'] ?? false;
+    }
+
+    /**
+     * Gets template render times (template name => duration in ms).
+     * Only populated when enable_metrics is true and Twig profiler is available.
+     *
+     * @return array<string, float> Template times
+     */
+    public function getTemplateTimes(): array
+    {
+        return $this->data['template_times'] ?? [];
+    }
+
+    /**
+     * Gets frontend config (overlay theme, compact, reduced_motion, keyboard_shortcut).
+     *
+     * @return array<string, mixed> Config for the inspector UI
+     */
+    public function getConfig(): array
+    {
+        return $this->data['config'] ?? [];
     }
 }

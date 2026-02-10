@@ -1,26 +1,17 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ES2020",
+    "module": "ESNext",
     "lib": ["ES2020", "DOM"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "declaration": false,
-    "outDir": "./src/Resources/assets/dist",
-    "rootDir": "./src/Resources/assets/src",
-    "noEmit": false,
-    "sourceMap": false
+    "noEmit": true,
+    "isolatedModules": true
   },
-  "include": [
-    "src/Resources/assets/src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "src/Resources/assets/dist"
-  ]
+  "include": ["src/Resources/assets/src/**/*", "vite.config.ts"],
+  "exclude": ["node_modules", "src/Resources/assets/dist"]
 }
-
