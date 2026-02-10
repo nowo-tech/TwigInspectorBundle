@@ -245,6 +245,7 @@ class InstallCommand extends Command
             return $errno === E_WARNING && str_contains($errstr, 'Failed to open stream');
         };
         set_error_handler($suppressReadWarning, E_WARNING);
+
         try {
             $content = file_get_contents($routesFile);
         } finally {
