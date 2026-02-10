@@ -5,27 +5,16 @@ services:
       dockerfile: Dockerfile
     container_name: twig-inspector-symfony7-php
     working_dir: /app
+    ports:
+      - "${PORT:-8001}:443"
     volumes:
       - .:/app
+      # Mount bundle root so path repo symlink and template/code changes are visible
       - ../..:/var/twig-inspector-bundle
       - composer-cache:/root/.composer/cache
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
       - APP_ENV=dev
-    command: php-fpm
-    networks:
-      - twig-inspector-demo-network
-
-  nginx:
-    image: nginx:alpine
-    container_name: twig-inspector-symfony7-nginx
-    ports:
-      - "${PORT:-8001}:80"
-    volumes:
-      - ./public:/var/www/html/public:ro
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - php
     networks:
       - twig-inspector-demo-network
 
@@ -36,4 +25,3 @@ volumes:
 networks:
   twig-inspector-demo-network:
     driver: bridge
-

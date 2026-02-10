@@ -279,14 +279,10 @@ final class OpenTemplateControllerTest extends TestCase
         }
     }
 
-    public function testInvokeRejectsFilePathOutsideAllowedDirectories(): void
+    public function testInvokeThrowsNotFoundWhenTemplateNotInLoader(): void
     {
-        // This test is difficult to test directly because TemplateWrapper is final
-        // The validation happens after Twig loads the template, so we test it indirectly
-        // by ensuring the validateFilePath method exists and works correctly
-        // The actual path validation is tested in testInvokeValidatesFilePathWithFilesystemLoader
-
-        // Create a temporary directory for templates
+        // Controller with real FilesystemLoader: loading a non-existent template name
+        // throws NotFoundHttpException (path validation runs only after load).
         $allowedDir = sys_get_temp_dir() . '/twig_inspector_allowed_' . uniqid();
         mkdir($allowedDir, 0o777, true);
         $templateFile = $allowedDir . '/test.html.twig';
@@ -295,18 +291,13 @@ final class OpenTemplateControllerTest extends TestCase
         try {
             $loader = new FilesystemLoader([$allowedDir]);
             $twig = new Environment($loader);
-
-            // Try to load a template that doesn't exist - this will trigger validation
             $realFileLinkFormatter = $this->createMock(FileLinkFormatter::class);
             $realController = new OpenTemplateController($twig, $realFileLinkFormatter);
-
             $request = new Request();
 
-            // This should fail because the template doesn't exist
             $this->expectException(NotFoundHttpException::class);
             ($realController)($request, 'nonexistent.html.twig');
         } finally {
-            // Cleanup
             if (file_exists($templateFile)) {
                 unlink($templateFile);
             }
@@ -441,6 +432,42 @@ final class OpenTemplateControllerTest extends TestCase
         $response = ($this->controller)($request, $template);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
+    }
+
+    public function testValidateFilePathRejectsFileOutsideAllowedDirectories(): void
+    {
+        $allowedDir = sys_get_temp_dir() . '/twig_inspector_allowed_' . uniqid();
+        $otherDir = sys_get_temp_dir() . '/twig_inspector_other_' . uniqid();
+        mkdir($allowedDir, 0o777, true);
+        mkdir($otherDir, 0o777, true);
+        $fileOutside = $otherDir . '/outside.html.twig';
+        file_put_contents($fileOutside, 'content');
+
+        try {
+            $loader = new FilesystemLoader([$allowedDir]);
+            $twig = new Environment($loader);
+            $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
+            $controller = new OpenTemplateController($twig, $fileLinkFormatter);
+
+            $reflection = new \ReflectionClass($controller);
+            $method = $reflection->getMethod('validateFilePath');
+            $method->setAccessible(true);
+
+            $this->expectException(BadRequestException::class);
+            $this->expectExceptionMessage('outside allowed Twig template directories');
+
+            $method->invoke($controller, $fileOutside);
+        } finally {
+            if (file_exists($fileOutside)) {
+                unlink($fileOutside);
+            }
+            if (is_dir($otherDir)) {
+                rmdir($otherDir);
+            }
+            if (is_dir($allowedDir)) {
+                rmdir($allowedDir);
+            }
+        }
     }
 
     public function testValidateFilePathWithInvalidPathInLoop(): void

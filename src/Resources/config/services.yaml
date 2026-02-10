@@ -37,9 +37,24 @@ services:
     tags:
       - { name: twig.extension }
 
+  Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber:
+    class: Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber
+    arguments:
+      - '@request_stack'
+
+  Nowo\TwigInspectorBundle\EventSubscriber\ControllerCommentSubscriber:
+    class: Nowo\TwigInspectorBundle\EventSubscriber\ControllerCommentSubscriber
+    arguments:
+      - '@request_stack'
+      - '%nowo_twig_inspector.cookie_name%'
+      - '%kernel.debug%'
+    tags:
+      - { name: kernel.event_subscriber }
+
   Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector:
     class: Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector
     arguments:
+      - '@Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber'
       - '@request_stack'
       - '@twig'
       - '%nowo_twig_inspector.cookie_name%'

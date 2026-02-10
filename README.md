@@ -34,7 +34,9 @@ Looking for **Twig debug**, **Twig inspector**, **Symfony template debug**, **te
 - ✅ Cookie-based activation (no code changes needed)
 - ✅ Supports nested blocks and templates
 - ✅ **Configurable template/block exclusion** (with wildcard support)
-- ✅ **Template usage metrics** in Web Profiler
+- ✅ **Template usage metrics** in Web Profiler (templates, blocks, **controllers**)
+- ✅ **Controllers in Profiler**: Main controller + fragments from `render(controller(...))` with Main/Fragment badges and render counts
+- ✅ **Controller HTML comments** in page source when inspector is on (main + fragment boundaries)
 - ✅ **Performance optimized** (skips processing when disabled)
 - ✅ **Flexible configuration** for different use cases
 
@@ -83,7 +85,7 @@ See [docs/USAGE.md](docs/USAGE.md) for the full step-by-step and overlay behavio
 
 ## How it works
 
-The bundle injects HTML comments before and after every Twig block and template. When the inspector is enabled, a JavaScript overlay maps those comments to HTML elements and lets you open the template in your IDE. See [docs/USAGE.md](docs/USAGE.md) for details.
+The bundle injects HTML comments before and after every Twig block and template. When the inspector is enabled, a JavaScript overlay maps those comments to HTML elements and lets you open the template in your IDE. With the inspector on, it also injects **controller comments** in the HTML (main controller after `<body>`, and start/end comments around each fragment from `render(controller(...))`). The Web Profiler panel shows templates, blocks, and **controllers** (with Main/Fragment roles). See [docs/USAGE.md](docs/USAGE.md) for details.
 
 ## Configuration
 

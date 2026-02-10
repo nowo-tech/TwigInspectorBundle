@@ -5,11 +5,17 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle\Tests\DataCollector;
 
 use Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector;
+use Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Twig\Environment;
+use Twig\Extension\ExtensionInterface;
+use Twig\Extension\ProfilerExtension;
+use Twig\Profiler\Profile;
 
 /**
  * Tests for TwigInspectorCollector.
@@ -22,12 +28,35 @@ final class TwigInspectorCollectorTest extends TestCase
     private RequestStack $requestStack;
     private TwigInspectorCollector $collector;
 
+    private function createControllerSubscriber(): ControllerRenderSubscriber
+    {
+        return new ControllerRenderSubscriber($this->requestStack);
+    }
+
+    /**
+     * Creates a real Profile (Twig\Profiler\Profile is final) with the given template name and duration in seconds.
+     */
+    private function createProfileWithDuration(string $templateName, float $durationSeconds): Profile
+    {
+        $profile = new Profile($templateName, Profile::TEMPLATE, $templateName);
+        $profile->enter();
+        $ref = new \ReflectionClass($profile);
+        $startsProp = $ref->getProperty('starts');
+        $startsProp->setAccessible(true);
+        $endsProp = $ref->getProperty('ends');
+        $endsProp->setAccessible(true);
+        $starts = $startsProp->getValue($profile);
+        $endsProp->setValue($profile, ['wt' => $starts['wt'] + $durationSeconds]);
+        return $profile;
+    }
+
     protected function setUp(): void
     {
         $this->requestStack = new RequestStack();
         $twig = $this->createMock(Environment::class);
         $twig->method('hasExtension')->willReturn(false);
         $this->collector = new TwigInspectorCollector(
+            $this->createControllerSubscriber(),
             $this->requestStack,
             $twig,
             'twig_inspector_is_active',
@@ -44,10 +73,14 @@ final class TwigInspectorCollectorTest extends TestCase
         $request = new Request();
         $response = new Response();
 
-        // Should not throw any exception
         $this->collector->collect($request, $response);
 
-        $this->assertTrue(true);
+        $data = $this->collector->getData();
+        $this->assertArrayHasKey('enabled', $data);
+        $this->assertArrayHasKey('templates', $data);
+        $this->assertArrayHasKey('controllers', $data);
+        $this->assertArrayHasKey('total_controllers', $data);
+        $this->assertFalse($data['enabled']);
     }
 
     public function testCollectWithException(): void
@@ -56,10 +89,11 @@ final class TwigInspectorCollectorTest extends TestCase
         $response = new Response();
         $exception = new \Exception('Test exception');
 
-        // Should not throw any exception
         $this->collector->collect($request, $response, $exception);
 
-        $this->assertTrue(true);
+        $data = $this->collector->getData();
+        $this->assertArrayHasKey('enabled', $data);
+        $this->assertArrayHasKey('config', $data);
     }
 
     public function testReset(): void
@@ -70,8 +104,10 @@ final class TwigInspectorCollectorTest extends TestCase
         $data = $this->collector->getData();
         $this->assertEmpty($data['templates']);
         $this->assertEmpty($data['blocks']);
+        $this->assertEmpty($data['controllers']);
         $this->assertSame(0, $this->collector->getTotalTemplates());
         $this->assertSame(0, $this->collector->getTotalBlocks());
+        $this->assertSame(0, $this->collector->getTotalControllers());
     }
 
     public function testGetName(): void
@@ -87,6 +123,66 @@ final class TwigInspectorCollectorTest extends TestCase
     public function testGetTotalBlocks(): void
     {
         $this->assertSame(0, $this->collector->getTotalBlocks());
+    }
+
+    public function testGetControllersAndTotalControllers(): void
+    {
+        $this->assertSame([], $this->collector->getControllers());
+        $this->assertSame(0, $this->collector->getTotalControllers());
+
+        $subscriber = new ControllerRenderSubscriber($this->requestStack);
+        $mainRequest = new Request();
+        $subRequest = new Request();
+        $this->requestStack->push($mainRequest);
+        $this->requestStack->push($subRequest);
+
+        $kernel = $this->createMock(HttpKernelInterface::class);
+        $mainController = [new class () {
+            public function home(): void
+            {
+            }
+        }, 'home'];
+        $subController = [new class () {
+            public function __invoke(): void
+            {
+            }
+        }, '__invoke'];
+
+        $subscriber->onController(new ControllerEvent($kernel, $mainController, $mainRequest, HttpKernelInterface::MAIN_REQUEST));
+        $subscriber->onController(new ControllerEvent($kernel, $subController, $subRequest, HttpKernelInterface::SUB_REQUEST));
+        $subscriber->onController(new ControllerEvent($kernel, $subController, $subRequest, HttpKernelInterface::SUB_REQUEST));
+
+        $collector = new TwigInspectorCollector(
+            $subscriber,
+            $this->requestStack,
+            $this->createMock(Environment::class),
+            'twig_inspector_is_active',
+            true,
+            'light',
+            false,
+            false,
+            'Ctrl+Shift+T'
+        );
+        $collector->collect($mainRequest, new Response());
+
+        $controllers = $collector->getControllers();
+        $this->assertCount(2, $controllers);
+        $this->assertSame(2, $collector->getTotalControllers());
+        $mainByName = null;
+        $subByName = null;
+        foreach ($controllers as $c) {
+            if ($c['is_main']) {
+                $mainByName = $c;
+            } else {
+                $subByName = $c;
+            }
+        }
+        $this->assertNotNull($mainByName, 'One controller should be main');
+        $this->assertSame(1, $mainByName['count']);
+        $this->assertStringEndsWith('::home', $mainByName['name']);
+        $this->assertNotNull($subByName, 'One controller should be sub');
+        $this->assertSame(2, $subByName['count']);
+        $this->assertStringEndsWith('::__invoke', $subByName['name']);
     }
 
     public function testCollectWithTemplateComments(): void
@@ -231,6 +327,7 @@ final class TwigInspectorCollectorTest extends TestCase
     public function testLateCollectWhenMetricsDisabled(): void
     {
         $collector = new TwigInspectorCollector(
+            $this->createControllerSubscriber(),
             $this->requestStack,
             $this->createMock(Environment::class),
             'twig_inspector_is_active',
@@ -298,5 +395,183 @@ final class TwigInspectorCollectorTest extends TestCase
         $this->collector->collect($request, $response);
         $this->assertSame(1, $this->collector->getTotalTemplates());
         $this->assertSame(2, $this->collector->getTotalBlocks());
+    }
+
+    public function testLateCollectPopulatesTemplateTimesWhenProfilerExtensionPresent(): void
+    {
+        $profile = $this->createProfileWithDuration('demo/page.html.twig', 0.002);
+        $extension = new ProfilerExtension($profile);
+
+        $twig = $this->createMock(Environment::class);
+        $twig->method('hasExtension')->willReturnMap([
+            [\Symfony\Bridge\Twig\Extension\ProfilerExtension::class, false],
+            [ProfilerExtension::class, true],
+        ]);
+        $twig->method('getExtension')->with(ProfilerExtension::class)->willReturn($extension);
+
+        $collector = new TwigInspectorCollector(
+            $this->createControllerSubscriber(),
+            $this->requestStack,
+            $twig,
+            'twig_inspector_is_active',
+            true,
+            'light',
+            false,
+            false,
+            'Ctrl+Shift+T'
+        );
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $response = new Response();
+        $collector->collect($request, $response);
+        $collector->lateCollect();
+
+        $times = $collector->getTemplateTimes();
+        $this->assertArrayHasKey('demo/page.html.twig', $times);
+        $this->assertEqualsWithDelta(2.0, $times['demo/page.html.twig'], 0.01, 'Template duration in ms (float precision)');
+    }
+
+    public function testLateCollectUsesSymfonyProfilerExtensionWhenPresent(): void
+    {
+        if (!class_exists(\Symfony\Bridge\Twig\Extension\ProfilerExtension::class)) {
+            $this->markTestSkipped('Symfony Twig Bridge ProfilerExtension not available');
+        }
+
+        $profile = $this->createProfileWithDuration('symfony_template.html.twig', 0.003);
+        $extension = new ProfilerExtension($profile);
+
+        $twig = $this->createMock(Environment::class);
+        $symfonyProfilerClass = \Symfony\Bridge\Twig\Extension\ProfilerExtension::class;
+        $twig->method('hasExtension')->willReturnMap([
+            [$symfonyProfilerClass, true],
+            [ProfilerExtension::class, false],
+        ]);
+        $twig->method('getExtension')->willReturnMap([
+            [$symfonyProfilerClass, $extension],
+            [ProfilerExtension::class, $extension],
+        ]);
+
+        $collector = new TwigInspectorCollector(
+            $this->createControllerSubscriber(),
+            $this->requestStack,
+            $twig,
+            'twig_inspector_is_active',
+            true,
+            'light',
+            false,
+            false,
+            'Ctrl+Shift+T'
+        );
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $response = new Response();
+        $collector->collect($request, $response);
+        $collector->lateCollect();
+
+        $times = $collector->getTemplateTimes();
+        $this->assertArrayHasKey('symfony_template.html.twig', $times);
+        $this->assertEqualsWithDelta(3.0, $times['symfony_template.html.twig'], 0.01, 'Template duration in ms (float precision)');
+    }
+
+    public function testLateCollectReturnsEmptyWhenExtensionNotProfilerExtension(): void
+    {
+        $twig = $this->createMock(Environment::class);
+        $symfonyProfilerClass = \Symfony\Bridge\Twig\Extension\ProfilerExtension::class;
+        $twig->method('hasExtension')->willReturnMap([
+            [$symfonyProfilerClass, false],
+            [ProfilerExtension::class, true],
+        ]);
+        $twig->method('getExtension')->with(ProfilerExtension::class)->willReturn($this->createMock(ExtensionInterface::class));
+
+        $collector = new TwigInspectorCollector(
+            $this->createControllerSubscriber(),
+            $this->requestStack,
+            $twig,
+            'twig_inspector_is_active',
+            true,
+            'light',
+            false,
+            false,
+            'Ctrl+Shift+T'
+        );
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $response = new Response();
+        $collector->collect($request, $response);
+        $collector->lateCollect();
+
+        $this->assertSame([], $collector->getTemplateTimes());
+    }
+
+    public function testLateCollectReturnsEmptyWhenActivesEmpty(): void
+    {
+        $extension = $this->createMock(ProfilerExtension::class);
+        $ref = new \ReflectionProperty(ProfilerExtension::class, 'actives');
+        $ref->setAccessible(true);
+        $ref->setValue($extension, []);
+
+        $twig = $this->createMock(Environment::class);
+        $twig->method('hasExtension')->willReturnMap([
+            [\Symfony\Bridge\Twig\Extension\ProfilerExtension::class, false],
+            [ProfilerExtension::class, true],
+        ]);
+        $twig->method('getExtension')->with(ProfilerExtension::class)->willReturn($extension);
+
+        $collector = new TwigInspectorCollector(
+            $this->createControllerSubscriber(),
+            $this->requestStack,
+            $twig,
+            'twig_inspector_is_active',
+            true,
+            'light',
+            false,
+            false,
+            'Ctrl+Shift+T'
+        );
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $response = new Response();
+        $collector->collect($request, $response);
+        $collector->lateCollect();
+
+        $this->assertSame([], $collector->getTemplateTimes());
+    }
+
+    public function testLateCollectAggregatesProfileWithChildren(): void
+    {
+        $childProfile = $this->createProfileWithDuration('child.html.twig', 0.001);
+        $parentProfile = new Profile('main', Profile::ROOT, 'main');
+        $parentProfile->addProfile($childProfile);
+        $parentProfile->enter();
+
+        $extension = new ProfilerExtension($parentProfile);
+
+        $twig = $this->createMock(Environment::class);
+        $twig->method('hasExtension')->willReturnMap([
+            [\Symfony\Bridge\Twig\Extension\ProfilerExtension::class, false],
+            [ProfilerExtension::class, true],
+        ]);
+        $twig->method('getExtension')->with(ProfilerExtension::class)->willReturn($extension);
+
+        $collector = new TwigInspectorCollector(
+            $this->createControllerSubscriber(),
+            $this->requestStack,
+            $twig,
+            'twig_inspector_is_active',
+            true,
+            'light',
+            false,
+            false,
+            'Ctrl+Shift+T'
+        );
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $response = new Response();
+        $collector->collect($request, $response);
+        $collector->lateCollect();
+
+        $times = $collector->getTemplateTimes();
+        $this->assertArrayHasKey('child.html.twig', $times);
+        $this->assertEqualsWithDelta(1.0, $times['child.html.twig'], 0.01, 'Template duration in ms (float precision)');
     }
 }

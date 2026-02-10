@@ -3,6 +3,9 @@ demo_home:
     controller: App\Controller\DemoController::home
     methods: [GET]
 
+# Chrome DevTools requests this when DevTools are open; avoid 404 in logs
+# controller and route are defined via attribute in DemoController
+
 # Twig Inspector Bundle routes
 when@dev:
     nowo_twig_inspector:

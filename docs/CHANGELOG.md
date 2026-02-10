@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Web Profiler — Controllers**: New **Controllers** tab in the collector panel listing every controller invoked in the request (main controller + sub-requests from `{{ render(controller(...)) }}`). Each row shows controller name, **Role** (Main / Fragment badge), and **Renders** count.
+- **Controller HTML comments**: When the inspector is enabled, the bundle injects HTML comments for controllers using the same box-drawing style as Twig blocks: `<!-- ┏ controller: FQCN::method [main] template: path -->` after `<body>` for the main controller, and `<!-- ┏ … [fragment] … -->` / `<!-- ┗ /controller -->` wrapping each fragment’s output. You can see which controller (and template) rendered which part of the page in the HTML source.
+- **Overlay — Controller recognition**: The overlay now recognizes controller comments: hovering over any element inside a controller range shows the controller (and optional template) in the tooltip, same as for Twig blocks. Display order: controller principal, then controller fragment (if any), then Twig templates in flow order.
+- **Panel — Renders**: Templates and Blocks tables now show a **Renders** column (number of times each template/block was rendered) with a short hint explaining that each render produces two HTML comments (start and end).
+
+### Changed
+- **TwigInspectorCollector**: Now receives `ControllerRenderSubscriber` as first constructor argument (internal; extension and services updated accordingly). No user-facing breaking change.
+- **Controller comments format**: Controller comments use `┏` / `┗` (same pattern as Twig block comments) and include the template path when available.
+
 ## [1.0.10] - 2025-02-10
 
 ### Added
@@ -25,26 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **README**: Usage section expanded with icon states (green/yellow), screenshots section, link to USAGE.md
 - **INSTALLATION.md**: Verify step mentions green icon; link to USAGE.md for full overlay flow
 - **Toolbar dropdown**: Simplified (removed long “How to use” block; instructions moved to panel tab)
-
-## [Unreleased]
-
-### Added
-- **Documentation**: [INSTALLATION.md](INSTALLATION.md) — step-by-step install (Flex and manual), routes, IDE setup
-- **Documentation**: [ROADMAP.md](ROADMAP.md) — vision, 1.x focus, current status of future ideas, and new ideas (overlay UX, fragments, profiler export, etc.)
-- **README**: Table of contents, quick search terms section, and documentation index table
-- **README**: Packagist downloads badge, PHP and Symfony version badges; link to install from Packagist and Security doc
-- **composer.json**: `support.docs` and `support.changelog` for Packagist; shorter description; `suggest.symfony/flex`; keyword `symfony-flex`
-- **Configuration**: `max_injection_depth` (0 = unlimited) to limit comment injection depth; `excluded_templates_regex`, `excluded_templates_prefixes`, `excluded_blocks_regex` for regex/namespace-style exclusions
-- **Configuration**: `overlay_theme` (light/dark/auto), `overlay_compact`, `reduced_motion`, `keyboard_shortcut` (e.g. Ctrl+Shift+T) for overlay and accessibility
-- **Web Profiler**: Template render times (ms per template) from Twig profiler; panel shows template times, templates, blocks, and an “Export config snippet” section
-- **Frontend**: Dark theme and compact tooltip (SCSS); config passed via `window.__twig_inspector_config`; keyboard shortcut to toggle inspector; filter by template name; Rescan DOM button and Ctrl+Shift+R; reduced-motion support
-- **IDE**: Cursor and JetBrains Fleet examples in [INSTALLATION.md](INSTALLATION.md)
-- **Demos**: `APP_ENV=dev` in docker-compose (symfony6, symfony7, symfony8) so `nowo:twig-inspector:install` is available in the container; README note when the command is not found
-
-### Changed
-- **README**: Consolidated testing and CI/CD sections; clearer links to Security and Installation docs
-- **TwigInspectorCollector**: Implements `LateDataCollectorInterface`, injects Twig environment and config; exposes `getTemplateTimes()` and `getConfig()`; uses configurable cookie name
-- **HtmlCommentsExtension**: New constructor args for max depth and regex/prefix exclusions; skips injection when over max depth
 
 ## [1.0.9] - 2025-01-26
 

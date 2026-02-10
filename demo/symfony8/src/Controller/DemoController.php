@@ -28,5 +28,23 @@ class DemoController extends AbstractController
             ],
         ]);
     }
+
+    /**
+     * Renders a small fragment via render(controller(...)) for the Twig Inspector "Controllers" panel.
+     */
+    public function fragment(): Response
+    {
+        return $this->render('demo/_controller_fragment.html.twig');
+    }
+
+    /**
+     * Responds to Chrome DevTools request to avoid 404 in logs.
+     * Chrome requests /.well-known/appspecific/com.chrome.devtools.json when DevTools are open.
+     */
+    #[Route('/.well-known/appspecific/com.chrome.devtools.json', name: 'chrome_devtools_well_known', methods: ['GET'], priority: -100)]
+    public function chromeDevToolsWellKnown(): Response
+    {
+        return new Response('{}', Response::HTTP_OK, ['Content-Type' => 'application/json']);
+    }
 }
 

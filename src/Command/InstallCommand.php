@@ -87,10 +87,12 @@ class InstallCommand extends Command
     /**
      * Constructor.
      *
-     * @param string|null $projectDir The project directory (kernel.project_dir parameter)
+     * @param string|null   $projectDir The project directory (kernel.project_dir parameter)
+     * @param Filesystem|null $filesystem Optional filesystem (for testing; defaults to new Filesystem())
      */
     public function __construct(
-        private readonly ?string $projectDir = null
+        private readonly ?string $projectDir = null,
+        private readonly ?Filesystem $filesystem = null
     ) {
         parent::__construct();
     }
@@ -153,7 +155,7 @@ class InstallCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $filesystem = new Filesystem();
+        $filesystem = $this->filesystem ?? new Filesystem();
 
         $env = $input->getOption('env') ?? 'dev';
         $force = $input->getOption('force');

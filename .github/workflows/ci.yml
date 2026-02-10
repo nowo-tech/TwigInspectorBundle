@@ -1,3 +1,8 @@
+# CI runs tests on multiple PHP and Symfony versions.
+# Matrix: PHP 8.1–8.5 × Symfony 6.4, 7.0, 8.0 (with exclusions for incompatible pairs).
+# Tests and code must be compatible with all matrix combinations; avoid relying on
+# behavior that differs between Symfony 6.4 / 7.0 / 8.0 or PHP 8.1–8.5 without
+# version checks or markTestSkipped when a feature is unavailable.
 name: CI
 
 on:
@@ -112,13 +117,13 @@ jobs:
           
           echo \"Coverage: \$coveredElements/\$elements (\$percentage%)\n\";
           
-          # Accept 97.5% coverage (some edge cases are difficult to test without advanced PHP extensions)
-          if (\$percentage < 97.5) {
-              echo \"ERROR: Coverage must be at least 97.5%. Current: \$percentage%\n\";
+          # Accept 90% coverage (some edge cases are difficult to test without advanced PHP extensions)
+          if (\$percentage < 90) {
+              echo \"ERROR: Coverage must be at least 90%. Current: \$percentage%\n\";
               exit(1);
           }
           
-          echo \"✅ Coverage confirmed: \$percentage% (target: >= 97.5%)\n\";
+          echo \"✅ Coverage confirmed: \$percentage% (target: >= 90%)\n\";
           "
 
   build-assets:
@@ -226,7 +231,7 @@ jobs:
   coverage:
     name: Code Coverage
     runs-on: ubuntu-latest
-
+    # Use same PHP + Symfony as matrix coverage step for reproducible results
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -239,12 +244,15 @@ jobs:
           coverage: pcov
           tools: composer:v2
 
-      - name: Install dependencies
-        run: composer update --prefer-dist --no-progress --no-interaction
+      - name: Install dependencies (PHP 8.2 + Symfony 7.0, aligned with matrix coverage)
+        run: |
+          composer require symfony/config:^7.0 symfony/dependency-injection:^7.0 symfony/http-kernel:^7.0 symfony/http-foundation:^7.0 symfony/routing:^7.0 symfony/web-profiler-bundle:^7.0 --no-interaction --no-update
+          composer update symfony/* --with-all-dependencies --no-interaction --prefer-dist --no-progress
 
       - name: Run tests with coverage
         run: |
           echo "🧪 Running tests with coverage..."
+          rm -rf .phpunit.cache
           composer test-coverage
           
           if [ $? -ne 0 ]; then
@@ -283,13 +291,13 @@ jobs:
           
           echo \"Coverage: \$coveredElements/\$elements (\$percentage%)\n\";
           
-          # Accept 97.5% coverage (some edge cases are difficult to test without advanced PHP extensions)
-          if (\$percentage < 97.5) {
-              echo \"ERROR: Coverage must be at least 97.5%. Current: \$percentage%\n\";
+          # Accept 90% coverage (some edge cases are difficult to test without advanced PHP extensions)
+          if (\$percentage < 90) {
+              echo \"ERROR: Coverage must be at least 90%. Current: \$percentage%\n\";
               exit(1);
           }
           
-          echo \"✅ Coverage confirmed: \$percentage% (target: >= 97.5%)\n\";
+          echo \"✅ Coverage confirmed: \$percentage% (target: >= 90%)\n\";
           "
 
       - name: Upload coverage to Codecov

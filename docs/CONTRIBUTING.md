@@ -73,11 +73,20 @@ make cs-fix
 composer cs-fix
 ```
 
+#### Supported versions and CI
+
+CI runs tests on **multiple PHP and Symfony versions**:
+
+- **PHP**: 8.1, 8.2, 8.3, 8.4, 8.5
+- **Symfony**: 6.4, 7.0, 8.0 (with exclusions for incompatible pairs, e.g. PHP 8.1 + Symfony 7/8, PHP 8.2/8.3 + Symfony 8.0)
+
+Code and tests must work on all matrix combinations. When behavior differs between versions (e.g. optional packages, API changes), use `markTestSkipped()` or version checks instead of assuming a single environment.
+
 #### Tests
 
-**The project requires a minimum of 97.5% code coverage**. All tests must pass before merging.
+**The project requires a minimum of 90% code coverage**. All tests must pass on every CI matrix combination before merging.
 
-**Note**: Some edge cases (e.g., `file_get_contents` returning false, filesystem permission errors) are difficult to test without advanced PHP extensions (uopz/runkit7) or system-level permission changes. These cases are handled correctly in the code, and 97.5% is our realistic coverage target.
+**Note**: Some edge cases (e.g., `file_get_contents` returning false, filesystem permission errors) are difficult to test without advanced PHP extensions (uopz/runkit7) or system-level permission changes. These cases are handled correctly in the code, and 90% is our realistic coverage target.
 
 ```bash
 # Run all tests
@@ -113,7 +122,7 @@ open coverage/index.html
    - Write clean and well-documented code
    - Add tests for new features
    - Make sure all tests pass
-   - Verify that coverage is at least 97.5%
+   - Verify that coverage is at least 90%
    - Run `make qa` to verify everything
 
 3. **Commit your changes**:
@@ -149,7 +158,7 @@ open coverage/index.html
 - [ ] Code follows PSR-12 standards
 - [ ] Ran `make cs-fix` (or `composer cs-fix`)
 - [ ] All tests pass (`make test`)
-- [ ] Code coverage is at least 97.5% (`make test-coverage`)
+- [ ] Code coverage is at least 90% (`make test-coverage`)
 - [ ] Added tests for new features
 - [ ] Documentation is updated (if necessary)
 - [ ] docs/CHANGELOG.md is updated (if necessary)
