@@ -40,7 +40,7 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
     {
         $request = $event->getRequest();
         $master = $this->getMainOrMasterRequest();
-        $master = $master ?? $request;
+        $master ??= $request;
         $key = spl_object_id($master);
 
         if (!isset($this->controllersByMasterRequest[$key])) {

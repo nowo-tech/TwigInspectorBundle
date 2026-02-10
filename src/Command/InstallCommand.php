@@ -87,7 +87,7 @@ class InstallCommand extends Command
     /**
      * Constructor.
      *
-     * @param string|null   $projectDir The project directory (kernel.project_dir parameter)
+     * @param string|null     $projectDir The project directory (kernel.project_dir parameter)
      * @param Filesystem|null $filesystem Optional filesystem (for testing; defaults to new Filesystem())
      */
     public function __construct(
