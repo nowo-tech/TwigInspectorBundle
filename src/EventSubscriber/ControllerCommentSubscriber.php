@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\EventSubscriber;
 
+use Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension;
 
 /**
  * Injects HTML comments for each controller (main + fragments) when Twig Inspector is enabled.
@@ -129,6 +129,7 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
                 $parts[] = 'template:';
                 $parts[] = $safeTemplate;
             }
+
             return '<!-- ' . self::COMMENT_OPEN . ' ' . implode(' ', $parts) . ' -->';
         }
 

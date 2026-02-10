@@ -47,6 +47,7 @@ final class TwigInspectorCollectorTest extends TestCase
         $endsProp->setAccessible(true);
         $starts = $startsProp->getValue($profile);
         $endsProp->setValue($profile, ['wt' => $starts['wt'] + $durationSeconds]);
+
         return $profile;
     }
 
