@@ -74,9 +74,9 @@ jobs:
           if [ "$HAS_CHANGELOG" = "true" ] && [ -n "$CHANGELOG_ENTRY" ]; then
             BODY="${TAG_MSG}
 
-## Changelog
+          ## Changelog
 
-${CHANGELOG_ENTRY}"
+          ${CHANGELOG_ENTRY}"
           fi
           DELIM=$(openssl rand -hex 16)
           { echo "content<<${DELIM}"; printf '%s' "$BODY"; echo ""; echo "${DELIM}"; } >> $GITHUB_OUTPUT
