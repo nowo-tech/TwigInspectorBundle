@@ -113,6 +113,7 @@ Full options and behavior: [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 | [**Security**](docs/SECURITY.md) | Reporting vulnerabilities and security notes |
 | [**Contributing**](docs/CONTRIBUTING.md) | How to contribute and code style |
 | [**Branching**](docs/BRANCHING.md) | Git workflow and release strategy |
+| [**Release**](docs/RELEASE.md) | Release checklist and tagging (for maintainers) |
 
 **Security**: The bundle validates template paths and restricts routes to `dev`/`test`. See [docs/SECURITY.md](docs/SECURITY.md).
 
