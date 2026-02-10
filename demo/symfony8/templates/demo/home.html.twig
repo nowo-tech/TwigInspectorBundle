@@ -9,6 +9,8 @@
 
     {{ include('demo/_feature_list.html.twig', { items: items }) }}
 
+    {{ render(controller('App\\Controller\\DemoController::fragment')) }}
+
     {{ include('demo/_instructions.html.twig') }}
 
     {{ include('demo/_template_structure.html.twig') }}

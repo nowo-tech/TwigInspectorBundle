@@ -2,6 +2,18 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
+## Upgrading from 1.0.10 to the next release
+
+**No action required** — backward-compatible release.
+
+### What’s new
+- **Controllers tab**: In the Twig Inspector profiler panel, a new **Controllers** tab lists every controller invoked in the request. The **main** controller (the one that handled the page) is labeled **Main**; controllers used via `{{ render(controller(...)) }}` are labeled **Fragment**, with a **Renders** count per controller.
+- **Controller HTML comments**: When the inspector is enabled, the HTML source includes comments for controllers in the same style as Twig blocks: `<!-- ┏ controller: FQCN::method [main] template: path -->` after `<body>` for the main controller, and `<!-- ┏ … [fragment] … -->` / `<!-- ┗ /controller -->` around each fragment’s output. Fragment output (e.g. a `<div>…</div>` from `render(controller(...))`) is now wrapped with these comments so you can see controller and template in the source.
+- **Overlay and controller comments**: The overlay recognizes these controller comments: when you hover over an element inside a controller range, the tooltip shows the controller (and template when available), in order: controller principal, then controller fragment (if any), then Twig templates in flow order. You can filter by “controller”, “main”, or “fragment” like with template names.
+- **Templates & Blocks panels**: The **Count** column was renamed to **Renders** and now shows the number of times each template or block was rendered (each render produces two HTML comments). A short hint in the panel explains this.
+
+No breaking changes; existing configuration and behavior are unchanged.
+
 ## Upgrading from 1.0.9 to 1.0.10
 
 **No action required** — backward-compatible release.

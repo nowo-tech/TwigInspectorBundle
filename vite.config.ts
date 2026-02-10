@@ -18,9 +18,7 @@ export default defineConfig({
       output: {
         format: 'iife',
         entryFileNames: 'index.min.js',
-        // Single CSS chunk from style.scss → fixed name ( [extname] would yield "style.min..css" )
-        assetFileNames: (assetInfo) =>
-          assetInfo.name?.endsWith('.css') ? 'style.min.css' : '[name]-[hash][extname]',
+        assetFileNames: '[name]-[hash][extname]',
       },
     },
     minify: true,

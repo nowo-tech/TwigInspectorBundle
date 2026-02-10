@@ -213,6 +213,7 @@ export class Overlay {
 
   /**
    * Binds click on the overlay: single template navigates to link; multiple show a static picker.
+   * Entries with link '#' (e.g. controller-only blocks) do not navigate.
    */
   initClickHandler(): void {
     this.block.addEventListener('click', (event: MouseEvent) => {
@@ -228,8 +229,11 @@ export class Overlay {
       const templates = this.storage.getTemplates(parseInt(templateIndex, 10));
 
       if (templates.length === 1) {
-        this.reset();
-        window.location.href = templates[0].link;
+        const link = templates[0].link;
+        if (link && link !== '#') {
+          this.reset();
+          window.location.href = link;
+        }
         event.stopPropagation();
       } else {
         for (let i = 0; i < templates.length; i++) {
@@ -239,8 +243,11 @@ export class Overlay {
           link.dataset.href = template.link;
           link.innerText = template.name;
           link.addEventListener('click', (event: MouseEvent) => {
+            const href = (event.currentTarget as HTMLElement).dataset.href || '';
             this.reset();
-            window.location.href = (event.currentTarget as HTMLElement).dataset.href || '';
+            if (href && href !== '#') {
+              window.location.href = href;
+            }
             event.stopPropagation();
           });
           this.block.appendChild(link);

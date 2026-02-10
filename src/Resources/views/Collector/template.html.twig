@@ -27,11 +27,13 @@
         #tab-how-to-use:checked ~ .twig-inspector-tab-list label[for="tab-how-to-use"],
         #tab-templates:checked ~ .twig-inspector-tab-list label[for="tab-templates"],
         #tab-blocks:checked ~ .twig-inspector-tab-list label[for="tab-blocks"],
+        #tab-controllers:checked ~ .twig-inspector-tab-list label[for="tab-controllers"],
         #tab-config:checked ~ .twig-inspector-tab-list label[for="tab-config"],
         #tab-tips:checked ~ .twig-inspector-tab-list label[for="tab-tips"] { color: #3d8ee0; font-weight: 600; border-bottom-color: #3d8ee0; }
         .theme-dark #tab-how-to-use:checked ~ .twig-inspector-tab-list label[for="tab-how-to-use"],
         .theme-dark #tab-templates:checked ~ .twig-inspector-tab-list label[for="tab-templates"],
         .theme-dark #tab-blocks:checked ~ .twig-inspector-tab-list label[for="tab-blocks"],
+        .theme-dark #tab-controllers:checked ~ .twig-inspector-tab-list label[for="tab-controllers"],
         .theme-dark #tab-config:checked ~ .twig-inspector-tab-list label[for="tab-config"],
         .theme-dark #tab-tips:checked ~ .twig-inspector-tab-list label[for="tab-tips"] { color: #5a9fd4; border-bottom-color: #5a9fd4; }
         .twig-inspector-tab-panel { display: none !important; }
@@ -39,6 +41,7 @@
         #tab-how-to-use:checked ~ #panel-how-to-use.twig-inspector-tab-panel,
         #tab-templates:checked ~ #panel-templates.twig-inspector-tab-panel,
         #tab-blocks:checked ~ #panel-blocks.twig-inspector-tab-panel,
+        #tab-controllers:checked ~ #panel-controllers.twig-inspector-tab-panel,
         #tab-config:checked ~ #panel-config.twig-inspector-tab-panel,
         #tab-tips:checked ~ #panel-tips.twig-inspector-tab-panel { display: block !important; }
         .twig-inspector-tips-list { margin: 0.5em 0 1em 1.2em; }
@@ -48,7 +51,14 @@
         .twig-inspector-tool-card h4 { margin: 0 0 4px 0; font-size: 14px; }
         .twig-inspector-tool-card p { margin: 0 0 6px 0; font-size: 12px; line-height: 1.4; }
         .twig-inspector-tool-card a { font-size: 12px; }
+        .twig-inspector-panel-hint { color: #666; font-size: 12px; margin: -0.25em 0 0.75em 0; line-height: 1.35; }
+        .theme-dark .twig-inspector-panel-hint { color: #999; }
         .theme-dark .twig-inspector-tool-card a { color: #5a9fd4; }
+        .twig-inspector-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+        .twig-inspector-badge-main { background: #3d8ee0; color: #fff; }
+        .theme-dark .twig-inspector-badge-main { background: #5a9fd4; color: #1a1a1a; }
+        .twig-inspector-badge-fragment { background: #e8e8e8; color: #555; }
+        .theme-dark .twig-inspector-badge-fragment { background: #444; color: #bbb; }
     </style>
 {% endblock %}
 
@@ -108,12 +118,14 @@
       <input type="radio" name="ti-tab" id="tab-how-to-use" class="twig-inspector-tab-radio" checked>
       <input type="radio" name="ti-tab" id="tab-templates" class="twig-inspector-tab-radio">
       <input type="radio" name="ti-tab" id="tab-blocks" class="twig-inspector-tab-radio">
+      <input type="radio" name="ti-tab" id="tab-controllers" class="twig-inspector-tab-radio">
       <input type="radio" name="ti-tab" id="tab-tips" class="twig-inspector-tab-radio">
       <input type="radio" name="ti-tab" id="tab-config" class="twig-inspector-tab-radio">
       <div class="twig-inspector-tab-list">
         <label for="tab-how-to-use">How to use</label>
         <label for="tab-templates">Templates</label>
         <label for="tab-blocks">Blocks</label>
+        <label for="tab-controllers">Controllers</label>
         <label for="tab-tips">Tips &amp; tools</label>
         <label for="tab-config">Configuration example</label>
       </div>
@@ -154,6 +166,7 @@
           </table>
         {% endif %}
         <h3>Templates ({{ collector.totalTemplates }})</h3>
+        <p class="twig-inspector-panel-hint"><em>Renders</em> = number of times the template was rendered in this response. Each render injects two HTML comments (start and end), so the raw comment count is twice the render count.</p>
         {% if collector.templates is empty %}
           <p><em>No template data for this request.</em></p>
         {% else %}
@@ -161,14 +174,14 @@
             <thead>
               <tr>
                 <th>Template</th>
-                <th>Count</th>
+                <th>Renders</th>
               </tr>
             </thead>
             <tbody>
               {% for t in collector.templates %}
                 <tr>
                   <td>{{ t.name }}</td>
-                  <td>{{ t.count }}</td>
+                  <td>{{ (t.count / 2)|round }}</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -178,6 +191,7 @@
 
       <div id="panel-blocks" class="twig-inspector-tab-panel">
         <h3>Blocks ({{ collector.totalBlocks }})</h3>
+        <p class="twig-inspector-panel-hint"><em>Renders</em> = number of times the block was rendered in this response. Each render injects two HTML comments (start and end), so the raw comment count is twice the render count.</p>
         {% if collector.blocks is empty %}
           <p><em>No block data for this request.</em></p>
         {% else %}
@@ -186,7 +200,7 @@
               <tr>
                 <th>Template</th>
                 <th>Block</th>
-                <th>Count</th>
+                <th>Renders</th>
               </tr>
             </thead>
             <tbody>
@@ -194,7 +208,34 @@
                 <tr>
                   <td>{{ b.template }}</td>
                   <td>{{ b.name }}</td>
-                  <td>{{ b.count }}</td>
+                  <td>{{ (b.count / 2)|round }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      </div>
+
+      <div id="panel-controllers" class="twig-inspector-tab-panel">
+        <h3>Controllers ({{ collector.totalControllers }})</h3>
+        <p class="twig-inspector-panel-hint">Controllers invoked in this request: the main controller plus any sub-requests from <code>{{ '{{ render(controller(...)) }}' }}</code> in templates.</p>
+        {% if collector.controllers is empty %}
+          <p><em>No controller data for this request.</em></p>
+        {% else %}
+          <table>
+            <thead>
+              <tr>
+                <th>Controller</th>
+                <th>Role</th>
+                <th>Renders</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in collector.controllers %}
+                <tr>
+                  <td><code>{{ c.name }}</code></td>
+                  <td>{% if c.is_main|default(false) %}<span class="twig-inspector-badge twig-inspector-badge-main" title="Controller that handled the main request">Main</span>{% else %}<span class="twig-inspector-badge twig-inspector-badge-fragment" title="Sub-request (e.g. render(controller(...)))">Fragment</span>{% endif %}</td>
+                  <td>{{ c.count }}</td>
                 </tr>
               {% endfor %}
             </tbody>

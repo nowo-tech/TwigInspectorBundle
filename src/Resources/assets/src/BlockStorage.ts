@@ -1,10 +1,16 @@
 /**
- * Maps DOM elements to the Twig templates that rendered them.
- * Populated by scanning HTML comments injected by the Twig extension.
+ * Maps DOM elements to the Twig templates (and controller renders) that produced them.
+ * Populated by scanning HTML comments injected by the Twig extension and ControllerCommentSubscriber.
  */
 
 import type { Block, Template } from './types';
 import { BlockClass, TemplateClass } from './models';
+
+/** Regex for controller opening comment: ┏ controller: FQCN::method [main|fragment] (template: path)? (same start as Twig blocks). */
+const CONTROLLER_OPEN =
+  /^\s*┏\s*controller:\s+(.+?)\s+\[(main|fragment)\](?:\s+template:\s+(\S+))?\s*$/u;
+/** Regex for controller closing comment (fragment only): ┗ /controller */
+const CONTROLLER_CLOSE = /^\s*┗\s*\/controller\s*$/u;
 
 export class BlockStorage {
   private elements: HTMLElement[] = [];
@@ -12,6 +18,7 @@ export class BlockStorage {
 
   /**
    * Scans the document for Twig Inspector HTML comments and rebuilds the element–template map.
+   * Includes template/block comments (box-drawing ┏┗) and controller comments (┏ controller: … ┗ /controller).
    * Call after DOM changes (e.g. AJAX) to rescan.
    */
   collectData(): void {
@@ -57,6 +64,108 @@ export class BlockStorage {
         element = element.nextSibling;
       }
     }
+
+    this.collectControllerRanges(sfToolbar);
+    this.sortTemplatesForDisplay();
+  }
+
+  /**
+   * Sorts each block's templates for overlay display: controller principal first, then [fragment] if any, then Twig templates in flow order.
+   */
+  private sortTemplatesForDisplay(): void {
+    for (let i = 0; i < this.templatesToElements.length; i++) {
+      const list = this.templatesToElements[i];
+      this.templatesToElements[i] = [...list].sort((a, b) => {
+        const aController = a.name.startsWith('Controller:');
+        const bController = b.name.startsWith('Controller:');
+        if (aController && !bController) return -1;
+        if (!aController && bController) return 1;
+        if (aController && bController) {
+          const aMain = a.name.includes('[main]');
+          const bMain = b.name.includes('[main]');
+          if (aMain && !bMain) return -1;
+          if (!aMain && bMain) return 1;
+          return 0;
+        }
+        return 0;
+      });
+    }
+  }
+
+  /**
+   * Scans for controller comments (┏ controller: … [main|fragment] … ┗ /controller) and adds a
+   * "Controller: FQCN [main|fragment] · template" entry to every element in that range so the overlay shows controller info on hover.
+   */
+  private collectControllerRanges(sfToolbar: HTMLElement): void {
+    const commentIterator = document.createNodeIterator(
+      document.body,
+      NodeFilter.SHOW_COMMENT
+    );
+    let node: Node | null;
+    while ((node = commentIterator.nextNode())) {
+      const openMatch = node.nodeValue?.match(CONTROLLER_OPEN);
+      if (!openMatch) {
+        continue;
+      }
+      const controllerStr = openMatch[1].trim();
+      const role = openMatch[2];
+      const templatePath = openMatch[3]?.trim();
+      const controllerName =
+        'Controller: ' + controllerStr + ' [' + role + ']' + (templatePath ? ' · ' + templatePath : '');
+      const controllerLink = templatePath ? '/_template/' + templatePath : '#';
+
+      let start: Node | null = node.nextSibling;
+      let end: Node | null = null;
+      if (role === 'fragment') {
+        end = this.findControllerCloseComment(node);
+      }
+      this.visitElementsInRange(start, end, (el: HTMLElement) => {
+        if (
+          !['SCRIPT', 'STYLE'].includes(el.tagName) &&
+          !sfToolbar.contains(el) &&
+          window.getComputedStyle(el).display !== 'none'
+        ) {
+          const block = this.findOrCreate(el);
+          this.addTemplate(block.index, new TemplateClass(controllerName, controllerLink));
+        }
+      });
+    }
+  }
+
+  private findControllerCloseComment(afterNode: Node): Node | null {
+    let node: Node | null = afterNode;
+    while ((node = this.nextInDocumentOrder(node, document.body))) {
+      if (node.nodeType === Node.COMMENT_NODE && CONTROLLER_CLOSE.test((node as Comment).nodeValue ?? '')) {
+        return node;
+      }
+    }
+    return null;
+  }
+
+  private visitElementsInRange(
+    start: Node | null,
+    end: Node | null,
+    fn: (el: HTMLElement) => void
+  ): void {
+    let node: Node | null = start;
+    while (node && node !== end) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        fn(node as HTMLElement);
+      }
+      node = this.nextInDocumentOrder(node, document.body);
+    }
+  }
+
+  private nextInDocumentOrder(node: Node | null, root: Node): Node | null {
+    if (!node) return null;
+    if (node.firstChild) return node.firstChild;
+    if (node.nextSibling) return node.nextSibling;
+    let p: Node | null = node.parentNode;
+    while (p && p !== root) {
+      if (p.nextSibling) return p.nextSibling;
+      p = p.parentNode;
+    }
+    return null;
   }
 
   /**

@@ -788,4 +788,118 @@ final class HtmlCommentsExtensionTest extends TestCase
         $out = ob_get_clean();
         $this->assertSame('<div>x</div>', $out);
     }
+
+    public function testEndWhenNoOutputBufferReturnsEarly(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        if (ob_get_level() !== 0) {
+            $this->markTestSkipped('Output buffer level is not 0; cannot test early-return branch without affecting other buffers');
+        }
+        $this->extension->end($ref);
+        $this->assertSame(0, ob_get_level(), 'end() with no buffer from start() should return early without touching buffers');
+    }
+
+    public function testShouldInspectReturnsFalseWhenDebugDisabled(): void
+    {
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            0,
+            [],
+            [],
+            [],
+            false
+        );
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $method = new \ReflectionMethod($extension, 'shouldInspect');
+        $result = $method->invoke($extension, $ref);
+        $this->assertFalse($result);
+    }
+
+    public function testEndRespectsMaxInjectionDepth(): void
+    {
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            1,
+            [],
+            [],
+            [],
+            true
+        );
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
+
+        $nestingLevel = new \ReflectionProperty($extension, 'nestingLevel');
+        $nestingLevel->setAccessible(true);
+        $nestingLevel->setValue($extension, 2);
+
+        ob_start();
+        $extension->start($ref);
+        echo 'x';
+        $extension->end($ref);
+        $output = ob_get_clean();
+
+        $this->assertSame('x', $output);
+        $this->assertStringNotContainsString('<!--', $output);
+    }
+
+    /** Covers maxInjectionDepth branch with HTML content (nestingLevel > maxInjectionDepth). */
+    public function testEndRespectsMaxInjectionDepthWithHtmlContent(): void
+    {
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            1,
+            [],
+            [],
+            [],
+            true
+        );
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
+
+        $nestingLevel = new \ReflectionProperty($extension, 'nestingLevel');
+        $nestingLevel->setAccessible(true);
+        $nestingLevel->setValue($extension, 2);
+
+        ob_start();
+        $extension->start($ref);
+        echo '<div>nested</div>';
+        $extension->end($ref);
+        $output = ob_get_clean();
+
+        $this->assertSame('<div>nested</div>', $output);
+        $this->assertStringNotContainsString('<!--', $output);
+    }
+
 }

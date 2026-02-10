@@ -5,8 +5,9 @@
   "private": true,
   "packageManager": "pnpm@10.29.2",
   "scripts": {
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
+    "build": "vite build && pnpm run build:css",
+    "build:css": "sass src/Resources/assets/src/style.scss src/Resources/views/assets/dist/style.min.css --style=compressed --no-source-map",
+    "build:dev": "vite build --mode development && pnpm run build:css",
     "dev": "vite build --watch",
     "watch": "vite build --watch",
     "clean": "rm -rf src/Resources/views/assets/dist",

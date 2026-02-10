@@ -70,10 +70,13 @@ When the filter is not empty, **persistent colored frames** (veils) are drawn ar
 
 Click **“View full panel →”** in the dropdown (or open the Twig Inspector panel from the profiler) to see:
 
-- **Templates** — Template render times (if Twig profiler is enabled) and list of templates used in the request.
-- **Blocks** — List of blocks and their templates.
+- **Templates** — Template render times (if Twig profiler is enabled) and list of templates used in the request, with **Renders** (how many times each was rendered).
+- **Blocks** — List of blocks and their templates, with **Renders**.
+- **Controllers** — List of controllers invoked in the request: the **main** controller (handles the page) and any **fragment** controllers from `{{ render(controller(...)) }}`. Each row shows **Role** (Main / Fragment) and **Renders**.
 - **Tips & tools** — “How to use the overlay” and Twig performance tips.
 - **Configuration example** — Copy-paste config snippets.
+
+When the inspector is enabled, the HTML source also includes **controller comments**: one after `<body>` for the main controller, and start/end comments around each fragment’s output, so you can see which controller rendered which part of the page (same idea as template/block comments).
 
 ## Troubleshooting
 

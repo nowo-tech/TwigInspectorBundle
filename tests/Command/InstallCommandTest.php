@@ -6,6 +6,7 @@ namespace Nowo\TwigInspectorBundle\Tests\Command;
 
 use Nowo\TwigInspectorBundle\Command\InstallCommand;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -38,6 +39,14 @@ final class InstallCommandTest extends TestCase
         }
     }
 
+    /**
+     * Normalizes console output so assertions work when Symfony Console wraps long paths (adds newlines).
+     */
+    private function normalizeDisplay(string $display): string
+    {
+        return preg_replace('/\s+/', ' ', $display);
+    }
+
     public function testCommandNameAndDescription(): void
     {
         $command = new InstallCommand();
@@ -59,7 +68,7 @@ final class InstallCommandTest extends TestCase
         $this->assertSame('dev', $envOption->getDefault());
 
         $forceOption = $definition->getOption('force');
-        $this->assertTrue($forceOption->isValueRequired() === false);
+        $this->assertFalse($forceOption->isValueRequired());
         $this->assertFalse($forceOption->acceptValue());
     }
 
@@ -86,7 +95,7 @@ final class InstallCommandTest extends TestCase
         $this->assertStringContainsString('nowo_twig_inspector:', file_get_contents($configFile));
         $this->assertStringContainsString('enabled_extensions:', file_get_contents($configFile));
         $this->assertSame(0, $commandTester->getStatusCode());
-        $this->assertStringContainsString('Configuration file created successfully', $commandTester->getDisplay());
+        $this->assertStringContainsString('Configuration file created successfully', $this->normalizeDisplay($commandTester->getDisplay()));
     }
 
     public function testExecuteCreatesConfigFileInTestEnvironment(): void
@@ -125,7 +134,7 @@ final class InstallCommandTest extends TestCase
         $commandTester->execute([]);
 
         $this->assertDirectoryExists($configDir);
-        $this->assertStringContainsString('Created directory:', $commandTester->getDisplay());
+        $this->assertStringContainsString('Created directory:', $this->normalizeDisplay($commandTester->getDisplay()));
     }
 
     public function testExecuteDoesNotCreateDirectoryIfExists(): void
@@ -139,7 +148,7 @@ final class InstallCommandTest extends TestCase
         $commandTester->execute([]);
 
         $this->assertDirectoryExists($configDir);
-        $this->assertStringNotContainsString('Created directory:', $commandTester->getDisplay());
+        $this->assertStringNotContainsString('Created directory:', $this->normalizeDisplay($commandTester->getDisplay()));
     }
 
     public function testExecuteWithExistingFileAndNoForcePromptsForConfirmation(): void
@@ -154,8 +163,8 @@ final class InstallCommandTest extends TestCase
         $commandTester->setInputs(['no']);
         $commandTester->execute([]);
 
-        $this->assertStringContainsString('Configuration file already exists', $commandTester->getDisplay());
-        $this->assertStringContainsString('Installation cancelled', $commandTester->getDisplay());
+        $this->assertStringContainsString('Configuration file already exists', $this->normalizeDisplay($commandTester->getDisplay()));
+        $this->assertStringContainsString('Installation cancelled', $this->normalizeDisplay($commandTester->getDisplay()));
         $this->assertSame('existing content', file_get_contents($configFile));
         $this->assertSame(0, $commandTester->getStatusCode());
     }
@@ -170,7 +179,7 @@ final class InstallCommandTest extends TestCase
 
         $commandTester->execute(['--force' => true]);
 
-        $this->assertStringContainsString('Configuration file created successfully', $commandTester->getDisplay());
+        $this->assertStringContainsString('Configuration file created successfully', $this->normalizeDisplay($commandTester->getDisplay()));
         $this->assertStringContainsString('nowo_twig_inspector:', file_get_contents($configFile));
         $this->assertStringNotContainsString('existing content', file_get_contents($configFile));
         $this->assertSame(0, $commandTester->getStatusCode());
@@ -188,7 +197,7 @@ final class InstallCommandTest extends TestCase
         $commandTester->setInputs(['yes']);
         $commandTester->execute([]);
 
-        $this->assertStringContainsString('Configuration file created successfully', $commandTester->getDisplay());
+        $this->assertStringContainsString('Configuration file created successfully', $this->normalizeDisplay($commandTester->getDisplay()));
         $this->assertStringContainsString('nowo_twig_inspector:', file_get_contents($configFile));
         $this->assertStringNotContainsString('existing content', file_get_contents($configFile));
         $this->assertSame(0, $commandTester->getStatusCode());
@@ -212,6 +221,28 @@ final class InstallCommandTest extends TestCase
         } finally {
             chdir($originalCwd);
         }
+    }
+
+    public function testExecuteHandlesConfigFileCreationFailure(): void
+    {
+        $configDir = $this->testProjectDir . '/config/packages/dev';
+        $configFile = $this->testProjectDir . '/config/packages/dev/nowo_twig_inspector.yaml';
+
+        $mockFilesystem = $this->createMock(Filesystem::class);
+        $mockFilesystem->method('exists')->willReturn(false); // config file and dir do not exist
+        $mockFilesystem->expects($this->once())->method('mkdir')->with($configDir);
+        $mockFilesystem->expects($this->once())
+            ->method('dumpFile')
+            ->with($configFile, $this->isType('string'))
+            ->willThrowException(new IOException('Permission denied'));
+
+        $command = new InstallCommand($this->testProjectDir, $mockFilesystem);
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([]);
+
+        $this->assertSame(Command::FAILURE, $commandTester->getStatusCode());
+        $this->assertStringContainsString('Failed to create configuration file', $this->normalizeDisplay($commandTester->getDisplay()));
     }
 
     public function testConfigFileContainsAllExpectedOptions(): void
@@ -309,7 +340,7 @@ final class InstallCommandTest extends TestCase
         $content = file_get_contents($routesFile);
         $matches = substr_count($content, 'NowoTwigInspectorBundle');
         $this->assertSame(1, $matches, 'Routes import should not be duplicated');
-        $this->assertStringContainsString('Routes file already contains', $commandTester->getDisplay());
+        $this->assertStringContainsString('Routes file already contains', $this->normalizeDisplay($commandTester->getDisplay()));
     }
 
     public function testExecuteDetectsExistingImportByBundleName(): void
@@ -325,7 +356,7 @@ final class InstallCommandTest extends TestCase
 
         $content = file_get_contents($routesFile);
         // Should not add duplicate
-        $this->assertStringContainsString('Routes file already contains', $commandTester->getDisplay());
+        $this->assertStringContainsString('Routes file already contains', $this->normalizeDisplay($commandTester->getDisplay()));
     }
 
     public function testExecuteDetectsExistingImportByRouteName(): void
@@ -339,7 +370,7 @@ final class InstallCommandTest extends TestCase
 
         $commandTester->execute([]);
 
-        $this->assertStringContainsString('Routes file already contains', $commandTester->getDisplay());
+        $this->assertStringContainsString('Routes file already contains', $this->normalizeDisplay($commandTester->getDisplay()));
     }
 
     public function testExecuteHandlesFileGetContentsFailure(): void
@@ -485,6 +516,42 @@ final class InstallCommandTest extends TestCase
             // So we skip this test in that case
             $this->markTestSkipped('Routes file already contains bundle import');
         }
+    }
+
+    public function testExecuteHandlesAppendToRoutesFileFailure(): void
+    {
+        $routesFile = $this->testProjectDir . '/config/routes.yaml';
+        $configFile = $this->testProjectDir . '/config/packages/dev/nowo_twig_inspector.yaml';
+        $this->filesystem->mkdir($this->testProjectDir . '/config');
+        $this->filesystem->dumpFile($routesFile, "existing_route:\n    path: /existing\n");
+
+        $mockFilesystem = $this->createMock(Filesystem::class);
+        $mockFilesystem->method('exists')
+            ->willReturnCallback(static function (string $path) use ($configFile, $routesFile): bool {
+                if (str_ends_with($path, 'nowo_twig_inspector.yaml')) {
+                    return false;
+                }
+                if (str_ends_with($path, 'routes.yaml')) {
+                    return true;
+                }
+                return false;
+            });
+        $mockFilesystem->method('mkdir');
+        $mockFilesystem->method('dumpFile');
+        $mockFilesystem->method('appendToFile')
+            ->willThrowException(new IOException('Permission denied'));
+
+        $command = new InstallCommand($this->testProjectDir, $mockFilesystem);
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([]);
+
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $display = $this->normalizeDisplay($commandTester->getDisplay());
+        $this->assertTrue(
+            str_contains($display, 'Could not update') || str_contains($display, 'Permission denied'),
+            'Expected warning about routes file update failure: ' . $display
+        );
     }
 
     public function testEnsureRoutesFileHandlesFileGetContentsFalse(): void

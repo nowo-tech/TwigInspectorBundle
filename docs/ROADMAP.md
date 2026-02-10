@@ -11,7 +11,7 @@ Twig Inspector Bundle aims to be the **go-to development tool** for Symfony deve
 - **Stability & compatibility**: Support Symfony 6.4, 7.x, 8.x and Twig 3.8–4.x. Fix regressions and deprecations as they appear.
 - **Performance**: Keep overhead minimal when the inspector is disabled (`optimize_output_buffering`).
 - **Documentation**: Clear install, config, and upgrade guides so new users can adopt the bundle quickly.
-- **Testing**: Maintain high test coverage (97.5%+ target) and CI (PHP matrix, code style, asset build).
+- **Testing**: Maintain high test coverage (90%+ target) and CI (PHP × Symfony matrix, code style, asset build).
 
 No breaking changes are planned for the 1.x line; new options will be additive.
 

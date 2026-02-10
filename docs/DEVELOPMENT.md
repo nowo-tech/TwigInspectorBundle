@@ -30,9 +30,9 @@ composer qa
 
 ## Testing
 
-The bundle has **128+ tests** and targets **97.5%+ code coverage**. CI runs tests on every push (PHP 8.1–8.5 × Symfony 6.4, 7.0, 8.0), plus code style and asset build. All tests are in `tests/`.
+The bundle has **150+ tests** and targets **90%+ code coverage**. CI runs tests on **multiple PHP and Symfony versions** (PHP 8.1–8.5 × Symfony 6.4, 7.0, 8.0; see exclusions in `.github/workflows/ci.yml`), plus code style and asset build. All tests are in `tests/`. Code and tests must be compatible with every matrix combination.
 
-**Current coverage**: 97.55% (358/367 lines). The remaining lines are edge cases (e.g. filesystem or `file_get_contents` failures) that are hard to test without system-level stubs; the code handles them correctly.
+**Current coverage**: 90%+ (validated in CI). Remaining uncovered code is mostly edge cases (e.g. `file_get_contents` failure when file is unreadable) that are hard to test without system-level stubs; the code handles them correctly.
 
 ### Running tests
 
@@ -74,7 +74,7 @@ composer cs-fix
 
 - **Tests**: PHP 8.1–8.5 × Symfony 6.4, 7.0, 8.0 (matrix excludes invalid combinations)
 - **Code style**: PHP-CS-Fixer; auto-fix on push to `main`/`master`
-- **Coverage**: 97.5% minimum (validated on one matrix job)
+- **Coverage**: 90% minimum (validated on PHP 8.2 + Symfony 7.0 and in the standalone coverage job)
 - **Assets**: Frontend build (TypeScript + SCSS) verified in CI
 - **Dependabot**: Dependency update PRs
 

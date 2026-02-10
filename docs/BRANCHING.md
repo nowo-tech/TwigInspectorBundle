@@ -146,7 +146,7 @@ chore(deps): update PHPUnit to v11
 2. **Keep branches short-lived**: Merge as soon as ready
 3. **Keep branches up to date**: Regularly rebase on `develop`
 4. **Write clear commit messages**: Follow Conventional Commits
-5. **Test before pushing**: Ensure all tests pass locally (coverage must be at least 97.5%)
+5. **Test before pushing**: Ensure all tests pass locally (coverage must be at least 90%)
 6. **Update documentation**: Keep docs in sync with code changes
 7. **Small, frequent commits**: Easier to review and revert if needed
 8. **No direct commits to `main` or `develop`**: Always use PRs

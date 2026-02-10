@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\DataCollector;
 
+use Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,13 +24,15 @@ use Twig\Profiler\Profile;
  */
 class TwigInspectorCollector implements DataCollectorInterface, LateDataCollectorInterface
 {
-    /** @var array{templates: array, blocks: array, template_times: array, total_templates: int, total_blocks: int, enabled: bool, config: array} Collected data for the profiler panel */
+    /** @var array{templates: array, blocks: array, controllers: array, template_times: array, total_templates: int, total_blocks: int, total_controllers: int, enabled: bool, config: array} Collected data for the profiler panel */
     private array $data = [
         'templates' => [],
         'blocks' => [],
+        'controllers' => [],
         'template_times' => [],
         'total_templates' => 0,
         'total_blocks' => 0,
+        'total_controllers' => 0,
         'enabled' => false,
         'config' => [],
     ];
@@ -37,16 +40,18 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     /**
      * Constructor.
      *
-     * @param RequestStack     $requestStack     The request stack
-     * @param Environment|null $twig             The Twig environment (for template times; null after unserialize)
-     * @param string           $cookieName       Cookie name used to enable the inspector
-     * @param bool             $enableMetrics    Whether to collect template render times from Twig profiler
-     * @param string           $overlayTheme     Overlay theme: "light", "dark", or "auto"
-     * @param bool             $overlayCompact   Use compact tooltip style
-     * @param bool             $reducedMotion    Respect reduced-motion preference
-     * @param string           $keyboardShortcut Keyboard shortcut to toggle inspector (e.g. "Ctrl+Shift+T")
+     * @param ControllerRenderSubscriber $controllerRenderSubscriber Records controller invocations (main + sub-requests)
+     * @param RequestStack              $requestStack               The request stack
+     * @param Environment|null          $twig                       The Twig environment (for template times; null after unserialize)
+     * @param string                    $cookieName                 Cookie name used to enable the inspector
+     * @param bool                      $enableMetrics              Whether to collect template render times from Twig profiler
+     * @param string                    $overlayTheme               Overlay theme: "light", "dark", or "auto"
+     * @param bool                      $overlayCompact             Use compact tooltip style
+     * @param bool                      $reducedMotion              Respect reduced-motion preference
+     * @param string                    $keyboardShortcut           Keyboard shortcut to toggle inspector (e.g. "Ctrl+Shift+T")
      */
     public function __construct(
+        private readonly ControllerRenderSubscriber $controllerRenderSubscriber,
         private readonly RequestStack $requestStack,
         private ?Environment $twig = null,
         private readonly string $cookieName = 'twig_inspector_is_active',
@@ -66,7 +71,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
      */
     public function __sleep(): array
     {
-        return ['data', 'requestStack', 'cookieName', 'enableMetrics', 'overlayTheme', 'overlayCompact', 'reducedMotion', 'keyboardShortcut'];
+        return ['data', 'controllerRenderSubscriber', 'requestStack', 'cookieName', 'enableMetrics', 'overlayTheme', 'overlayCompact', 'reducedMotion', 'keyboardShortcut'];
     }
 
     /**
@@ -99,6 +104,9 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
             'reduced_motion' => $this->reducedMotion,
             'keyboard_shortcut' => $this->keyboardShortcut,
         ];
+
+        $this->data['controllers'] = $this->controllerRenderSubscriber->getControllersForRequest($request);
+        $this->data['total_controllers'] = count($this->data['controllers']);
 
         if (!$this->data['enabled']) {
             return;
@@ -268,9 +276,11 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
         $this->data = [
             'templates' => [],
             'blocks' => [],
+            'controllers' => [],
             'template_times' => [],
             'total_templates' => 0,
             'total_blocks' => 0,
+            'total_controllers' => 0,
             'enabled' => false,
             'config' => [],
         ];
@@ -334,6 +344,26 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     public function getTotalBlocks(): int
     {
         return $this->data['total_blocks'] ?? 0;
+    }
+
+    /**
+     * Gets controller invocations (main request + sub-requests from render(controller(...))).
+     *
+     * @return list<array{name: string, count: int, is_main: bool}> Controller entries (is_main = true for the main request controller)
+     */
+    public function getControllers(): array
+    {
+        return $this->data['controllers'] ?? [];
+    }
+
+    /**
+     * Gets total number of unique controllers invoked.
+     *
+     * @return int Total controllers
+     */
+    public function getTotalControllers(): int
+    {
+        return $this->data['total_controllers'] ?? 0;
     }
 
     /**

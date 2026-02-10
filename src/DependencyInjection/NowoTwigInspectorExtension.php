@@ -64,16 +64,17 @@ class NowoTwigInspectorExtension extends Extension
         $htmlCommentsExtensionDefinition->setArgument(9, $config['excluded_templates_prefixes']);
         $htmlCommentsExtensionDefinition->setArgument(10, $config['excluded_blocks_regex']);
 
-        // Pass configuration to DataCollector
+        // Pass configuration to DataCollector (argument 0 = ControllerRenderSubscriber from services.yaml)
         $collectorDefinition = $container->getDefinition('Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector');
-        $collectorDefinition->setArgument(0, new Reference('request_stack'));
-        $collectorDefinition->setArgument(1, new Reference('twig'));
-        $collectorDefinition->setArgument(2, $config['cookie_name']);
-        $collectorDefinition->setArgument(3, $config['enable_metrics']);
-        $collectorDefinition->setArgument(4, $config['overlay_theme']);
-        $collectorDefinition->setArgument(5, $config['overlay_compact']);
-        $collectorDefinition->setArgument(6, $config['reduced_motion']);
-        $collectorDefinition->setArgument(7, $config['keyboard_shortcut']);
+        $collectorDefinition->setArgument(0, new Reference('Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber'));
+        $collectorDefinition->setArgument(1, new Reference('request_stack'));
+        $collectorDefinition->setArgument(2, new Reference('twig'));
+        $collectorDefinition->setArgument(3, $config['cookie_name']);
+        $collectorDefinition->setArgument(4, $config['enable_metrics']);
+        $collectorDefinition->setArgument(5, $config['overlay_theme']);
+        $collectorDefinition->setArgument(6, $config['overlay_compact']);
+        $collectorDefinition->setArgument(7, $config['reduced_motion']);
+        $collectorDefinition->setArgument(8, $config['keyboard_shortcut']);
     }
 
     /**

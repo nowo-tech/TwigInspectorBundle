@@ -66,10 +66,18 @@ class HtmlCommentsExtension extends AbstractExtension
      *
      * @return void
      */
+    /** Request attribute key for the root template name (controller render); set on first template of each request. */
+    public const REQUEST_ATTR_ROOT_TEMPLATE = '_twig_inspector_root_template';
+
     public function start(NodeReference $ref): void
     {
         if (!$this->shouldInspect($ref)) {
             return;
+        }
+
+        $request = $this->requestStack->getCurrentRequest();
+        if ($request instanceof Request && !$request->attributes->has(self::REQUEST_ATTR_ROOT_TEMPLATE)) {
+            $request->attributes->set(self::REQUEST_ATTR_ROOT_TEMPLATE, $ref->getTemplate());
         }
 
         ob_start();

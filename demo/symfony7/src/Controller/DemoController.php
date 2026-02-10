@@ -28,5 +28,13 @@ class DemoController extends AbstractController
             ],
         ]);
     }
+
+    /**
+     * Renders a small fragment via render(controller(...)) for the Twig Inspector "Controllers" panel.
+     */
+    public function fragment(): Response
+    {
+        return $this->render('demo/_controller_fragment.html.twig');
+    }
 }
 
