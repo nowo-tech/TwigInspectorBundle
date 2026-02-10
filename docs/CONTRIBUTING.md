@@ -221,7 +221,7 @@ cd demo/symfony6 && docker-compose up -d
 
 ## Branching Policy
 
-For detailed information about branch naming conventions, workflow, and release process, see [docs/BRANCHING.md](docs/BRANCHING.md).
+For detailed information about branch naming conventions, workflow, and release process, see [BRANCHING.md](BRANCHING.md).
 
 ## Questions
 
