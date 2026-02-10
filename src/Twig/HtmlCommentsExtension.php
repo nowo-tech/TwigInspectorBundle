@@ -29,14 +29,14 @@ class HtmlCommentsExtension extends AbstractExtension
     /**
      * Constructor.
      *
-     * @param RequestStack          $requestStack             The request stack
-     * @param UrlGeneratorInterface $urlGenerator             The URL generator for template links
-     * @param BoxDrawings           $boxDrawings              The box-drawing character helper
+     * @param RequestStack          $requestStack              The request stack
+     * @param UrlGeneratorInterface $urlGenerator              The URL generator for template links
+     * @param BoxDrawings           $boxDrawings               The box-drawing character helper
      * @param array<string>         $enabledExtensions         Template extensions to inspect (e.g. ['.html.twig'])
-     * @param array<string>         $excludedTemplates        Template names or wildcard patterns to exclude
-     * @param array<string>         $excludedBlocks           Block names or wildcard patterns to exclude
+     * @param array<string>         $excludedTemplates         Template names or wildcard patterns to exclude
+     * @param array<string>         $excludedBlocks            Block names or wildcard patterns to exclude
      * @param string                $cookieName                Cookie name used to enable the inspector
-     * @param int                   $maxInjectionDepth        Max nesting depth for comments (0 = unlimited)
+     * @param int                   $maxInjectionDepth         Max nesting depth for comments (0 = unlimited)
      * @param array<string>         $excludedTemplatesRegex    Regex patterns for template exclusion
      * @param array<string>         $excludedTemplatesPrefixes Template name prefixes to exclude
      * @param array<string>         $excludedBlocksRegex       Regex patterns for block exclusion
@@ -241,7 +241,7 @@ class HtmlCommentsExtension extends AbstractExtension
     /**
      * Checks if a name matches any regex exclusion pattern.
      *
-     * @param string        $name   The name to check
+     * @param string        $name    The name to check
      * @param array<string> $regexes List of regex patterns
      *
      * @return bool True if excluded, false otherwise
