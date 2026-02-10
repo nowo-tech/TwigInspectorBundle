@@ -115,10 +115,10 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
     /**
      * Injects the main controller comment after <body>, after <html>, or at the start of the content.
      *
-     * @param Response $response     The response to modify
-     * @param string   $content      Current response content
-     * @param string   $controllerStr Controller string (e.g. FQCN::method)
-     * @param string|null $templateName Optional template path from the request attribute
+     * @param Response    $response      The response to modify
+     * @param string      $content       Current response content
+     * @param string      $controllerStr Controller string (e.g. FQCN::method)
+     * @param string|null $templateName  Optional template path from the request attribute
      */
     private function injectMainControllerComment(Response $response, string $content, string $controllerStr, ?string $templateName): void
     {
@@ -141,10 +141,10 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
     /**
      * Wraps fragment content (sub-request output) with start and end controller comments.
      *
-     * @param Response   $response     The response to modify
-     * @param string     $content      Fragment content (e.g. HTML from render(controller()))
-     * @param string     $controllerStr Controller string (e.g. FQCN::method)
-     * @param string|null $templateName Optional template path
+     * @param Response    $response      The response to modify
+     * @param string      $content       Fragment content (e.g. HTML from render(controller()))
+     * @param string      $controllerStr Controller string (e.g. FQCN::method)
+     * @param string|null $templateName  Optional template path
      */
     private function wrapFragmentWithComments(Response $response, string $content, string $controllerStr, ?string $templateName): void
     {
