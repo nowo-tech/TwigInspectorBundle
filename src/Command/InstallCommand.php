@@ -238,8 +238,16 @@ class InstallCommand extends Command
             return;
         }
 
-        // If routes.yaml exists, check if import is already there
-        $content = file_get_contents($routesFile);
+        // If routes.yaml exists, check if import is already there (suppress open warning so CI tests can assert graceful handling)
+        $suppressReadWarning = static function (int $errno, string $errstr): bool {
+            return $errno === E_WARNING && str_contains($errstr, 'Failed to open stream');
+        };
+        set_error_handler($suppressReadWarning, E_WARNING);
+        try {
+            $content = file_get_contents($routesFile);
+        } finally {
+            restore_error_handler();
+        }
         if (false === $content) {
             $io->warning('Could not read routes.yaml file.');
             $io->note('Please manually add the route import to config/routes.yaml:');

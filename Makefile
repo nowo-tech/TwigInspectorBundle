@@ -1,5 +1,10 @@
 # Makefile for Twig Inspector Bundle
-# Simplifies Docker commands for development
+# Simplifies Docker commands for development.
+# All dev targets (test, install, qa, etc.) use the root docker-compose.yml.
+
+COMPOSE_FILE := docker-compose.yml
+COMPOSE := docker-compose -f $(COMPOSE_FILE)
+SERVICE_PHP := php
 
 .PHONY: help up down shell install test test-coverage cs-check cs-fix qa clean setup-hooks test-up test-down test-shell build-assets build-assets-dev watch-assets clean-assets
 
@@ -30,33 +35,33 @@ help:
 	@echo "  clean-assets  Clean built assets"
 	@echo ""
 
-# Build and start container
+# Build and start container (root docker-compose)
 up:
-	docker-compose build
-	docker-compose up -d
+	$(COMPOSE) build
+	$(COMPOSE) up -d
 	@echo "Installing dependencies..."
-	docker-compose exec php composer install --no-interaction
+	$(COMPOSE) exec $(SERVICE_PHP) composer install --no-interaction
 	@echo "✅ Container ready!"
 
 # Stop container
 down:
-	docker-compose down
+	$(COMPOSE) down
 
 # Open shell in container
 shell:
-	docker-compose exec php sh
+	$(COMPOSE) exec $(SERVICE_PHP) sh
 
 # Install dependencies
 install:
-	docker-compose exec php composer install
+	$(COMPOSE) exec $(SERVICE_PHP) composer install
 
-# Run tests
+# Run tests (inside root docker-compose php service)
 test:
-	docker-compose exec php composer test
+	$(COMPOSE) exec $(SERVICE_PHP) composer test
 
 # Run tests with coverage
 test-coverage:
-	docker-compose exec php composer test-coverage
+	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage
 
 # Start test container
 test-up:
@@ -76,15 +81,15 @@ test-shell:
 
 # Check code style
 cs-check:
-	docker-compose exec php composer cs-check
+	$(COMPOSE) exec $(SERVICE_PHP) composer cs-check
 
 # Fix code style
 cs-fix:
-	docker-compose exec php composer cs-fix
+	$(COMPOSE) exec $(SERVICE_PHP) composer cs-fix
 
 # Run all QA
 qa:
-	docker-compose exec php composer qa
+	$(COMPOSE) exec $(SERVICE_PHP) composer qa
 
 # Clean vendor and cache
 clean:

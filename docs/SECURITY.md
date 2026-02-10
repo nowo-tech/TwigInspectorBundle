@@ -5,6 +5,17 @@
 - **Development tool only**: Twig Inspector is intended for development and debugging. Do not enable it in production; it injects HTML comments and exposes template paths.
 - **Template paths**: The overlay shows template names and links that open in your IDE. Ensure your IDE/open-controller URLs are not exposed to untrusted users when the inspector is enabled.
 
+## Bundle security measures
+
+The bundle includes measures to prevent path traversal and unauthorized access:
+
+- **Template name validation**: Rejects path traversal attempts (`..`), null bytes, and absolute paths
+- **File path verification**: Ensures resolved template paths are within allowed Twig template directories
+- **Parameter validation**: Line numbers must be positive integers
+- **Route restrictions**: Routes should only be available in `dev` and `test` environments
+
+Routes are restricted to `dev` and `test` (e.g. via `when@dev:` in `config/routes.yaml`). If routes are not available (e.g. in production), the bundle uses fallback URLs and does not throw "route does not exist". The route pattern allows slashes in template names; security validations in the controller prevent path traversal.
+
 ## Supported Versions
 
 | Version | Supported          |

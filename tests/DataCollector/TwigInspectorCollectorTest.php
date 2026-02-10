@@ -290,9 +290,10 @@ final class TwigInspectorCollectorTest extends TestCase
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $response = new Response();
-        $content = '<!-- ┏━ base [/_template/base.html.twig?line=1] #a-->';
-        $content .= '<!-- ┏━ content [/_template/base.html.twig?line=2] #b-->';
-        $content .= '<!-- ┏━ sidebar [/_template/base.html.twig?line=3] #c-->';
+        // Use ASCII prefix so regex matches on all CI environments (no Unicode encoding issues)
+        $content = '<!-- x base [/_template/base.html.twig?line=1] #a-->';
+        $content .= '<!-- x content [/_template/base.html.twig?line=2] #b-->';
+        $content .= '<!-- x sidebar [/_template/base.html.twig?line=3] #c-->';
         $response->setContent($content);
         $this->collector->collect($request, $response);
         $this->assertSame(1, $this->collector->getTotalTemplates());

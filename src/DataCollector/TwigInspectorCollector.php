@@ -109,25 +109,27 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
             return;
         }
 
-        // Extract template information from HTML comments
-        $pattern = '/<!--\s+([┏━╭─╔═┎─┗━╰─╚═┖─]+)\s+([^\s]+)\s+\[([^\]]+)\]\s+#(\w+)-->/';
+        // Extract template information from HTML comments (prefix: box-drawing \S+ or any non-space)
+        $pattern = '/<!--\s+\S+\s+([^\s]+)\s+\[([^\]]+)\]\s+#(\w+)-->/u';
         preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
 
         $templates = [];
         $blocks = [];
 
         foreach ($matches as $match) {
-            $name = $match[2];
-            $link = $match[3];
-            $id = $match[4];
+            $name = $match[1];
+            $link = $match[2];
+            $id = $match[3];
 
             // Extract template name from link
             if (preg_match('/\/_template\/([^?]+)/', $link, $linkMatch)) {
                 $templateName = urldecode($linkMatch[1]);
+                $templateBaseName = pathinfo($templateName, PATHINFO_FILENAME);
+                $templateNameFirstPart = strtok($templateName, '.');
 
                 // Determine if it's a template or a block
-                // Blocks have the same name as the template, templates have different names
-                if ($name === $templateName) {
+                // Template: name equals full template name, pathinfo filename (e.g. base.html), or first segment (e.g. base for base.html.twig)
+                if ($name === $templateName || $name === $templateBaseName || $name === $templateNameFirstPart) {
                     // It's a template
                     if (!isset($templates[$templateName])) {
                         $templates[$templateName] = [
