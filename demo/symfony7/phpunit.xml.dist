@@ -15,7 +15,7 @@
 
         <!-- ###+ symfony/framework-bundle ### -->
         <env name="APP_ENV" value="test"/>
-        <env name="APP_SECRET" value="33667f84fd818ddb05eb22f99fd20b84"/>
+        <env name="APP_SECRET" value="test_secret_do_not_use_in_prod"/>
         <!-- ###- symfony/framework-bundle ### -->
 
         <!-- ###+ symfony/routing ### -->
