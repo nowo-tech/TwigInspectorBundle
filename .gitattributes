@@ -24,3 +24,35 @@
 *.ttf binary
 *.eot binary
 
+# Composer
+/composer.lock export-ignore
+
+# CI / QA
+/.github export-ignore
+/.php-cs-fixer.dist.php export-ignore
+/phpunit.xml.dist export-ignore
+/tests export-ignore
+
+# Development / Demos
+/demo export-ignore
+/docker-compose.yml export-ignore
+/docker-compose.test.yml export-ignore
+/Dockerfile export-ignore
+/Makefile export-ignore
+/.symfony export-ignore
+
+# Frontend source (dist is in src/Resources/assets/dist)
+/src/Resources/assets/src export-ignore
+/vite.config.ts export-ignore
+/tsconfig.json export-ignore
+/package.json export-ignore
+/package-lock.json export-ignore
+/pnpm-lock.yaml export-ignore
+
+# Documentation
+/docs export-ignore
+
+# Misc
+/.editorconfig export-ignore
+/.gitignore export-ignore
+/.gitattributes export-ignore

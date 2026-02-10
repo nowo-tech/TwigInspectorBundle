@@ -3,7 +3,6 @@
 
 # Define available demos
 DEMOS := symfony6 symfony7 symfony8
-DEMO_DIRS := $(addprefix demo-,$(DEMOS))
 
 # Helper function to get port from .env file (defaults to 8001)
 get-port = $(shell grep -E '^PORT=' $(1)/.env 2>/dev/null | cut -d '=' -f2 || echo "8001")
@@ -60,10 +59,10 @@ help:
 	@echo "Access URLs:"
 	@for demo in $(DEMOS); do \
 		version=$$(echo $$demo | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
-		if [ -f demo-$$demo/.env ]; then \
-			port=$$(grep -E '^PORT=' demo-$$demo/.env 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
-		elif [ -f demo-$$demo/.env.example ]; then \
-			port=$$(grep -E '^PORT=' demo-$$demo/.env.example 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
+		if [ -f $$demo/.env ]; then \
+			port=$$(grep -E '^PORT=' $$demo/.env 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
+		elif [ -f $$demo/.env.example ]; then \
+			port=$$(grep -E '^PORT=' $$demo/.env.example 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
 		else \
 			port=8001; \
 		fi; \
@@ -76,7 +75,7 @@ define up-target-template
 up-$(1):
 	@VERSION=$$$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
 	echo "🚀 Starting $$$$VERSION demo..."; \
-	cd demo-$(1) && \
+	cd $(1) && \
 	if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || true; fi && \
 	PORT=$$$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
 	echo "🔍 Checking port $$$$PORT..."; \
@@ -112,7 +111,7 @@ define down-target-template
 down-$(1):
 	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
 	echo "🛑 Stopping $$VERSION demo..."; \
-	cd demo-$(1) && docker-compose down; \
+	cd $(1) && docker-compose down; \
 	echo "✅ $$VERSION demo stopped!"
 endef
 
@@ -121,7 +120,7 @@ define install-target-template
 install-$(1):
 	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
 	echo "📦 Installing $$VERSION dependencies..."; \
-	cd demo-$(1) && docker-compose exec php composer install || \
+	cd $(1) && docker-compose exec php composer install || \
 		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
 		CONTAINER=$$(docker ps --format "{{.Names}}" --filter "publish=$$PORT" 2>/dev/null | head -1); \
 		if [ -n "$$CONTAINER" ]; then \
@@ -135,13 +134,13 @@ endef
 # Generate shell targets for each demo
 define shell-target-template
 shell-$(1):
-	@cd demo-$(1) && docker-compose exec php sh
+	@cd $(1) && docker-compose exec php sh
 endef
 
 # Generate logs targets for each demo
 define logs-target-template
 logs-$(1):
-	@cd demo-$(1) && docker-compose logs -f
+	@cd $(1) && docker-compose logs -f
 endef
 
 # Generate test targets for each demo
@@ -149,7 +148,7 @@ define test-target-template
 test-$(1):
 	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
 	echo "🧪 Running $$VERSION tests..."; \
-	cd demo-$(1) && docker-compose exec php composer test || \
+	cd $(1) && docker-compose exec php composer test || \
 		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
 		CONTAINER=$$(docker ps --format "{{.Names}}" --filter "publish=$$PORT" 2>/dev/null | head -1); \
 		if [ -n "$$CONTAINER" ]; then \
@@ -164,7 +163,7 @@ define test-coverage-target-template
 test-coverage-$(1):
 	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
 	echo "🧪 Running $$VERSION tests with coverage..."; \
-	cd demo-$(1) && docker-compose exec php composer test-coverage || \
+	cd $(1) && docker-compose exec php composer test-coverage || \
 		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
 		CONTAINER=$$(docker ps --format "{{.Names}}" --filter "publish=$$PORT" 2>/dev/null | head -1); \
 		if [ -n "$$CONTAINER" ]; then \
@@ -263,7 +262,7 @@ define verify-target-template
 verify-$(1):
 	@VERSION=$$$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
 	echo "🔍 Verifying $$$$VERSION demo..."; \
-	cd demo-$(1) && \
+	cd $(1) && \
 	if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || true; fi && \
 	PORT=$$$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
 	echo "🔍 Checking port $$$$PORT..."; \
@@ -333,10 +332,10 @@ verify-all:
 		for demo in $(DEMOS); do \
 			if echo "$$FAILED_DEMOS" | grep -qv "$$demo"; then \
 				VERSION=$$(echo $$demo | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
-				if [ -f demo-$$demo/.env ]; then \
-					PORT=$$(grep -E '^PORT=' demo-$$demo/.env 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
-				elif [ -f demo-$$demo/.env.example ]; then \
-					PORT=$$(grep -E '^PORT=' demo-$$demo/.env.example 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
+				if [ -f $$demo/.env ]; then \
+					PORT=$$(grep -E '^PORT=' $$demo/.env 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
+				elif [ -f $$demo/.env.example ]; then \
+					PORT=$$(grep -E '^PORT=' $$demo/.env.example 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
 				else \
 					PORT=8001; \
 				fi; \
@@ -350,10 +349,10 @@ verify-all:
 		echo "Access URLs:"; \
 		for demo in $(DEMOS); do \
 			VERSION=$$(echo $$demo | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
-			if [ -f demo-$$demo/.env ]; then \
-				PORT=$$(grep -E '^PORT=' demo-$$demo/.env 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
-			elif [ -f demo-$$demo/.env.example ]; then \
-				PORT=$$(grep -E '^PORT=' demo-$$demo/.env.example 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
+			if [ -f $$demo/.env ]; then \
+				PORT=$$(grep -E '^PORT=' $$demo/.env 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
+			elif [ -f $$demo/.env.example ]; then \
+				PORT=$$(grep -E '^PORT=' $$demo/.env.example 2>/dev/null | cut -d '=' -f2 | head -1 || echo "8001"); \
 			else \
 				PORT=8001; \
 			fi; \
@@ -376,5 +375,5 @@ check-all: verify-all
 # Clean vendor and cache from all demos
 clean:
 	@echo "🧹 Cleaning vendor and cache from all demos..."
-	@$(foreach demo,$(DEMOS),rm -rf demo-$(demo)/vendor demo-$(demo)/var demo-$(demo)/.phpunit.cache;)
+	@$(foreach demo,$(DEMOS),rm -rf $(demo)/vendor $(demo)/var $(demo)/.phpunit.cache;)
 	@echo "✅ Cleaned!"

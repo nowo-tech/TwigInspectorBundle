@@ -1,24 +1,24 @@
 # Symfony demo projects
-demo-symfony6/vendor/
-demo-symfony6/var/
-demo-symfony6/.env.local
-demo-symfony6/.env.local.php
-demo-symfony6/.env.*.local
-demo-symfony6/config/secrets/
-demo-symfony6/.phpunit.cache/
+symfony6/vendor/
+symfony6/var/
+symfony6/.env.local
+symfony6/.env.local.php
+symfony6/.env.*.local
+symfony6/config/secrets/
+symfony6/.phpunit.cache/
 
-demo-symfony7/vendor/
-demo-symfony7/var/
-demo-symfony7/.env.local
-demo-symfony7/.env.local.php
-demo-symfony7/.env.*.local
-demo-symfony7/config/secrets/
-demo-symfony7/.phpunit.cache/
+symfony7/vendor/
+symfony7/var/
+symfony7/.env.local
+symfony7/.env.local.php
+symfony7/.env.*.local
+symfony7/config/secrets/
+symfony7/.phpunit.cache/
 
-demo-symfony8/vendor/
-demo-symfony8/var/
-demo-symfony8/.env.local
-demo-symfony8/.env.local.php
-demo-symfony8/.env.*.local
-demo-symfony8/config/secrets/
-demo-symfony8/.phpunit.cache/
+symfony8/vendor/
+symfony8/var/
+symfony8/.env.local
+symfony8/.env.local.php
+symfony8/.env.*.local
+symfony8/config/secrets/
+symfony8/.phpunit.cache/

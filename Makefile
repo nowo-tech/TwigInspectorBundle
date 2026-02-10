@@ -103,26 +103,26 @@ setup-hooks:
 # Build assets (TypeScript and SCSS)
 build-assets:
 	@echo "Building assets..."
-	npm install
-	npm run build
+	pnpm install
+	pnpm run build
 	@echo "✅ Assets built!"
 
 # Build assets in development mode
 build-assets-dev:
 	@echo "Building assets in development mode..."
-	npm install
-	npm run build:dev
+	pnpm install
+	pnpm run build:dev
 	@echo "✅ Assets built!"
 
-# Watch assets for changes
+# Watch assets for changes (Vite watch)
 watch-assets:
 	@echo "Watching assets for changes..."
-	npm install
-	npm run watch
+	pnpm install
+	pnpm run watch
 
 # Clean built assets
 clean-assets:
 	@echo "Cleaning built assets..."
-	npm run clean
+	pnpm run clean
 	@echo "✅ Assets cleaned!"
 

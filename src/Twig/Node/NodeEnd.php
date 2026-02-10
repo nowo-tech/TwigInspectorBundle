@@ -9,7 +9,7 @@ use Twig\Compiler;
 use Twig\Node\Node;
 
 /**
- * Modify generated Twig template to call the `end` method of HtmlCommentsExtension extension.
+ * Twig AST node that compiles to a call to HtmlCommentsExtension::end() with the same NodeReference.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
@@ -20,7 +20,7 @@ class NodeEnd extends Node
     /**
      * Constructor.
      *
-     * @param string $varName The variable name
+     * @param string $varName Variable name of the extension instance (must match NodeStart)
      */
     public function __construct(string $varName)
     {
@@ -28,9 +28,9 @@ class NodeEnd extends Node
     }
 
     /**
-     * Compiles the node.
+     * Compiles the node to PHP that calls the extension's end() with the stored NodeReference.
      *
-     * @param Compiler $compiler The Twig compiler
+     * @param Compiler $compiler Twig compiler
      *
      * @return void
      */

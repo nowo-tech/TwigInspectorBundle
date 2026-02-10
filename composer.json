@@ -1,6 +1,6 @@
 {
     "name": "nowo-tech/twig-inspector-bundle",
-    "description": "Symfony bundle for debugging and inspecting Twig templates in the browser. Visual overlay showing which templates render HTML elements, click to open in IDE, Web Profiler integration, development tool",
+    "description": "Debug Twig templates in the browser: visual overlay, click-to-open in IDE, Web Profiler. Symfony 6|7|8.",
     "type": "symfony-bundle",
     "license": "MIT",
     "keywords": [
@@ -23,12 +23,15 @@
         "symfony-profiler",
         "ide-integration",
         "template-finder",
-        "block-inspector"
+        "block-inspector",
+        "symfony-flex"
     ],
     "homepage": "https://github.com/nowo-tech/twig-inspector-bundle",
     "support": {
         "issues": "https://github.com/nowo-tech/twig-inspector-bundle/issues",
-        "source": "https://github.com/nowo-tech/twig-inspector-bundle"
+        "source": "https://github.com/nowo-tech/twig-inspector-bundle",
+        "docs": "https://github.com/nowo-tech/twig-inspector-bundle/tree/main/docs",
+        "changelog": "https://github.com/nowo-tech/twig-inspector-bundle/blob/main/docs/CHANGELOG.md"
     },
     "authors": [
         {
@@ -93,5 +96,8 @@
         "cs-check": "Check code style with PHP-CS-Fixer",
         "cs-fix": "Fix code style with PHP-CS-Fixer",
         "qa": "Run all quality assurance checks"
+    },
+    "suggest": {
+        "symfony/flex": "For automatic recipe installation (config and routes)"
     }
 }

@@ -1,27 +1,281 @@
 {% extends '@WebProfiler/Profiler/layout.html.twig' %}
 
+{% block head %}
+    {{ parent() }}
+    <style>
+        /* Twig Inspector toolbar: use only Symfony defaults (table-row + b/span). Minimal overrides for form elements. */
+        .sf-toolbar-block .sf-toolbar-info-piece-twig-inspector-header span { font-weight: normal; line-height: 1.35; }
+        .sf-toolbar-block .sf-toolbar-info-piece-twig-inspector-toggle label { cursor: pointer; }
+        .sf-toolbar-block .sf-toolbar-info-piece-twig-inspector-toggle .sf-toolbar-label { color: var(--sf-toolbar-gray-400, #a3a3a3); }
+        .sf-toolbar-block .sf-toolbar-info-piece-twig-inspector-filter .sf-toolbar-info-piece-twig-inspector-filter-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+        #_twig_inspector__filter { flex: 1; min-width: 0; }
+        #_twig_inspector__filter input { width: 100%; box-sizing: border-box; font: 11px var(--sf-toolbar-font-family-system, system-ui, sans-serif); padding: 2px 4px; margin: 0; border: 1px solid var(--sf-toolbar-gray-500, #737373); border-radius: 4px; background: var(--sf-toolbar-gray-800, #262626); color: var(--sf-toolbar-gray-100, #f5f5f5); }
+        #_twig_inspector__filter input::placeholder { color: var(--sf-toolbar-gray-500, #737373); }
+        #_twig_inspector__filter input:focus { outline: none; border-color: var(--sf-toolbar-gray-400, #a3a3a3); }
+        .sf-toolbar-block .sf-toolbar-info-piece-twig-inspector-filter button { flex-shrink: 0; font: 11px var(--sf-toolbar-font-family-system, system-ui, sans-serif); padding: 2px 5px; margin: 0; border: 1px solid var(--sf-toolbar-gray-500, #737373); border-radius: 4px; background: transparent; color: var(--sf-toolbar-gray-300, #d4d4d4); cursor: pointer; line-height: 1.2; }
+        .sf-toolbar-block .sf-toolbar-info-piece-twig-inspector-filter button:hover { background: var(--sf-toolbar-gray-600, #525252); color: var(--sf-toolbar-gray-100, #f5f5f5); border-color: var(--sf-toolbar-gray-400, #a3a3a3); }
+        .sf-toolbar-block .sf-toolbar-info-piece-twig-inspector-hint span { font-size: 11px; color: var(--sf-toolbar-gray-400, #a3a3a3); }
+        /* Panel tabs */
+        .twig-inspector-tabs { margin-top: 1em; }
+        .twig-inspector-tabs .twig-inspector-tab-radio { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+        .twig-inspector-tab-list { display: flex; flex-wrap: wrap; gap: 0 4px; border-bottom: 1px solid #ddd; margin-bottom: 1em; padding-bottom: 0; }
+        .theme-dark .twig-inspector-tab-list { border-bottom-color: #555; }
+        .twig-inspector-tab-list label { display: inline-block; padding: 6px 12px 8px; font-size: 13px; cursor: pointer; color: #666; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+        .twig-inspector-tab-list label:hover { color: #333; }
+        .theme-dark .twig-inspector-tab-list label { color: #999; }
+        .theme-dark .twig-inspector-tab-list label:hover { color: #e0e0e0; }
+        #tab-how-to-use:checked ~ .twig-inspector-tab-list label[for="tab-how-to-use"],
+        #tab-templates:checked ~ .twig-inspector-tab-list label[for="tab-templates"],
+        #tab-blocks:checked ~ .twig-inspector-tab-list label[for="tab-blocks"],
+        #tab-config:checked ~ .twig-inspector-tab-list label[for="tab-config"],
+        #tab-tips:checked ~ .twig-inspector-tab-list label[for="tab-tips"] { color: #3d8ee0; font-weight: 600; border-bottom-color: #3d8ee0; }
+        .theme-dark #tab-how-to-use:checked ~ .twig-inspector-tab-list label[for="tab-how-to-use"],
+        .theme-dark #tab-templates:checked ~ .twig-inspector-tab-list label[for="tab-templates"],
+        .theme-dark #tab-blocks:checked ~ .twig-inspector-tab-list label[for="tab-blocks"],
+        .theme-dark #tab-config:checked ~ .twig-inspector-tab-list label[for="tab-config"],
+        .theme-dark #tab-tips:checked ~ .twig-inspector-tab-list label[for="tab-tips"] { color: #5a9fd4; border-bottom-color: #5a9fd4; }
+        .twig-inspector-tab-panel { display: none !important; }
+        .twig-inspector-tabs .twig-inspector-tab-panel.is-active { display: block !important; }
+        #tab-how-to-use:checked ~ #panel-how-to-use.twig-inspector-tab-panel,
+        #tab-templates:checked ~ #panel-templates.twig-inspector-tab-panel,
+        #tab-blocks:checked ~ #panel-blocks.twig-inspector-tab-panel,
+        #tab-config:checked ~ #panel-config.twig-inspector-tab-panel,
+        #tab-tips:checked ~ #panel-tips.twig-inspector-tab-panel { display: block !important; }
+        .twig-inspector-tips-list { margin: 0.5em 0 1em 1.2em; }
+        .twig-inspector-tips-list li { margin-bottom: 0.35em; }
+        .twig-inspector-tool-card { border: 1px solid #ddd; border-radius: 6px; padding: 10px 12px; margin-bottom: 10px; background: #fafafa; }
+        .theme-dark .twig-inspector-tool-card { border-color: #555; background: #2a2a2a; }
+        .twig-inspector-tool-card h4 { margin: 0 0 4px 0; font-size: 14px; }
+        .twig-inspector-tool-card p { margin: 0 0 6px 0; font-size: 12px; line-height: 1.4; }
+        .twig-inspector-tool-card a { font-size: 12px; }
+        .theme-dark .twig-inspector-tool-card a { color: #5a9fd4; }
+    </style>
+{% endblock %}
+
+{% block menu %}
+    <span class="label">
+        <span class="icon">{{ source('@NowoTwigInspector/Icon/twig-inspector.svg') }}</span>
+        <strong>Twig Inspector</strong>
+    </span>
+{% endblock %}
+
 {% block toolbar %}
   {% set isActive = app.request.cookies.getBoolean('twig_inspector_is_active', false) %}
   {% set icon %}
-    <span class="icon">&lt;/&gt;</span>
+    <span class="icon">{{ source('@NowoTwigInspector/Icon/twig-inspector.svg') }}</span>
+    {% if collector.enabled %}
+      <span class="sf-toolbar-value">{{ collector.totalTemplates }}</span>
+      <span class="sf-toolbar-label">tpl</span>
+    {% endif %}
   {% endset %}
 
   {% set text %}
-    <div class="sf-toolbar-info-piece">
-      <b>Twig Inspector</b>
-      <span></span>
+    <div class="sf-toolbar-info-piece sf-toolbar-info-piece-twig-inspector-link">
+      <span><a href="{{ path('_profiler', {token: token, panel: name}) }}">View full panel →</a></span>
     </div>
-    <div class="sf-toolbar-info-piece">
-      <input type="checkbox" id="_twig_inspector__status"{% if isActive %} checked{% endif %}>
-      <label for="_twig_inspector__status"><span>enable (will reload the page)</span></label>
+    <div class="sf-toolbar-info-piece sf-toolbar-info-piece-twig-inspector-toggle">
+      <b>Enable</b>
+      <span><input type="checkbox" id="_twig_inspector__status"{% if isActive %} checked{% endif %}> <label for="_twig_inspector__status">inspector <span class="sf-toolbar-label">(reloads page)</span></label></span>
+    </div>
+    <div class="sf-toolbar-info-piece sf-toolbar-info-piece-twig-inspector-filter">
+      <b>Filter</b>
+      <span class="sf-toolbar-info-piece-twig-inspector-filter-row">
+        <span id="_twig_inspector__filter"></span>
+        <button type="button" id="_twig_inspector__rescan" title="Re-scan the page for Twig comments (e.g. after AJAX)">Rescan DOM</button>
+      </span>
+    </div>
+    <div class="sf-toolbar-info-piece sf-toolbar-info-piece-twig-inspector-hint">
+      <b>Shortcuts</b>
+      <span>{{ collector.config.keyboard_shortcut|default('Ctrl+Shift+T') }} toggle · Ctrl+Shift+R rescan · Esc close</span>
     </div>
   {% endset %}
+  {% set block_attrs = (block_attrs|default('')) ~ ' title="Click to toggle overlay: green = on, yellow = off"' %}
   {{ include('@NowoTwigInspector/Collector/toolbar_item.html.twig') }}
+  <script>
+    window.__twig_inspector_config = {{ collector.config|json_encode|raw }};
+  </script>
   <script>
     {{ include('@NowoTwigInspector/assets/dist/index.min.js') }}
   </script>
-  <style>
-    {{ include('@NowoTwigInspector/assets/dist/style.min.css') }}
-  </style>
 {% endblock %}
 
+{% block panel %}
+  <h2>Twig Inspector</h2>
+  {% if not collector.enabled %}
+    <p><em>Enable the inspector in the toolbar to see metrics and template times.</em></p>
+  {% else %}
+    <div class="twig-inspector-tabs">
+      <input type="radio" name="ti-tab" id="tab-how-to-use" class="twig-inspector-tab-radio" checked>
+      <input type="radio" name="ti-tab" id="tab-templates" class="twig-inspector-tab-radio">
+      <input type="radio" name="ti-tab" id="tab-blocks" class="twig-inspector-tab-radio">
+      <input type="radio" name="ti-tab" id="tab-tips" class="twig-inspector-tab-radio">
+      <input type="radio" name="ti-tab" id="tab-config" class="twig-inspector-tab-radio">
+      <div class="twig-inspector-tab-list">
+        <label for="tab-how-to-use">How to use</label>
+        <label for="tab-templates">Templates</label>
+        <label for="tab-blocks">Blocks</label>
+        <label for="tab-tips">Tips &amp; tools</label>
+        <label for="tab-config">Configuration example</label>
+      </div>
+
+      <div id="panel-how-to-use" class="twig-inspector-tab-panel">
+        <h3>How to use the overlay</h3>
+        <ol class="twig-inspector-tips-list" style="list-style: decimal;">
+          <li><strong>Enable</strong> the inspector with the checkbox in the toolbar dropdown, then <strong>reload</strong> the page.</li>
+          <li><strong>Click the <code>&lt;/&gt;</code> icon</strong> in the toolbar so it turns <strong>green</strong> — the overlay is now on.</li>
+          <li><strong>Move the mouse</strong> over the page: each element under the cursor gets a <strong>blue highlight</strong> and a <strong>popup</strong> with the template name(s) that rendered it.</li>
+          <li><strong>Click an element</strong> to open that template in your IDE (or pick one if several templates apply).</li>
+          <li>Click the icon again (it turns <strong>yellow</strong>) to <strong>hide</strong> the overlay without disabling the inspector.</li>
+        </ol>
+        <p><em>Summary:</em> Green icon = overlay on (hover shows highlight + popup). Yellow icon = overlay off (click icon to turn it green again).</p>
+      </div>
+
+      <div id="panel-templates" class="twig-inspector-tab-panel">
+        <h3>Template render times</h3>
+        {% set template_times = collector.templateTimes %}
+        {% if template_times is empty %}
+          <p><em>No template timing data (Twig profiler may be disabled).</em></p>
+        {% else %}
+          <table>
+            <thead>
+              <tr>
+                <th>Template</th>
+                <th>Time (ms)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for name, ms in template_times %}
+                <tr>
+                  <td>{{ name }}</td>
+                  <td>{{ "%.2f"|format(ms) }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+        <h3>Templates ({{ collector.totalTemplates }})</h3>
+        {% if collector.templates is empty %}
+          <p><em>No template data for this request.</em></p>
+        {% else %}
+          <table>
+            <thead>
+              <tr>
+                <th>Template</th>
+                <th>Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for t in collector.templates %}
+                <tr>
+                  <td>{{ t.name }}</td>
+                  <td>{{ t.count }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      </div>
+
+      <div id="panel-blocks" class="twig-inspector-tab-panel">
+        <h3>Blocks ({{ collector.totalBlocks }})</h3>
+        {% if collector.blocks is empty %}
+          <p><em>No block data for this request.</em></p>
+        {% else %}
+          <table>
+            <thead>
+              <tr>
+                <th>Template</th>
+                <th>Block</th>
+                <th>Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for b in collector.blocks %}
+                <tr>
+                  <td>{{ b.template }}</td>
+                  <td>{{ b.name }}</td>
+                  <td>{{ b.count }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% endif %}
+      </div>
+
+      <div id="panel-tips" class="twig-inspector-tab-panel">
+        <h3>Twig: what to use when</h3>
+        <p>Summary of when to use each construct and what performs best.</p>
+        <ul class="twig-inspector-tips-list">
+          <li><strong><code>include</code></strong> <a href="https://twig.symfony.com/doc/3.x/tags/include.html" target="_blank" rel="noopener noreferrer">docs</a> — Reusable fragment without inheritance. Best performance when you don't need to override blocks. Use <code>only</code> to pass only the variables you need and avoid context leakage.</li>
+          <li><strong><code>embed</code></strong> <a href="https://twig.symfony.com/doc/3.x/tags/embed.html" target="_blank" rel="noopener noreferrer">docs</a> — Like <code>include</code> but allows overriding blocks in the included template. Heavier than <code>include</code>; use only when you need to redefine blocks.</li>
+          <li><strong><code>extends</code></strong> <a href="https://twig.symfony.com/doc/3.x/tags/extends.html" target="_blank" rel="noopener noreferrer">docs</a> — Layout inheritance (once per template). Ideal for base + pages; avoid long inheritance chains (more than 2–3 levels).</li>
+          <li><strong><code>block</code> / <code>{{ 'block()' }}</code></strong> <a href="https://twig.symfony.com/doc/3.x/tags/block.html" target="_blank" rel="noopener noreferrer">docs</a> — Defines or outputs the parent content. Don't overuse blocks; many nested blocks can hurt performance.</li>
+          <li><strong><code>set</code></strong> <a href="https://twig.symfony.com/doc/3.x/tags/set.html" target="_blank" rel="noopener noreferrer">docs</a> — Local variables. Prefer <code>{{ '{% set x = value %}' }}</code> over recalculating in the template; for default values in a block use <code>{{ '{% set x = x|default(...) %}' }}</code> or the <code>default</code> filter in output.</li>
+          <li><strong><code>macro</code></strong> <a href="https://twig.symfony.com/doc/3.x/tags/macro.html" target="_blank" rel="noopener noreferrer">docs</a> — Reusable functions inside a template. Useful for fragments with repeated logic that don't warrant an <code>include</code>; they don't replace reusable components across files (use <code>include</code> there).</li>
+          <li><strong>Filters in loops</strong> — Use <code>|batch</code> <a href="https://twig.symfony.com/doc/3.x/filters/batch.html" target="_blank" rel="noopener noreferrer">docs</a>, <code>|slice</code> <a href="https://twig.symfony.com/doc/3.x/filters/slice.html" target="_blank" rel="noopener noreferrer">docs</a>, etc. sparingly; for large sets, consider pagination or limiting in the controller.</li>
+        </ul>
+
+        <h3>Performance</h3>
+        <ul class="twig-inspector-tips-list">
+          <li>Rough order (lightest → heaviest): <code>include</code> with <code>only</code> &lt; <code>include</code> &lt; <code>embed</code> &lt; inheritance with many <code>{{ 'block()' }}</code>.</li>
+          <li>Enable Twig cache in production; avoid debugging or extending on the fly in prod.</li>
+          <li>Reduce the number of templates included per page when possible (combine small fragments into one where it makes sense).</li>
+        </ul>
+
+        <h3>Analysis tools (PHP CS Fixer / Rector style for Twig)</h3>
+        <p>To check style, rules and best practices in your templates:</p>
+
+        <div class="twig-inspector-tool-card">
+          <h4>twigcs (FriendsOfTwig/twigcs)</h4>
+          <p>Linter for Twig style and rules. Detects uppercase variables, forbidden functions, trailing spaces, unused macros/variables, etc. Does not auto-fix; ideal for CI and pre-commit.</p>
+          <p><strong>Usage:</strong> <code>composer require --dev friendsoftwig/twigcs</code>, then <code>vendor/bin/twigcs templates/</code>. Config via <code>.twigcs.php</code> or <code>twigcs.xml</code>.</p>
+          <a href="https://github.com/friendsoftwig/twigcs" target="_blank" rel="noopener noreferrer">GitHub: friendsoftwig/twigcs →</a>
+        </div>
+
+        <div class="twig-inspector-tool-card">
+          <h4>Twig CS Fixer (VincentLanglet/Twig-CS-Fixer)</h4>
+          <p>Automatically fixes Twig style issues (formatting, spacing, quotes, indentation, <code>include</code> usage, etc.). Designed to integrate into your pipeline (CI) or on save.</p>
+          <p><strong>Usage:</strong> install and run over directories; config in <code>.twig-cs-fixer.php</code>. Used by Symfony, Drupal, PrestaShop.</p>
+          <a href="https://github.com/VincentLanglet/Twig-CS-Fixer" target="_blank" rel="noopener noreferrer">GitHub: VincentLanglet/Twig-CS-Fixer →</a>
+        </div>
+
+        <p style="margin-top:12px;font-size:12px;color:#666;">Recommendation: use <strong>twigcs</strong> in CI to fail on violations and <strong>Twig CS Fixer</strong> to auto-fix style (or in pre-commit).</p>
+      </div>
+
+      <div id="panel-config" class="twig-inspector-tab-panel">
+        <h3>Configuration example</h3>
+        <p>This is the full default config for the bundle. Copy the block below into <code>config/packages/dev/nowo_twig_inspector.yaml</code> (create the file if needed) to customize which templates/blocks are tracked, the overlay theme, keyboard shortcut, etc. You can then commit this file so your team shares the same settings.</p>
+        <pre style="font-size:11px;max-height:200px;overflow:auto;background:#f5f5f5;padding:8px;">nowo_twig_inspector:
+    excluded_templates: []      # e.g. ['admin/*', 'email/*.html.twig']
+    excluded_blocks: []          # e.g. ['javascript', 'head_*']
+    excluded_templates_regex: [] # e.g. ['/^email\\\\//']
+    excluded_templates_prefixes: [] # e.g. ['@Admin/', 'components/']
+    excluded_blocks_regex: []
+    max_injection_depth: 0
+    overlay_theme: light        # or dark, auto
+    overlay_compact: false
+    reduced_motion: false
+    keyboard_shortcut: 'Ctrl+Shift+T'</pre>
+      </div>
+    </div>
+    <script>
+      (function() {
+        var wrapper = document.querySelector('.twig-inspector-tabs');
+        if (!wrapper) return;
+        var panels = wrapper.querySelectorAll('.twig-inspector-tab-panel');
+        var radios = wrapper.querySelectorAll('.twig-inspector-tab-radio');
+        function show(i) {
+          panels.forEach(function(p, j) { p.classList.toggle('is-active', j === i); });
+          if (radios[i]) radios[i].checked = true;
+        }
+        wrapper.querySelectorAll('.twig-inspector-tab-list label').forEach(function(label, i) {
+          label.addEventListener('click', function() { show(i); });
+        });
+        radios.forEach(function(radio, i) {
+          radio.addEventListener('change', function() { show(i); });
+        });
+        show(0);
+      })();
+    </script>
+  {% endif %}
+{% endblock %}

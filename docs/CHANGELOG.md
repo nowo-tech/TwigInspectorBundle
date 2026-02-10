@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.10] - 2025-02-10
+
+### Added
+- **Screenshots**: Added three screenshots to the README (overlay tooltip, toolbar dropdown, DevTools HTML comments); images live in `docs/img/`
+- **Documentation**: [USAGE.md](USAGE.md) — step-by-step overlay usage, filter, shortcuts, troubleshooting
+- **Panel**: New “How to use” tab in the collector panel (first tab by default) with overlay instructions; “How to use” text removed from toolbar dropdown
+- **Filter**: Filter by template **path** (link) as well as name; **comma-separated** terms (OR) for multiple templates; persistent highlight frames when filter is active
+- **Demos**: Demo templates split into multiple Twig files (layout + partials) to better showcase the filter and overlay
+- **Tests**: Vitest + jsdom for frontend; `blockMatchesFilter()` unit tests; `getAllBlocks()` in BlockStorage for filter highlights
+- **Toolbar**: Icon title/tooltip “Click to toggle overlay: green = on, yellow = off”
+
+### Fixed
+- **Template timing**: Collector now uses `Symfony\Bridge\Twig\Extension\ProfilerExtension` when present so “template timing” data appears in the panel (was only checking Twig’s `ProfilerExtension`)
+
+### Changed
+- **README**: Usage section expanded with icon states (green/yellow), screenshots section, link to USAGE.md
+- **INSTALLATION.md**: Verify step mentions green icon; link to USAGE.md for full overlay flow
+- **Toolbar dropdown**: Simplified (removed long “How to use” block; instructions moved to panel tab)
+
+## [Unreleased]
+
+### Added
+- **Documentation**: [INSTALLATION.md](INSTALLATION.md) — step-by-step install (Flex and manual), routes, IDE setup
+- **Documentation**: [ROADMAP.md](ROADMAP.md) — vision, 1.x focus, current status of future ideas, and new ideas (overlay UX, fragments, profiler export, etc.)
+- **README**: Table of contents, quick search terms section, and documentation index table
+- **README**: Packagist downloads badge, PHP and Symfony version badges; link to install from Packagist and Security doc
+- **composer.json**: `support.docs` and `support.changelog` for Packagist; shorter description; `suggest.symfony/flex`; keyword `symfony-flex`
+- **Configuration**: `max_injection_depth` (0 = unlimited) to limit comment injection depth; `excluded_templates_regex`, `excluded_templates_prefixes`, `excluded_blocks_regex` for regex/namespace-style exclusions
+- **Configuration**: `overlay_theme` (light/dark/auto), `overlay_compact`, `reduced_motion`, `keyboard_shortcut` (e.g. Ctrl+Shift+T) for overlay and accessibility
+- **Web Profiler**: Template render times (ms per template) from Twig profiler; panel shows template times, templates, blocks, and an “Export config snippet” section
+- **Frontend**: Dark theme and compact tooltip (SCSS); config passed via `window.__twig_inspector_config`; keyboard shortcut to toggle inspector; filter by template name; Rescan DOM button and Ctrl+Shift+R; reduced-motion support
+- **IDE**: Cursor and JetBrains Fleet examples in [INSTALLATION.md](INSTALLATION.md)
+- **Demos**: `APP_ENV=dev` in docker-compose (symfony6, symfony7, symfony8) so `nowo:twig-inspector:install` is available in the container; README note when the command is not found
+
+### Changed
+- **README**: Consolidated testing and CI/CD sections; clearer links to Security and Installation docs
+- **TwigInspectorCollector**: Implements `LateDataCollectorInterface`, injects Twig environment and config; exposes `getTemplateTimes()` and `getConfig()`; uses configurable cookie name
+- **HtmlCommentsExtension**: New constructor args for max depth and regex/prefix exclusions; skips injection when over max depth
+
 ## [1.0.9] - 2025-01-26
 
 ### Fixed

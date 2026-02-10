@@ -12,27 +12,35 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Extension\AbstractExtension;
 
 /**
- * Adds comments before and after every Twig block and template.
+ * Twig extension that injects HTML comments before and after every block and template.
+ * Comments contain template name, link, and a unique id for the inspector overlay.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
  */
 class HtmlCommentsExtension extends AbstractExtension
 {
+    /** @var string|null Last wrapped content (used to detect nested blocks and update box style) */
     private ?string $previousContent = null;
 
+    /** @var int Current nesting level for box-drawing style */
     private int $nestingLevel = 0;
 
     /**
      * Constructor.
      *
-     * @param RequestStack          $requestStack      The request stack
-     * @param UrlGeneratorInterface $urlGenerator      The URL generator
-     * @param BoxDrawings           $boxDrawings       The box drawings helper
-     * @param array<string>         $enabledExtensions List of template extensions to inspect
-     * @param array<string>         $excludedTemplates List of template names/patterns to exclude
-     * @param array<string>         $excludedBlocks    List of block names/patterns to exclude
-     * @param string                $cookieName        Name of the cookie to check
+     * @param RequestStack          $requestStack             The request stack
+     * @param UrlGeneratorInterface $urlGenerator             The URL generator for template links
+     * @param BoxDrawings           $boxDrawings              The box-drawing character helper
+     * @param array<string>         $enabledExtensions         Template extensions to inspect (e.g. ['.html.twig'])
+     * @param array<string>         $excludedTemplates        Template names or wildcard patterns to exclude
+     * @param array<string>         $excludedBlocks           Block names or wildcard patterns to exclude
+     * @param string                $cookieName                Cookie name used to enable the inspector
+     * @param int                   $maxInjectionDepth        Max nesting depth for comments (0 = unlimited)
+     * @param array<string>         $excludedTemplatesRegex    Regex patterns for template exclusion
+     * @param array<string>         $excludedTemplatesPrefixes Template name prefixes to exclude
+     * @param array<string>         $excludedBlocksRegex       Regex patterns for block exclusion
+     * @param bool                  $debug                     When false (e.g. prod), no injection to avoid any overhead
      */
     public function __construct(
         private readonly RequestStack $requestStack,
@@ -41,7 +49,12 @@ class HtmlCommentsExtension extends AbstractExtension
         private readonly array $enabledExtensions = ['.html.twig'],
         private readonly array $excludedTemplates = [],
         private readonly array $excludedBlocks = [],
-        private readonly string $cookieName = 'twig_inspector_is_active'
+        private readonly string $cookieName = 'twig_inspector_is_active',
+        private readonly int $maxInjectionDepth = 0,
+        private readonly array $excludedTemplatesRegex = [],
+        private readonly array $excludedTemplatesPrefixes = [],
+        private readonly array $excludedBlocksRegex = [],
+        private readonly bool $debug = true
     ) {
     }
 
@@ -74,12 +87,18 @@ class HtmlCommentsExtension extends AbstractExtension
     public function end(NodeReference $ref): void
     {
         if (!$this->shouldInspect($ref)) {
-            // If buffering wasn't started in start(), content was already output normally
-            // Just return without doing anything
             return;
         }
 
-        // Check if output buffering is actually active
+        // Do not output if headers were already sent (e.g. error response) to avoid "Cannot modify header" warning
+        if (headers_sent()) {
+            if (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+
+            return;
+        }
+
         if (ob_get_level() === 0) {
             return;
         }
@@ -87,6 +106,14 @@ class HtmlCommentsExtension extends AbstractExtension
         $content = ob_get_clean();
 
         if ($this->isSupported($content)) {
+            if ($this->maxInjectionDepth > 0 && $this->nestingLevel > $this->maxInjectionDepth) {
+                // Only echo when a parent buffer exists (e.g. Twig's render()), never to stdout
+                if (ob_get_level() > 0) {
+                    echo $content;
+                }
+
+                return;
+            }
             // Check if this is a nested block (content contains previous content)
             if ((string) $this->previousContent !== '' && str_contains($content, (string) $this->previousContent)) {
                 // If content changed, update box drawing style
@@ -107,12 +134,15 @@ class HtmlCommentsExtension extends AbstractExtension
             $this->previousContent = $content;
         }
 
-        echo $content;
+        // Only echo when a parent buffer exists (e.g. Twig's render()), never to stdout
+        if (!headers_sent() && ob_get_level() > 0) {
+            echo $content;
+        }
     }
 
     /**
      * Checks if the inspector should inspect the given node.
-     * The inspector is enabled when:
+     * Only runs when the Web Profiler toolbar can be present (kernel.debug), then checks:
      * - A request is available
      * - The cookie is set to true
      * - The template file extension is in the enabled extensions list
@@ -125,9 +155,25 @@ class HtmlCommentsExtension extends AbstractExtension
      */
     protected function shouldInspect(NodeReference $ref): bool
     {
+        // No toolbar in prod / when debug is off: skip all work to avoid consuming resources
+        if (!$this->debug) {
+            return false;
+        }
+
         $request = $this->requestStack->getCurrentRequest();
 
         if (!$request instanceof Request || !$request->cookies->getBoolean($this->cookieName)) {
+            return false;
+        }
+
+        // Do not inject on sub-requests (fragments, toolbar, etc.) to avoid "headers already sent"
+        if ($this->requestStack->getParentRequest() !== null) {
+            return false;
+        }
+
+        // Do not inject on Web Debug Toolbar / Profiler requests
+        $path = $request->getPathInfo();
+        if (str_starts_with($path, '/_wdt') || str_starts_with($path, '/_profiler')) {
             return false;
         }
 
@@ -146,14 +192,23 @@ class HtmlCommentsExtension extends AbstractExtension
             return false;
         }
 
-        // Check if template is excluded
+        // Check if template is excluded (wildcards, regex, prefixes)
         if ($this->isExcluded($template, $this->excludedTemplates)) {
             return false;
         }
+        if ($this->isExcludedByRegex($template, $this->excludedTemplatesRegex)) {
+            return false;
+        }
+        if ($this->isExcludedByPrefix($template, $this->excludedTemplatesPrefixes)) {
+            return false;
+        }
 
-        // Check if block is excluded
+        // Check if block is excluded (wildcards, regex)
         $blockName = $ref->getName();
         if ($blockName !== $template && $this->isExcluded($blockName, $this->excludedBlocks)) {
+            return false;
+        }
+        if ($blockName !== $template && $this->isExcludedByRegex($blockName, $this->excludedBlocksRegex)) {
             return false;
         }
 
@@ -176,6 +231,44 @@ class HtmlCommentsExtension extends AbstractExtension
             $escaped = preg_quote($pattern, '/');
             $regex = '/^' . str_replace('\*', '.*', $escaped) . '$/';
             if (preg_match($regex, $name)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if a name matches any regex exclusion pattern.
+     *
+     * @param string        $name   The name to check
+     * @param array<string> $regexes List of regex patterns
+     *
+     * @return bool True if excluded, false otherwise
+     */
+    private function isExcludedByRegex(string $name, array $regexes): bool
+    {
+        foreach ($regexes as $regex) {
+            if (@preg_match($regex, $name) === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if a name has any of the given prefixes (namespace-style exclusion).
+     *
+     * @param string        $name     The name to check
+     * @param array<string> $prefixes List of prefixes (e.g. ['@Admin/', 'components/'])
+     *
+     * @return bool True if excluded, false otherwise
+     */
+    private function isExcludedByPrefix(string $name, array $prefixes): bool
+    {
+        foreach ($prefixes as $prefix) {
+            if (str_starts_with($name, $prefix)) {
                 return true;
             }
         }
