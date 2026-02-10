@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.11] - 2026-02-10
+
 ### Added
 - **Web Profiler — Controllers**: New **Controllers** tab in the collector panel listing every controller invoked in the request (main controller + sub-requests from `{{ render(controller(...)) }}`). Each row shows controller name, **Role** (Main / Fragment badge), and **Renders** count.
 - **Controller HTML comments**: When the inspector is enabled, the bundle injects HTML comments for controllers using the same box-drawing style as Twig blocks: `<!-- ┏ controller: FQCN::method [main] template: path -->` after `<body>` for the main controller, and `<!-- ┏ … [fragment] … -->` / `<!-- ┗ /controller -->` wrapping each fragment’s output. You can see which controller (and template) rendered which part of the page in the HTML source.

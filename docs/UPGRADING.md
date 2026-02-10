@@ -2,7 +2,7 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
-## Upgrading from 1.0.10 to the next release
+## Upgrading from 1.0.10 to 1.0.11
 
 **No action required** — backward-compatible release.
 
