@@ -29,7 +29,7 @@ class OpenTemplateController
      * Constructor.
      *
      * @param Environment       $twig              The Twig environment (to resolve template path)
-     * @param FileLinkFormatter $fileLinkFormatter  Formats file path and line into an IDE URL
+     * @param FileLinkFormatter $fileLinkFormatter Formats file path and line into an IDE URL
      */
     public function __construct(
         private readonly Environment $twig,
