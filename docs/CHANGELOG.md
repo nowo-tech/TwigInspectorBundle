@@ -199,6 +199,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Backbone template detection
   - Template file extension validation
 - **CONTRIBUTING.md**: Added comprehensive contribution guidelines
+- **CI/CD**: GitHub Actions pipeline, PHP-CS-Fixer, Dependabot
+- **Demos**: Three independent demo projects (Symfony 6.4, 7.0, 8.0) with test suites; PHP 8.4 and 8.5 support
 
 ### Fixed
 - **Test Suite**: Fixed all test failures and warnings
@@ -225,17 +227,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Updated demo projects to use specific bundle version (`^0.0.1`) instead of wildcard (`*`)
-
-### Added
-- **100% Code Coverage**: Complete test coverage (144/144 lines, 35/35 methods, 11/11 classes)
-- Comprehensive test suite covering all edge cases
-- GitHub Actions CI/CD pipeline
-- Code style enforcement with PHP-CS-Fixer
-- Automated dependency updates with Dependabot
-- Three independent demo projects (Symfony 6.4, 7.0, and 8.0) with their own docker-compose.yml
-- Test suites for each demo project
-- Support for PHP 8.4 and 8.5
-- CONTRIBUTING.md with contribution guidelines
 
 ## [1.0.0] - 2024-12-11
 

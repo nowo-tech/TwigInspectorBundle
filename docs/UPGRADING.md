@@ -44,6 +44,12 @@ The bundle has been updated to add the `#[\Twig\Attribute\YieldReady]` attribute
 - Update to version 1.0.9 or later
 - The bundle is fully compatible with Twig 3.8 through 4.0
 
+## Upgrading from 1.0.7 to 1.0.8
+
+**No action required** — backward-compatible release.
+
+Packagist search optimization and documentation updates only. No code or configuration changes.
+
 ## Upgrading from 1.0.6 to 1.0.7
 
 ### Twig 3.15+ Compatibility
@@ -104,11 +110,11 @@ when@dev:
 
 ## Upgrading from 1.0.1 to 1.0.2
 
-### Configuration Changes
+### CI/CD and compatibility
 
-**No action required** - This is a backward-compatible update.
+**No action required** — backward-compatible update.
 
-The configuration structure remains the same. All existing configurations will continue to work.
+CI/CD fixes (PHP/Symfony matrix, PHPUnit constraint for PHP 8.1, PHP-CS-Fixer). No configuration or API changes.
 
 ## Upgrading from 1.0.0 to 1.0.1
 
