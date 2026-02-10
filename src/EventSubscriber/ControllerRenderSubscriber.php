@@ -23,11 +23,21 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
     /** @var array<int, list<array{name: string, is_main: bool}>> Master request object id => list of controller entries */
     private array $controllersByMasterRequest = [];
 
+    /**
+     * Constructor.
+     *
+     * @param RequestStack $requestStack The request stack (for main/master request)
+     */
     public function __construct(
         private readonly RequestStack $requestStack
     ) {
     }
 
+    /**
+     * Subscribes to the controller and terminate events to record controller invocations.
+     *
+     * @return array<string, array{0: string, 1: int}> Event name => [method, priority]
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -36,6 +46,11 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * Records each controller invocation (main request or sub-request from render(controller())).
+     *
+     * @param ControllerEvent $event The controller event
+     */
     public function onController(ControllerEvent $event): void
     {
         $request = $event->getRequest();
@@ -54,6 +69,11 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * Cleans up recorded controllers for the master request when the request terminates.
+     *
+     * @param TerminateEvent $event The terminate event
+     */
     public function onTerminate(TerminateEvent $event): void
     {
         $request = $event->getRequest();
@@ -81,6 +101,8 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
      * Returns the list of controller strings recorded for the given (master) request.
      * Used by TwigInspectorCollector when collecting data.
      *
+     * @param object $masterRequest The master (main) request object (used as key for stored controllers)
+     *
      * @return list<array{name: string, count: int, is_main: bool}>
      */
     public function getControllersForRequest(object $masterRequest): array
@@ -103,6 +125,13 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
         return array_values($byName);
     }
 
+    /**
+     * Converts a controller value (string, array, Closure, or other) to a display string.
+     *
+     * @param mixed $controller The controller from the event (e.g. 'App\Controller::index', [object, 'method'], Closure)
+     *
+     * @return string Display string (e.g. 'App\Controller::index', 'Closure', or 'unknown')
+     */
     private function controllerToString(mixed $controller): string
     {
         if (\is_string($controller)) {

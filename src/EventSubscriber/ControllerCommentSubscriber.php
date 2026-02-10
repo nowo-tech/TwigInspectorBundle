@@ -27,6 +27,13 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
     /** Box-drawing closing for fragment controller comment (same as Twig blocks: ┗). */
     private const COMMENT_CLOSE = '┗';
 
+    /**
+     * Constructor.
+     *
+     * @param RequestStack $requestStack The request stack (for main/master request and cookies)
+     * @param string       $cookieName   Cookie name used to enable the inspector (e.g. twig_inspector_is_active)
+     * @param bool         $debug        When false, no comments are injected (e.g. in production)
+     */
     public function __construct(
         private readonly RequestStack $requestStack,
         private readonly string $cookieName,
@@ -34,6 +41,11 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
     ) {
     }
 
+    /**
+     * Subscribes to the kernel response event to inject controller comments.
+     *
+     * @return array<string, array{0: string, 1: int}> Event name => [method, priority]
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -42,6 +54,12 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * Injects controller HTML comments into the response when inspector is enabled.
+     * Skips when debug is off, cookie is not set, or path is _wdt/_profiler.
+     *
+     * @param ResponseEvent $event The kernel response event
+     */
     public function onKernelResponse(ResponseEvent $event): void
     {
         if (!$this->debug) {
@@ -94,6 +112,14 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * Injects the main controller comment after <body>, after <html>, or at the start of the content.
+     *
+     * @param Response $response     The response to modify
+     * @param string   $content      Current response content
+     * @param string   $controllerStr Controller string (e.g. FQCN::method)
+     * @param string|null $templateName Optional template path from the request attribute
+     */
     private function injectMainControllerComment(Response $response, string $content, string $controllerStr, ?string $templateName): void
     {
         $comment = "\n" . $this->buildComment($controllerStr, 'main', true, $templateName) . "\n";
@@ -112,6 +138,14 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         $response->setContent($content);
     }
 
+    /**
+     * Wraps fragment content (sub-request output) with start and end controller comments.
+     *
+     * @param Response   $response     The response to modify
+     * @param string     $content      Fragment content (e.g. HTML from render(controller()))
+     * @param string     $controllerStr Controller string (e.g. FQCN::method)
+     * @param string|null $templateName Optional template path
+     */
     private function wrapFragmentWithComments(Response $response, string $content, string $controllerStr, ?string $templateName): void
     {
         $start = $this->buildComment($controllerStr, 'fragment', true, $templateName);
@@ -119,6 +153,17 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         $response->setContent($start . "\n" . $content . "\n" . $end);
     }
 
+    /**
+     * Builds an HTML comment string for controller (start or end).
+     * Sanitizes controller and template strings to avoid breaking HTML comments.
+     *
+     * @param string      $controllerStr Controller string (e.g. FQCN::method)
+     * @param string      $role          Role label: 'main' or 'fragment'
+     * @param bool        $isStart       True for opening comment (┏), false for closing (┗)
+     * @param string|null $templateName  Optional template path (only used when $isStart is true)
+     *
+     * @return string HTML comment (e.g. <!-- ┏ controller: FQCN::method [main] -->)
+     */
     private function buildComment(string $controllerStr, string $role, bool $isStart, ?string $templateName = null): string
     {
         $safeController = str_replace(['--', '>'], ['', ''], $controllerStr);
@@ -156,6 +201,12 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         return str_contains($content, '<') && str_contains($content, '>');
     }
 
+    /**
+     * Returns the main (or master) request from the stack.
+     * Uses getMainRequest() when available (Symfony 6+), otherwise getMasterRequest() (Symfony 5.x).
+     *
+     * @return Request|null The main/master request or null if the stack is empty
+     */
     private function getMainOrMasterRequest(): ?Request
     {
         if (method_exists($this->requestStack, 'getMainRequest')) {
@@ -167,6 +218,13 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         return $getMaster();
     }
 
+    /**
+     * Converts a controller value (string, array, Closure, or other) to a display string.
+     *
+     * @param mixed $controller The controller from the request (e.g. 'App\Controller::index', [object, 'method'], Closure)
+     *
+     * @return string Display string (e.g. 'App\Controller::index', 'Closure', or 'unknown')
+     */
     private function controllerToString(mixed $controller): string
     {
         if (\is_string($controller)) {

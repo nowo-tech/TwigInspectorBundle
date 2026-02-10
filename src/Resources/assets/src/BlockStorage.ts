@@ -12,6 +12,10 @@ const CONTROLLER_OPEN =
 /** Regex for controller closing comment (fragment only): ┗ /controller */
 const CONTROLLER_CLOSE = /^\s*┗\s*\/controller\s*$/u;
 
+/**
+ * Storage that maps DOM elements to the Twig templates (and controller renders) that produced them.
+ * Populated by scanning HTML comments injected by the Twig extension and ControllerCommentSubscriber.
+ */
 export class BlockStorage {
   private elements: HTMLElement[] = [];
   private templatesToElements: Template[][] = [];
@@ -95,6 +99,8 @@ export class BlockStorage {
   /**
    * Scans for controller comments (┏ controller: … [main|fragment] … ┗ /controller) and adds a
    * "Controller: FQCN [main|fragment] · template" entry to every element in that range so the overlay shows controller info on hover.
+   *
+   * @param sfToolbar - Symfony toolbar element (elements inside it are excluded from overlay)
    */
   private collectControllerRanges(sfToolbar: HTMLElement): void {
     const commentIterator = document.createNodeIterator(
@@ -132,6 +138,12 @@ export class BlockStorage {
     }
   }
 
+  /**
+   * Finds the next controller closing comment (┗ /controller) in document order after the given node.
+   *
+   * @param afterNode - Node to start searching after (e.g. the node after the controller open comment)
+   * @returns The closing comment node, or null if not found
+   */
   private findControllerCloseComment(afterNode: Node): Node | null {
     let node: Node | null = afterNode;
     while ((node = this.nextInDocumentOrder(node, document.body))) {
@@ -142,6 +154,13 @@ export class BlockStorage {
     return null;
   }
 
+  /**
+   * Visits every element node between start and end (exclusive) in document order, calling fn for each.
+   *
+   * @param start - First node to consider (inclusive)
+   * @param end - Node to stop before (exclusive), or null to visit until end of document
+   * @param fn - Callback invoked for each element node in the range
+   */
   private visitElementsInRange(
     start: Node | null,
     end: Node | null,
@@ -156,6 +175,13 @@ export class BlockStorage {
     }
   }
 
+  /**
+   * Returns the next node in document order (depth-first): first child, then next sibling, then parent's next sibling, etc.
+   *
+   * @param node - Current node (may be null)
+   * @param root - Root node to stop at (do not go above this)
+   * @returns The next node, or null if there is none before reaching root
+   */
   private nextInDocumentOrder(node: Node | null, root: Node): Node | null {
     if (!node) return null;
     if (node.firstChild) return node.firstChild;
@@ -170,6 +196,9 @@ export class BlockStorage {
 
   /**
    * Returns the block for the given element, or null if not tracked.
+   *
+   * @param element - DOM element to look up
+   * @returns Block (element + templates) or null
    */
   find(element: HTMLElement): Block | null {
     const index = this.elements.indexOf(element);
@@ -182,6 +211,9 @@ export class BlockStorage {
 
   /**
    * Registers a new element and returns its block.
+   *
+   * @param element - DOM element to register
+   * @returns New block with empty templates array
    */
   create(element: HTMLElement): Block {
     const length = this.elements.push(element);
@@ -192,6 +224,9 @@ export class BlockStorage {
 
   /**
    * Returns the block for the element, creating one if not yet tracked.
+   *
+   * @param element - DOM element to look up or register
+   * @returns Block (existing or newly created)
    */
   findOrCreate(element: HTMLElement): Block {
     const layoutItem = this.find(element);
@@ -200,6 +235,9 @@ export class BlockStorage {
 
   /**
    * Associates a template with a block by index.
+   *
+   * @param index - Block index (from find/create)
+   * @param template - Template (name + link) to add to the block
    */
   addTemplate(index: number, template: Template): void {
     this.templatesToElements[index].push(template);
@@ -207,6 +245,9 @@ export class BlockStorage {
 
   /**
    * Returns the templates for a block index.
+   *
+   * @param index - Block index (from find/create)
+   * @returns Array of templates (name + link) for that block
    */
   getTemplates(index: number): Template[] {
     return this.templatesToElements[index];
