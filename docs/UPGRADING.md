@@ -2,12 +2,18 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
+## Upgrading from 1.0.12 to the next release
+
+_Placeholder for the next release._
+
 ## Upgrading from 1.0.11 to 1.0.12
 
 **No action required** — backward-compatible release.
 
 ### What’s new
 - **`inject_on_sub_requests`**: New configuration option (bool, default `false`). When your application renders the main HTML during a sub-request (e.g. fragment-based layout), the inspector may show all templates as "sub-request" and not inject comments. Set `inject_on_sub_requests: true` in `config/packages/nowo_twig_inspector.yaml` to enable injection on sub-requests so the inspector works in those setups.
+- **Overlay off by default**: With the inspector enabled, the overlay no longer starts on automatically. Click the `</>` icon in the toolbar to turn the overlay on (green); click again to turn it off (yellow). This avoids the overlay being active until you need it.
+- **Toolbar dropdown**: Filter and Rescan in the collector dropdown are now initialized more reliably (after DOM ready), so they should always appear when you open the Twig Inspector dropdown.
 
 No breaking changes; existing configuration and behavior are unchanged.
 
