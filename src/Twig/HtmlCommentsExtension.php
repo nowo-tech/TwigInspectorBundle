@@ -40,6 +40,7 @@ class HtmlCommentsExtension extends AbstractExtension
      * @param array<string>         $excludedTemplatesRegex    Regex patterns for template exclusion
      * @param array<string>         $excludedTemplatesPrefixes Template name prefixes to exclude
      * @param array<string>         $excludedBlocksRegex       Regex patterns for block exclusion
+     * @param bool                  $injectOnSubRequests       When true, inject comments also during sub-requests (e.g. fragment rendering)
      * @param bool                  $debug                     When false (e.g. prod), no injection to avoid any overhead
      */
     public function __construct(
@@ -54,6 +55,7 @@ class HtmlCommentsExtension extends AbstractExtension
         private readonly array $excludedTemplatesRegex = [],
         private readonly array $excludedTemplatesPrefixes = [],
         private readonly array $excludedBlocksRegex = [],
+        private readonly bool $injectOnSubRequests = false,
         private readonly bool $debug = true
     ) {
     }
@@ -174,8 +176,8 @@ class HtmlCommentsExtension extends AbstractExtension
             return false;
         }
 
-        // Do not inject on sub-requests (fragments, toolbar, etc.) to avoid "headers already sent"
-        if ($this->requestStack->getParentRequest() !== null) {
+        // Do not inject on sub-requests (fragments, toolbar, etc.) to avoid "headers already sent" — unless inject_on_sub_requests is enabled
+        if (!$this->injectOnSubRequests && $this->requestStack->getParentRequest() !== null) {
             return false;
         }
 

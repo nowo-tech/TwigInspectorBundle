@@ -34,6 +34,10 @@ nowo_twig_inspector:
     # Default: true
     optimize_output_buffering: true
 
+    # Inject comments also during sub-requests (e.g. when main content is rendered as fragment)
+    # Enable if all templates show "sub-request" and none get inspected. Default: false
+    inject_on_sub_requests: false
+
     # Custom cookie name for enabling/disabling inspector
     # Default: 'twig_inspector_is_active'
     cookie_name: 'twig_inspector_is_active'

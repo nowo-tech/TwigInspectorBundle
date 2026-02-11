@@ -727,6 +727,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *     excluded_blocks?: list<scalar|null>,
  *     enable_metrics?: bool, // Enable collection of template usage metrics in DataCollector // Default: true
  *     optimize_output_buffering?: bool, // Skip output buffering when inspector is disabled (performance optimization) // Default: true
+ *     inject_on_sub_requests?: bool, // When true, inject comments also during sub-requests (e.g. when main content is rendered as fragment). Enable if all templates show "sub-request" and none get inspected. // Default: false
  *     cookie_name?: scalar|null, // Name of the cookie used to enable/disable the inspector // Default: "twig_inspector_is_active"
  *     max_injection_depth?: int, // Maximum nesting depth for comment injection (0 = unlimited). Reduces overhead on very deep template trees. // Default: 0
  *     excluded_templates_regex?: list<scalar|null>,

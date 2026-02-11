@@ -46,6 +46,7 @@ class NowoTwigInspectorExtension extends Extension
         $container->setParameter('nowo_twig_inspector.excluded_blocks_regex', $config['excluded_blocks_regex']);
         $container->setParameter('nowo_twig_inspector.enable_metrics', $config['enable_metrics']);
         $container->setParameter('nowo_twig_inspector.optimize_output_buffering', $config['optimize_output_buffering']);
+        $container->setParameter('nowo_twig_inspector.inject_on_sub_requests', $config['inject_on_sub_requests']);
         $container->setParameter('nowo_twig_inspector.cookie_name', $config['cookie_name']);
         $container->setParameter('nowo_twig_inspector.max_injection_depth', $config['max_injection_depth']);
         $container->setParameter('nowo_twig_inspector.overlay_theme', $config['overlay_theme']);
@@ -63,6 +64,7 @@ class NowoTwigInspectorExtension extends Extension
         $htmlCommentsExtensionDefinition->setArgument(8, $config['excluded_templates_regex']);
         $htmlCommentsExtensionDefinition->setArgument(9, $config['excluded_templates_prefixes']);
         $htmlCommentsExtensionDefinition->setArgument(10, $config['excluded_blocks_regex']);
+        $htmlCommentsExtensionDefinition->setArgument(11, $config['inject_on_sub_requests']);
 
         // Pass configuration to DataCollector (argument 0 = ControllerRenderSubscriber from services.yaml)
         $collectorDefinition = $container->getDefinition('Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector');

@@ -2,6 +2,15 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
+## Upgrading from 1.0.11 to 1.0.12
+
+**No action required** — backward-compatible release.
+
+### What’s new
+- **`inject_on_sub_requests`**: New configuration option (bool, default `false`). When your application renders the main HTML during a sub-request (e.g. fragment-based layout), the inspector may show all templates as "sub-request" and not inject comments. Set `inject_on_sub_requests: true` in `config/packages/nowo_twig_inspector.yaml` to enable injection on sub-requests so the inspector works in those setups.
+
+No breaking changes; existing configuration and behavior are unchanged.
+
 ## Upgrading from 1.0.10 to 1.0.11
 
 **No action required** — backward-compatible release.

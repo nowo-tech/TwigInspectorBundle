@@ -663,6 +663,37 @@ final class HtmlCommentsExtensionTest extends TestCase
         $this->assertFalse($method->invoke($this->extension, $ref));
     }
 
+    public function testShouldInspectWithSubRequestWhenInjectOnSubRequestsEnabled(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        $this->requestStack->method('getParentRequest')->willReturn(new Request());
+
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            0,
+            [],
+            [],
+            [],
+            true,  // injectOnSubRequests
+            true   // debug
+        );
+
+        $reflection = new \ReflectionClass($extension);
+        $method = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $this->assertTrue($method->invoke($extension, $ref));
+    }
+
     public function testShouldInspectWithWdtPath(): void
     {
         $ref = new NodeReference('block', 'template.html.twig', 1);
@@ -817,7 +848,8 @@ final class HtmlCommentsExtensionTest extends TestCase
             [],
             [],
             [],
-            false
+            false,  // injectOnSubRequests
+            false   // debug
         );
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
@@ -843,7 +875,8 @@ final class HtmlCommentsExtensionTest extends TestCase
             [],
             [],
             [],
-            true
+            false,  // injectOnSubRequests
+            true    // debug
         );
         $ref = new NodeReference('block', 'template.html.twig', 1);
         $request = new Request();
@@ -880,7 +913,8 @@ final class HtmlCommentsExtensionTest extends TestCase
             [],
             [],
             [],
-            true
+            false,  // injectOnSubRequests
+            true    // debug
         );
         $ref = new NodeReference('block', 'template.html.twig', 1);
         $request = new Request();

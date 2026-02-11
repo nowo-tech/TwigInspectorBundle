@@ -40,6 +40,7 @@ final class ConfigurationTest extends TestCase
         $this->assertSame([], $config['excluded_blocks']);
         $this->assertTrue($config['enable_metrics']);
         $this->assertTrue($config['optimize_output_buffering']);
+        $this->assertFalse($config['inject_on_sub_requests']);
         $this->assertSame('twig_inspector_is_active', $config['cookie_name']);
     }
 
@@ -52,6 +53,7 @@ final class ConfigurationTest extends TestCase
                 'excluded_blocks' => ['javascript', 'head_*'],
                 'enable_metrics' => false,
                 'optimize_output_buffering' => false,
+                'inject_on_sub_requests' => true,
                 'cookie_name' => 'custom_cookie',
             ],
         ];
@@ -63,6 +65,7 @@ final class ConfigurationTest extends TestCase
         $this->assertSame(['javascript', 'head_*'], $config['excluded_blocks']);
         $this->assertFalse($config['enable_metrics']);
         $this->assertFalse($config['optimize_output_buffering']);
+        $this->assertTrue($config['inject_on_sub_requests']);
         $this->assertSame('custom_cookie', $config['cookie_name']);
     }
 
@@ -82,6 +85,7 @@ final class ConfigurationTest extends TestCase
         $this->assertSame([], $config['excluded_blocks']);
         $this->assertTrue($config['enable_metrics']);
         $this->assertTrue($config['optimize_output_buffering']);
+        $this->assertFalse($config['inject_on_sub_requests']);
         $this->assertSame('twig_inspector_is_active', $config['cookie_name']);
     }
 
@@ -108,6 +112,7 @@ final class ConfigurationTest extends TestCase
         $config = $this->processor->processConfiguration($this->configuration, []);
 
         $this->assertSame(0, $config['max_injection_depth']);
+        $this->assertFalse($config['inject_on_sub_requests']);
         $this->assertSame([], $config['excluded_templates_regex']);
         $this->assertSame([], $config['excluded_templates_prefixes']);
         $this->assertSame([], $config['excluded_blocks_regex']);

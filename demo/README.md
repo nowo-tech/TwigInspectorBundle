@@ -10,12 +10,12 @@ This directory contains three demo projects, one for each supported Symfony vers
 
 - Three separate demo projects for Symfony 6.4, 7.0, and 8.0
 - Simple demo pages with multiple Twig blocks
-- **Symfony Web Profiler integration** - Fully configured and enabled
+- **Symfony Web Profiler integration** — Fully configured and enabled
   - Toolbar at the bottom of pages
   - Profiler accessible at `/_profiler`
   - WDT (Web Debug Toolbar) at `/_wdt`
 - Visual demonstration of template inspection
-- Docker setup for easy development
+- **Docker stack: FrankenPHP + Caddy** — Demos run with [FrankenPHP](https://frankenphp.dev/) and [Caddy](https://caddyserver.com/) as the web server. **HTTPS** is available where configured (Caddy’s internal CA for local dev); see each demo’s `Caddyfile` and `docker-compose.yml` for ports and HTTP/HTTPS URLs.
 - Independent Docker containers for each demo
 
 ## Requirements
@@ -368,6 +368,9 @@ nowo_twig_inspector:
     
     # Performance optimization
     optimize_output_buffering: true
+    
+    # Inject on sub-requests (e.g. when main content is rendered as fragment)
+    inject_on_sub_requests: false
     
     # Custom cookie name
     cookie_name: 'twig_inspector_is_active'

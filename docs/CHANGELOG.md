@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Configuration**: New option `inject_on_sub_requests` (bool, default `false`). When `true`, the bundle injects comments also during sub-requests (e.g. when the main content is rendered as a fragment). Use this if all templates show "sub-request" in the panel and none get inspected.
+
 ## [1.0.11] - 2026-02-10
 
 ### Added

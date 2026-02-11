@@ -6,6 +6,8 @@ The bundle includes three demo projects, one for each supported Symfony version.
 - **Symfony 7.0 Demo**: `demo/symfony7/` (Port 8001 by default, configurable via PORT env variable)
 - **Symfony 8.0 Demo**: `demo/symfony8/` (Port 8001 by default, configurable via PORT env variable)
 
+**Docker stack:** Demos use **FrankenPHP** with **Caddy** as the web server. Where configured, **HTTPS** is available (Caddy’s internal CA for local dev); HTTP may redirect to HTTPS depending on the demo. See each demo’s `Caddyfile` and `docker-compose.yml` for ports and URLs.
+
 ## Quick Start with Docker
 
 Each demo can be started independently:
