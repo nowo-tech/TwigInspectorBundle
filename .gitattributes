@@ -39,9 +39,7 @@
 /docker-compose.test.yml export-ignore
 /Dockerfile export-ignore
 /Makefile export-ignore
-/.symfony export-ignore
-
-# Frontend source (dist is in src/Resources/assets/dist)
+/.symfony export-ignore# Frontend source (dist is in src/Resources/assets/dist)
 /src/Resources/assets/src export-ignore
 /vite.config.ts export-ignore
 /tsconfig.json export-ignore

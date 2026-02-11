@@ -33,6 +33,7 @@ services:
       - '%nowo_twig_inspector.excluded_templates_regex%'
       - '%nowo_twig_inspector.excluded_templates_prefixes%'
       - '%nowo_twig_inspector.excluded_blocks_regex%'
+      - '%nowo_twig_inspector.inject_on_sub_requests%'
       - '%kernel.debug%'
     tags:
       - { name: twig.extension }

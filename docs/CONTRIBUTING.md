@@ -209,7 +209,7 @@ Compiled files are located in `src/Resources/assets/dist/` and must be copied to
 
 ## Demos
 
-The project includes three independent demos to test the bundle with different Symfony versions:
+The project includes three independent demos to test the bundle with different Symfony versions. Each demo runs with **FrankenPHP** and **Caddy**; **HTTPS** is available where configured (see each demo’s `Caddyfile` and `docker-compose.yml`).
 
 - `demo/symfony6/` - Symfony 6.4
 - `demo/symfony7/` - Symfony 7.0

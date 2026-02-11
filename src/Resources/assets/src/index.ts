@@ -19,7 +19,7 @@ import { BlockStorage } from './BlockStorage';
 import { Overlay } from './Overlay';
 import { shortcutMatches } from './shortcut';
 
-(function (): void {
+function runTwigInspector(): void {
   // Toolbar not present (e.g. prod, or script loaded without profiler): do nothing
   if (!document.querySelector('.sf-toolbar')) {
     return;
@@ -68,6 +68,7 @@ import { shortcutMatches } from './shortcut';
     }
   });
 
+  // Filter and Rescan are always set up so they appear in the toolbar dropdown (collector)
   const filterContainer = document.getElementById('_twig_inspector__filter');
   if (filterContainer) {
     const filterInput = document.createElement('input');
@@ -87,17 +88,22 @@ import { shortcutMatches } from './shortcut';
     rescanBtn.addEventListener('click', () => overlay.rescan());
   }
 
-  if (statusCheckbox.checked === false) {
-    return;
+  // Overlay off by default when inspector is active; user clicks icon to turn it on (green).
+  if (statusCheckbox.checked === true) {
+    statusIcon.addEventListener('click', () => {
+      if (overlay.isEnabled) {
+        overlay.reset();
+      } else {
+        overlay.enable();
+      }
+    });
   }
+}
 
-  statusIcon.addEventListener('click', () => {
-    if (overlay.isEnabled) {
-      overlay.reset();
-    } else {
-      overlay.enable();
-    }
-  });
-
-  overlay.enable();
+(function (): void {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runTwigInspector);
+  } else {
+    runTwigInspector();
+  }
 })();

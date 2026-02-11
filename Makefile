@@ -19,8 +19,8 @@ help:
 	@echo "  down          Stop Docker container"
 	@echo "  shell         Open shell in container"
 	@echo "  install       Install Composer dependencies"
-	@echo "  test          Run PHPUnit tests"
-	@echo "  test-coverage Run tests with code coverage"
+	@echo "  test          Run PHPUnit tests (starts container if needed)"
+	@echo "  test-coverage Run tests with code coverage (starts container if needed)"
 	@echo "  test-up       Start test container"
 	@echo "  test-down     Stop test container"
 	@echo "  test-shell    Open shell in test container"
@@ -55,12 +55,16 @@ shell:
 install:
 	$(COMPOSE) exec $(SERVICE_PHP) composer install
 
-# Run tests (inside root docker-compose php service)
-test:
+# Ensure container is running (start if not)
+ensure-up:
+	@$(COMPOSE) up -d
+
+# Run tests (inside root docker-compose php service). Run 'make up' once to build and install deps.
+test: ensure-up
 	$(COMPOSE) exec $(SERVICE_PHP) composer test
 
 # Run tests with coverage
-test-coverage:
+test-coverage: ensure-up
 	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage
 
 # Start test container

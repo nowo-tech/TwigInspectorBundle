@@ -53,4 +53,20 @@ final class NowoTwigInspectorExtensionTest extends TestCase
 
         $this->assertTrue(true);
     }
+
+    public function testLoadSetsInjectOnSubRequestsParameter(): void
+    {
+        $container = new ContainerBuilder();
+        $this->extension->load([], $container);
+
+        $this->assertFalse($container->getParameter('nowo_twig_inspector.inject_on_sub_requests'));
+    }
+
+    public function testLoadWithInjectOnSubRequestsTrue(): void
+    {
+        $container = new ContainerBuilder();
+        $this->extension->load([['inject_on_sub_requests' => true]], $container);
+
+        $this->assertTrue($container->getParameter('nowo_twig_inspector.inject_on_sub_requests'));
+    }
 }
