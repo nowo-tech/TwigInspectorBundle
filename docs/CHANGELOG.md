@@ -7,8 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.12] - 2026-02-11
+
 ### Added
 - **Configuration**: New option `inject_on_sub_requests` (bool, default `false`). When `true`, the bundle injects comments also during sub-requests (e.g. when the main content is rendered as a fragment). Use this if all templates show "sub-request" in the panel and none get inspected.
+
+### Changed
+- **Overlay default**: When the inspector is enabled, the overlay is **off by default**. Click the `</>` toolbar icon to turn it on (green); click again to turn it off (yellow). Previously the overlay started on as soon as the inspector was active.
+- **Toolbar dropdown**: Filter input and Rescan button are now initialized after `DOMContentLoaded` so they reliably appear in the collector dropdown in all environments.
+- **Demos**: Documented that demos use **FrankenPHP** with **Caddy** and can serve over **HTTPS** (Caddy internal CA). Symfony 7 demo supports HTTP→HTTPS redirect; `TRUSTED_PROXIES` is set where needed. README, demo/README, docs/DEMO.md, and CONTRIBUTING.md updated accordingly.
+- **Development**: `make test` and `make test-coverage` now start the Docker container if not running (`ensure-up`), so you no longer need to run `make up` first.
 
 ## [1.0.11] - 2026-02-10
 
