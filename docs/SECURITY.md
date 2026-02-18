@@ -13,8 +13,9 @@ The bundle includes measures to prevent path traversal and unauthorized access:
 - **File path verification**: Ensures resolved template paths are within allowed Twig template directories
 - **Parameter validation**: Line numbers must be positive integers
 - **Route restrictions**: Routes should only be available in `dev` and `test` environments
+- **Prod environment block**: The "open in IDE" controller returns 404 in `prod` even if routes were accidentally enabled (defense in depth)
 
-Routes are restricted to `dev` and `test` (e.g. via `when@dev:` in `config/routes.yaml`). If routes are not available (e.g. in production), the bundle uses fallback URLs and does not throw "route does not exist". The route pattern allows slashes in template names; security validations in the controller prevent path traversal.
+Routes must be imported with `when@dev:` and `when@test:` in `config/routes.yaml`. The controller checks `kernel.environment` and returns 404 in `prod` without processing the request. The route pattern allows slashes in template names; security validations in the controller prevent path traversal.
 
 ## Supported Versions
 

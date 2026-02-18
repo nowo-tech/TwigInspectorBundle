@@ -9,7 +9,7 @@ This guide covers installing Twig Inspector Bundle in a Symfony application.
 - **Symfony Web Profiler Bundle** (dev environment) — required for toolbar, collector and "open in IDE" feature
 - **Twig** >= 3.8 || >= 4.0
 
-> **Note:** The "open in IDE" feature uses the `debug.file_link_formatter` service provided by the Web Profiler. The bundle is intended for `dev` and `test` environments only.
+> **Important:** Twig Inspector is a **development tool only**. Do **not** enable it in production (`prod`). Register the bundle for `dev` and `test` only. The "open in IDE" route returns 404 in `prod` even if mistakenly configured — but the bundle, its extensions and HTML comment injection should never be active in production. See [Security](SECURITY.md) for details.
 
 ## Install with Composer
 
@@ -50,9 +50,13 @@ return [
 when@dev:
     nowo_twig_inspector:
         resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
+
+when@test:
+    nowo_twig_inspector:
+        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
 ```
 
-For the **test** environment, add a similar block under `when@test:` if you want the inspector in tests.
+**Import must be restricted to `dev` and `test`** — never in `prod`. For the **test** environment, add the `when@test:` block as shown above. If the route is imported without `when@dev`/`when@test` (e.g. in prod), the controller returns 404 as a safety measure — but you must not register the bundle for prod.
 
 3. **Optional config**: Create `config/packages/dev/nowo_twig_inspector.yaml` (or use the install command below). If you skip this, the bundle uses defaults from `Configuration.php`.
 
