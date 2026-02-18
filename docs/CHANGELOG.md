@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.17] - 2026-02-18
+
+### Fixed
+- **OpenTemplateController**: Skip non-string namespaces in `collectFilesystemPaths()` to avoid `TypeError` when `FilesystemLoader::getNamespaces()` returns integer keys (e.g. from reflection-manipulated loaders). Removed fragile test that corrupted loader state.
+
+### Changed
+- **Demos (Symfony 6, 7, 8)**: Custom Caddyfile serves HTTP on port 80 (no HTTPS). Access at `http://localhost:8001`. `docker-compose` maps `${PORT:-8001}:80`.
+- **Root Makefile**: `assets`, `assets-dev`, `assets-watch`, `assets-clean`, and `clean` now run inside the Docker container. Added `-e CI=true` for pnpm install (avoids no-TTY errors). Root `Dockerfile` includes Node.js and pnpm for asset builds.
+- **Demo Makefiles**: Added `build` target (docker-compose build --no-cache) and `update-bundle` target. Unified volume mount comments across demos.
+
 ## [1.0.16] - 2026-02-18
 
 ### Changed

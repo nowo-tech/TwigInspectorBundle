@@ -2,9 +2,20 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
-## Upgrading from 1.0.16 to the next release
+## Upgrading from 1.0.17 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.16 to 1.0.17
+
+**No action required** — backward-compatible release.
+
+### What changed
+- **Controller**: Defensive handling for non-string namespaces in FilesystemLoader path collection.
+- **Demos**: HTTP on port 80 instead of HTTPS on 443. Rebuild images with `make build` if you run demos locally.
+- **Development**: Asset and clean targets run inside the container; run `make up` first. Demo Makefiles: `make build`, `make update-bundle`.
+
+No configuration changes required for bundle users.
 
 ## Upgrading from 1.0.15 to 1.0.16
 

@@ -27,11 +27,11 @@ git tag -a vX.Y.Z -m "Release vX.Y.Z"
 git push origin vX.Y.Z
 ```
 
-Example for v1.0.16:
+Example for v1.0.17:
 
 ```bash
-git tag -a v1.0.16 -m "Release v1.0.16"
-git push origin v1.0.16
+git tag -a v1.0.17 -m "Release v1.0.17"
+git push origin v1.0.17
 ```
 
 After the push, GitHub Actions will create the release and attach the changelog entry (from `docs/CHANGELOG.md`) to the release body. Packagist will pick up the new tag automatically.
