@@ -205,7 +205,7 @@ pnpm run watch
 make watch-assets
 ```
 
-Compiled files are located in `src/Resources/assets/dist/` and must be copied to `src/Resources/views/assets/dist/` for Twig to include them.
+The build compiles TypeScript (`src/Resources/assets/src/*.ts`) to JavaScript. Output goes to `src/Resources/views/assets/dist/` (used by the collector Twig template). The bundle needs both: TS source for the build pipeline and compiled JS for runtime. Distributable assets in `src/Resources/public/assets/` are copied to the host project with `assets:install`.
 
 ## Demos
 

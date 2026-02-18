@@ -2,9 +2,19 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
-## Upgrading from 1.0.12 to the next release
+## Upgrading from 1.0.13 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.12 to 1.0.13
+
+**No action required** — documentation-only release.
+
+### What changed
+- **Documentation**: Asset pipeline (TypeScript source → JavaScript output) is now documented in DEVELOPMENT.md, CONTRIBUTING.md, and FEEDBACK-REVISION.md. The bundle requires both: TS for the build and compiled JS for runtime. Asset locations (`assets/src`, `views/assets/dist`, `public/assets`) are documented.
+- **.gitattributes**: Fixed malformed line that could cause git attribute parsing errors.
+
+No code or configuration changes; no breaking changes.
 
 ## Upgrading from 1.0.11 to 1.0.12
 

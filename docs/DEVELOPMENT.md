@@ -80,7 +80,7 @@ composer cs-fix
 
 ## Building assets
 
-The bundle uses **TypeScript** and **SCSS** with **Vite**. To build:
+The bundle uses **TypeScript** and **SCSS** with **Vite**. The flow is: TS (source) → Vite compiles → JS (output used by projects that install the bundle). **Both are required**: TS for development/build, and the compiled JS for runtime.
 
 ```bash
 # Install dependencies
@@ -105,7 +105,15 @@ make build-assets-dev  # Development build
 make watch-assets     # Watch mode
 ```
 
-Output is written to `src/Resources/views/assets/dist/` (used by the Twig template):
+**Asset locations:**
+
+| Path | Purpose |
+|------|---------|
+| `src/Resources/assets/src/*.ts` | TypeScript source — compiled by Vite |
+| `src/Resources/views/assets/dist/` | Build output — used by the collector Twig template (`@NowoTwigInspector`) |
+| `src/Resources/public/assets/` | Distributable assets — copied to the host project with `assets:install` |
+
+Main output in `src/Resources/views/assets/dist/`:
 
 - `index.min.js` — bundled TypeScript (IIFE)
 - `style.min.css` — compiled SCSS

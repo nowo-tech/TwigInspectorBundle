@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.13] - 2026-02-18
+
+### Fixed
+- **.gitattributes**: Fixed malformed line (missing newline before comment) that could cause "not a valid attribute name" errors
+
+### Changed
+- **Documentation**: Clarified asset pipeline (TypeScript → JavaScript) in DEVELOPMENT.md, CONTRIBUTING.md, and FEEDBACK-REVISION.md
+  - Documented that TS source files (`src/Resources/assets/src/*.ts`) compile to JS used at runtime; both are required
+  - Added asset location table: source (TS), build output (views/assets/dist), and distributable (public/assets)
+  - Resolved FEEDBACK-REVISION section 2.3: `public/assets/` is not legacy — it contains distributable assets copied to host projects with `assets:install`
+
 ## [1.0.12] - 2026-02-11
 
 ### Added

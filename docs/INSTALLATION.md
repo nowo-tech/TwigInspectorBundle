@@ -6,8 +6,10 @@ This guide covers installing Twig Inspector Bundle in a Symfony application.
 
 - **PHP** >= 8.1, < 8.6
 - **Symfony** >= 6.0 || >= 7.0 || >= 8.0
-- **Symfony Web Profiler Bundle** (dev environment)
+- **Symfony Web Profiler Bundle** (dev environment) — required for toolbar, collector and "open in IDE" feature
 - **Twig** >= 3.8 || >= 4.0
+
+> **Note:** The "open in IDE" feature uses the `debug.file_link_formatter` service provided by the Web Profiler. The bundle is intended for `dev` and `test` environments only.
 
 ## Install with Composer
 

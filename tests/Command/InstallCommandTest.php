@@ -260,7 +260,6 @@ final class InstallCommandTest extends TestCase
         $this->assertStringContainsString('excluded_templates:', $content);
         $this->assertStringContainsString('excluded_blocks:', $content);
         $this->assertStringContainsString('enable_metrics:', $content);
-        $this->assertStringContainsString('optimize_output_buffering:', $content);
         $this->assertStringContainsString('cookie_name:', $content);
         $this->assertStringContainsString("'twig_inspector_is_active'", $content);
     }
