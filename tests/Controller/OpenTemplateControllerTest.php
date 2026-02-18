@@ -347,6 +347,16 @@ final class OpenTemplateControllerTest extends TestCase
         }
     }
 
+    public function testInvokeReturns404InProdEnvironment(): void
+    {
+        $controller = new OpenTemplateController($this->twig, $this->fileLinkFormatter, 'prod');
+        $request = new Request();
+        $template = 'test.html.twig';
+
+        $this->expectException(NotFoundHttpException::class);
+        ($controller)($request, $template);
+    }
+
     public function testInvokeRejectsUnresolvableFilePath(): void
     {
         // Test case where realpath() returns false using reflection
@@ -354,7 +364,7 @@ final class OpenTemplateControllerTest extends TestCase
         $twig = new Environment($loader);
 
         $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
-        $controller = new OpenTemplateController($twig, $fileLinkFormatter);
+        $controller = new OpenTemplateController($twig, $fileLinkFormatter, 'dev');
 
         // Use reflection to test validateFilePath directly with a non-existent path
         $reflection = new \ReflectionClass($controller);

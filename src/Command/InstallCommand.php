@@ -220,8 +220,12 @@ class InstallCommand extends Command
     {
         $routeImport = <<<'YAML'
 
-            # Twig Inspector Bundle routes
+            # Twig Inspector Bundle routes (dev and test only — never prod)
             when@dev:
+                nowo_twig_inspector:
+                    resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
+
+            when@test:
                 nowo_twig_inspector:
                     resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
 

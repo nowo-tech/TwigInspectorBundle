@@ -9,6 +9,7 @@ services:
     arguments:
       - '@twig'
       - '@debug.file_link_formatter'
+      - '%kernel.environment%'
     public: true
 
   Nowo\TwigInspectorBundle\BoxDrawings:

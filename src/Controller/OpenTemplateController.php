@@ -25,15 +25,20 @@ use Twig\TemplateWrapper;
  */
 class OpenTemplateController
 {
+    /** @var list<string> Environments where the "open in IDE" route is allowed (dev, test). In prod, returns 404. */
+    private const ALLOWED_ENVIRONMENTS = ['dev', 'test'];
+
     /**
      * Constructor.
      *
      * @param Environment       $twig              The Twig environment (to resolve template path)
      * @param FileLinkFormatter $fileLinkFormatter Formats file path and line into an IDE URL
+     * @param string            $environment       Kernel environment (e.g. dev, prod, test). Route returns 404 in prod.
      */
     public function __construct(
         private readonly Environment $twig,
-        private readonly FileLinkFormatter $fileLinkFormatter
+        private readonly FileLinkFormatter $fileLinkFormatter,
+        private readonly string $environment = 'dev'
     ) {
     }
 
@@ -54,6 +59,11 @@ class OpenTemplateController
      */
     public function __invoke(Request $request, string $template): RedirectResponse
     {
+        // Restrict to dev/test: in prod, return 404 even if routes were accidentally enabled
+        if (!\in_array($this->environment, self::ALLOWED_ENVIRONMENTS, true)) {
+            throw new NotFoundHttpException();
+        }
+
         // Security: Validate template name to prevent path traversal attacks
         $this->validateTemplateName($template);
 
