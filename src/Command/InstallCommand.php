@@ -58,6 +58,11 @@ class InstallCommand extends Command
             # Default: true
             enable_metrics: true
 
+            # Optimize performance by skipping output buffering when inspector is disabled
+            # This reduces overhead when the inspector cookie is not set
+            # Default: true
+            # optimize_output_buffering: true
+
             # Custom cookie name for enabling/disabling inspector
             # Default: 'twig_inspector_is_active'
             cookie_name: 'twig_inspector_is_active'

@@ -45,6 +45,7 @@ class NowoTwigInspectorExtension extends Extension
         $container->setParameter('nowo_twig_inspector.excluded_templates_prefixes', $config['excluded_templates_prefixes']);
         $container->setParameter('nowo_twig_inspector.excluded_blocks_regex', $config['excluded_blocks_regex']);
         $container->setParameter('nowo_twig_inspector.enable_metrics', $config['enable_metrics']);
+        // $container->setParameter('nowo_twig_inspector.optimize_output_buffering', $config['optimize_output_buffering']);
         $container->setParameter('nowo_twig_inspector.inject_on_sub_requests', $config['inject_on_sub_requests']);
         $container->setParameter('nowo_twig_inspector.cookie_name', $config['cookie_name']);
         $container->setParameter('nowo_twig_inspector.max_injection_depth', $config['max_injection_depth']);
@@ -54,7 +55,7 @@ class NowoTwigInspectorExtension extends Extension
         $container->setParameter('nowo_twig_inspector.keyboard_shortcut', $config['keyboard_shortcut']);
 
         // Pass configuration to HtmlCommentsExtension
-        $htmlCommentsExtensionDefinition = $container->getDefinition('nowo_twig_inspector.html_comments_extension');
+        $htmlCommentsExtensionDefinition = $container->getDefinition('Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension');
         $htmlCommentsExtensionDefinition->setArgument(3, $config['enabled_extensions']);
         $htmlCommentsExtensionDefinition->setArgument(4, $config['excluded_templates']);
         $htmlCommentsExtensionDefinition->setArgument(5, $config['excluded_blocks']);
@@ -66,8 +67,8 @@ class NowoTwigInspectorExtension extends Extension
         $htmlCommentsExtensionDefinition->setArgument(11, $config['inject_on_sub_requests']);
 
         // Pass configuration to DataCollector (argument 0 = ControllerRenderSubscriber from services.yaml)
-        $collectorDefinition = $container->getDefinition('nowo_twig_inspector.collector');
-        $collectorDefinition->setArgument(0, new Reference('nowo_twig_inspector.controller_render_subscriber'));
+        $collectorDefinition = $container->getDefinition('Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector');
+        $collectorDefinition->setArgument(0, new Reference('Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber'));
         $collectorDefinition->setArgument(1, new Reference('request_stack'));
         $collectorDefinition->setArgument(2, new Reference('twig'));
         $collectorDefinition->setArgument(3, $config['cookie_name']);
