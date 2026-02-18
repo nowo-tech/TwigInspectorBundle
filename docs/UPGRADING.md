@@ -2,9 +2,20 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
-## Upgrading from 1.0.15 to the next release
+## Upgrading from 1.0.16 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.15 to 1.0.16
+
+**Action for contributors** — if you use the Makefile for assets, update your commands.
+
+### What changed
+- **DependencyInjection**: The extension no longer duplicates configuration via `setArgument()`. Configuration flows only through parameters; behavior is unchanged.
+- **Makefile**: Asset targets renamed — `build-assets` → `assets`, `build-assets-dev` → `assets-dev`, `watch-assets` → `assets-watch`, `clean-assets` → `assets-clean`.
+
+### Action for contributors
+If you run `make build-assets`, use `make assets` instead. Run `make help` for the full target list. No changes needed for bundle users who don't contribute to the repo.
 
 ## Upgrading from 1.0.14 to 1.0.15
 
