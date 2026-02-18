@@ -556,5 +556,4 @@ final class OpenTemplateControllerTest extends TestCase
             }
         }
     }
-
 }
