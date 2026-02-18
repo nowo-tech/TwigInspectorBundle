@@ -9,7 +9,7 @@ services:
       - "${PORT:-8001}:80"
     volumes:
       - .:/app
-      # Mount bundle root so path repo symlink and template/code changes are visible
+      # Mount bundle root so the path repo symlink works and template/code changes are visible
       - ../..:/var/twig-inspector-bundle
       - composer-cache:/root/.composer/cache
     environment:
