@@ -20,11 +20,14 @@ RUN git config --global --add safe.directory /app
 # Set working directory
 WORKDIR /app
 
-# Set environment
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV PATH="/app/vendor/bin:${PATH}"
+ENV SERVER_NAME=:80
 
-# Entrypoint: ensure var dirs exist and are writable, then run FrankenPHP (keep process in foreground)
+# Custom Caddyfile: HTTP on port 80 (no HTTPS)
+COPY docker/frankenphp/Caddyfile /etc/frankenphp/Caddyfile
+
+# Entrypoint: ensure var dirs exist and are writable, then run FrankenPHP
 RUN echo '#!/bin/sh' > /usr/local/bin/docker-entrypoint.sh && \
     echo 'set -e' >> /usr/local/bin/docker-entrypoint.sh && \
     echo 'mkdir -p /app/var/cache /app/var/log' >> /usr/local/bin/docker-entrypoint.sh && \
