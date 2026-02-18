@@ -11,20 +11,20 @@ services:
       - '@debug.file_link_formatter'
     public: true
 
-  nowo_twig_inspector.box_drawings:
+  Nowo\TwigInspectorBundle\BoxDrawings:
     class: Nowo\TwigInspectorBundle\BoxDrawings
 
-  nowo_twig_inspector.twig_inspector_extension:
+  Nowo\TwigInspectorBundle\Twig\TwigInspectorExtension:
     class: Nowo\TwigInspectorBundle\Twig\TwigInspectorExtension
     tags:
       - { name: twig.extension }
 
-  nowo_twig_inspector.html_comments_extension:
+  Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension:
     class: Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension
     arguments:
       - '@request_stack'
       - '@router'
-      - '@nowo_twig_inspector.box_drawings'
+      - '@Nowo\TwigInspectorBundle\BoxDrawings'
       - '%nowo_twig_inspector.enabled_extensions%'
       - '%nowo_twig_inspector.excluded_templates%'
       - '%nowo_twig_inspector.excluded_blocks%'
@@ -38,12 +38,12 @@ services:
     tags:
       - { name: twig.extension }
 
-  nowo_twig_inspector.controller_render_subscriber:
+  Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber:
     class: Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber
     arguments:
       - '@request_stack'
 
-  nowo_twig_inspector.controller_comment_subscriber:
+  Nowo\TwigInspectorBundle\EventSubscriber\ControllerCommentSubscriber:
     class: Nowo\TwigInspectorBundle\EventSubscriber\ControllerCommentSubscriber
     arguments:
       - '@request_stack'
@@ -52,10 +52,10 @@ services:
     tags:
       - { name: kernel.event_subscriber }
 
-  nowo_twig_inspector.collector:
+  Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector:
     class: Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector
     arguments:
-      - '@nowo_twig_inspector.controller_render_subscriber'
+      - '@Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber'
       - '@request_stack'
       - '@twig'
       - '%nowo_twig_inspector.cookie_name%'
@@ -72,7 +72,7 @@ services:
         # just before symfony twig collector
         priority: 260
 
-  nowo_twig_inspector.command.install:
+  Nowo\TwigInspectorBundle\Command\InstallCommand:
     class: Nowo\TwigInspectorBundle\Command\InstallCommand
     arguments:
       - '%kernel.project_dir%'
