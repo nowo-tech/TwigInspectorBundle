@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.16] - 2026-02-18
+
+### Changed
+- **DependencyInjection**: Removed redundant `setArgument()` calls in `NowoTwigInspectorExtension`. Configuration is now passed solely via parameters; `services.yaml` binds arguments through `%nowo_twig_inspector.xxx%` references. Internal refactor, no user-facing changes.
+- **Makefile**: Renamed asset targets for clarity — `build-assets` → `assets`, `build-assets-dev` → `assets-dev`, `watch-assets` → `assets-watch`, `clean-assets` → `assets-clean`. If you run `make build-assets` in development, use `make assets` instead. See Makefile help for full list.
+
 ## [1.0.15] - 2026-02-18
 
 ### Added
