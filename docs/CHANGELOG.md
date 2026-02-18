@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.15] - 2026-02-18
+
+### Added
+- **Security — Prod restriction**: The "open in IDE" controller returns 404 in `prod` even if routes were accidentally enabled. Defense in depth: the controller checks `kernel.environment` before processing any request.
+- **ChainLoader support**: Template path validation now supports `ChainLoader`, collecting paths from all nested `FilesystemLoader` instances. "Open in IDE" works correctly when using multiple template directories via `ChainLoader`.
+
+### Changed
+- **Routes**: Recipe and InstallCommand now import routes with `when@dev:` and `when@test:` only. Never import in prod. See INSTALLATION.md and SECURITY.md.
+- **Documentation**: INSTALLATION.md and SECURITY.md updated with route restrictions and defense-in-depth measures.
+
 ## [1.0.14] - 2026-02-18
 
 ### Changed

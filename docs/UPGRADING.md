@@ -2,9 +2,33 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
-## Upgrading from 1.0.14 to the next release
+## Upgrading from 1.0.15 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.14 to 1.0.15
+
+**Action recommended** — ensure routes are restricted to dev/test.
+
+### What changed
+- **Prod restriction**: The "open in IDE" controller now returns 404 in `prod` regardless of route configuration. This is a safety measure; you should still only import routes in dev/test.
+- **Routes**: The recipe uses `when@dev:` and `when@test:` in `config/routes.yaml`. If you added routes manually without this restriction, update them as shown in INSTALLATION.md.
+- **ChainLoader**: Template path validation now supports projects using `ChainLoader` (multiple Twig template directories). No configuration changes needed.
+
+### Action required
+If your `config/routes.yaml` imports Twig Inspector routes without `when@dev:` / `when@test:`, update it:
+
+```yaml
+when@dev:
+    nowo_twig_inspector:
+        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
+
+when@test:
+    nowo_twig_inspector:
+        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
+```
+
+No breaking changes for projects already restricting routes to dev/test.
 
 ## Upgrading from 1.0.13 to 1.0.14
 
