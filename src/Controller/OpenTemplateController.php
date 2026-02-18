@@ -180,7 +180,10 @@ class OpenTemplateController
 
         if ($loader instanceof FilesystemLoader) {
             foreach ($loader->getNamespaces() as $namespace) {
-                $paths = array_merge($paths, $loader->getPaths((string) $namespace));
+                if (!\is_string($namespace)) {
+                    continue;
+                }
+                $paths = array_merge($paths, $loader->getPaths($namespace));
             }
         }
 

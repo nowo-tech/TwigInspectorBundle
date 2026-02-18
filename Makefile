@@ -52,12 +52,17 @@ shell:
 	$(COMPOSE) exec $(SERVICE_PHP) sh
 
 # Install dependencies
-install:
-	$(COMPOSE) exec $(SERVICE_PHP) composer install
+install: ensure-up
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer install
 
-# Ensure container is running (start if not)
+# Ensure root container is running (start if not). Used by cs-fix, cs-check, qa, install, test, test-coverage.
 ensure-up:
-	@$(COMPOSE) up -d
+	@if ! $(COMPOSE) exec -T $(SERVICE_PHP) true 2>/dev/null; then \
+		echo "Starting container (root docker-compose)..."; \
+		$(COMPOSE) up -d; \
+		sleep 3; \
+		$(COMPOSE) exec -T $(SERVICE_PHP) composer install --no-interaction; \
+	fi
 
 # Run tests (inside root docker-compose php service). Run 'make up' once to build and install deps.
 test: ensure-up
@@ -84,24 +89,20 @@ test-shell:
 	docker-compose -f docker-compose.test.yml exec test sh
 
 # Check code style
-cs-check:
-	$(COMPOSE) exec $(SERVICE_PHP) composer cs-check
+cs-check: ensure-up
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer cs-check
 
 # Fix code style
-cs-fix:
-	$(COMPOSE) exec $(SERVICE_PHP) composer cs-fix
+cs-fix: ensure-up
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer cs-fix
 
 # Run all QA
-qa:
-	$(COMPOSE) exec $(SERVICE_PHP) composer qa
+qa: ensure-up
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer qa
 
-# Clean vendor and cache
-clean:
-	rm -rf vendor
-	rm -rf .phpunit.cache
-	rm -rf coverage
-	rm -f coverage.xml
-	rm -f .php-cs-fixer.cache
+# Clean vendor and cache — runs inside container
+clean: ensure-up
+	$(COMPOSE) exec -T $(SERVICE_PHP) sh -c "rm -rf vendor .phpunit.cache coverage coverage.xml .php-cs-fixer.cache"
 
 # Setup git hooks for pre-commit checks
 setup-hooks:
@@ -109,29 +110,28 @@ setup-hooks:
 	git config core.hooksPath .githooks
 	@echo "✅ Git hooks installed! CS-check and tests will run before each commit."
 
-# Build assets (TypeScript and SCSS)
-assets:
+# Build assets (TypeScript and SCSS) — runs inside container
+assets: ensure-up
 	@echo "Building assets..."
-	pnpm install
-	pnpm run build
+	$(COMPOSE) exec -T -e CI=true $(SERVICE_PHP) pnpm install
+	$(COMPOSE) exec -T $(SERVICE_PHP) pnpm run build
 	@echo "✅ Assets built!"
 
-# Build assets in development mode
-assets-dev:
+# Build assets in development mode — runs inside container
+assets-dev: ensure-up
 	@echo "Building assets in development mode..."
-	pnpm install
-	pnpm run build:dev
+	$(COMPOSE) exec -T -e CI=true $(SERVICE_PHP) pnpm install
+	$(COMPOSE) exec -T $(SERVICE_PHP) pnpm run build:dev
 	@echo "✅ Assets built!"
 
-# Watch assets for changes (Vite watch)
-assets-watch:
+# Watch assets for changes (Vite watch) — runs inside container (interactive)
+assets-watch: ensure-up
 	@echo "Watching assets for changes..."
-	pnpm install
-	pnpm run watch
+	$(COMPOSE) exec -e CI=true $(SERVICE_PHP) sh -c "pnpm install && pnpm run watch"
 
-# Clean built assets
-assets-clean:
+# Clean built assets — runs inside container
+assets-clean: ensure-up
 	@echo "Cleaning built assets..."
-	pnpm run clean
+	$(COMPOSE) exec -T $(SERVICE_PHP) pnpm run clean
 	@echo "✅ Assets cleaned!"
 
