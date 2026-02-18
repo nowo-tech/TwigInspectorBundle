@@ -6,7 +6,7 @@ COMPOSE_FILE := docker-compose.yml
 COMPOSE := docker-compose -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down shell install test test-coverage cs-check cs-fix qa clean setup-hooks test-up test-down test-shell build-assets build-assets-dev watch-assets clean-assets
+.PHONY: help up down shell install test test-coverage cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-dev assets-watch assets-clean
 
 # Default target
 help:
@@ -29,10 +29,10 @@ help:
 	@echo "  qa            Run all QA checks (cs-check + test)"
 	@echo "  clean         Remove vendor and cache"
 	@echo "  setup-hooks   Install git pre-commit hooks"
-	@echo "  build-assets  Build TypeScript and SCSS assets"
-	@echo "  build-assets-dev Build assets in development mode"
-	@echo "  watch-assets  Watch assets for changes"
-	@echo "  clean-assets  Clean built assets"
+	@echo "  assets  Build TypeScript and SCSS assets"
+	@echo "  assets-dev Build assets in development mode"
+	@echo "  assets-watch  Watch assets for changes"
+	@echo "  assets-clean  Clean built assets"
 	@echo ""
 
 # Build and start container (root docker-compose)
@@ -110,27 +110,27 @@ setup-hooks:
 	@echo "✅ Git hooks installed! CS-check and tests will run before each commit."
 
 # Build assets (TypeScript and SCSS)
-build-assets:
+assets:
 	@echo "Building assets..."
 	pnpm install
 	pnpm run build
 	@echo "✅ Assets built!"
 
 # Build assets in development mode
-build-assets-dev:
+assets-dev:
 	@echo "Building assets in development mode..."
 	pnpm install
 	pnpm run build:dev
 	@echo "✅ Assets built!"
 
 # Watch assets for changes (Vite watch)
-watch-assets:
+assets-watch:
 	@echo "Watching assets for changes..."
 	pnpm install
 	pnpm run watch
 
 # Clean built assets
-clean-assets:
+assets-clean:
 	@echo "Cleaning built assets..."
 	pnpm run clean
 	@echo "✅ Assets cleaned!"
