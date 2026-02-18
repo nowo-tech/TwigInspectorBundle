@@ -9,7 +9,6 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Dependency injection extension for the Twig Inspector Bundle.
@@ -54,29 +53,32 @@ class NowoTwigInspectorExtension extends Extension
         $container->setParameter('nowo_twig_inspector.reduced_motion', $config['reduced_motion']);
         $container->setParameter('nowo_twig_inspector.keyboard_shortcut', $config['keyboard_shortcut']);
 
-        // Pass configuration to HtmlCommentsExtension
-        $htmlCommentsExtensionDefinition = $container->getDefinition('Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension');
-        $htmlCommentsExtensionDefinition->setArgument(3, $config['enabled_extensions']);
-        $htmlCommentsExtensionDefinition->setArgument(4, $config['excluded_templates']);
-        $htmlCommentsExtensionDefinition->setArgument(5, $config['excluded_blocks']);
-        $htmlCommentsExtensionDefinition->setArgument(6, $config['cookie_name']);
-        $htmlCommentsExtensionDefinition->setArgument(7, $config['max_injection_depth']);
-        $htmlCommentsExtensionDefinition->setArgument(8, $config['excluded_templates_regex']);
-        $htmlCommentsExtensionDefinition->setArgument(9, $config['excluded_templates_prefixes']);
-        $htmlCommentsExtensionDefinition->setArgument(10, $config['excluded_blocks_regex']);
-        $htmlCommentsExtensionDefinition->setArgument(11, $config['inject_on_sub_requests']);
-
-        // Pass configuration to DataCollector (argument 0 = ControllerRenderSubscriber from services.yaml)
-        $collectorDefinition = $container->getDefinition('Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector');
-        $collectorDefinition->setArgument(0, new Reference('Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber'));
-        $collectorDefinition->setArgument(1, new Reference('request_stack'));
-        $collectorDefinition->setArgument(2, new Reference('twig'));
-        $collectorDefinition->setArgument(3, $config['cookie_name']);
-        $collectorDefinition->setArgument(4, $config['enable_metrics']);
-        $collectorDefinition->setArgument(5, $config['overlay_theme']);
-        $collectorDefinition->setArgument(6, $config['overlay_compact']);
-        $collectorDefinition->setArgument(7, $config['reduced_motion']);
-        $collectorDefinition->setArgument(8, $config['keyboard_shortcut']);
+        // Configuration is passed via parameters; services.yaml uses %nowo_twig_inspector.xxx% references.
+        // The following setArgument() calls were redundant and have been removed to avoid duplication.
+        //
+        // Discarded (HtmlCommentsExtension): services.yaml already binds args 3–11 to parameters.
+        // $htmlCommentsExtensionDefinition = $container->getDefinition('Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension');
+        // $htmlCommentsExtensionDefinition->setArgument(3, $config['enabled_extensions']);
+        // $htmlCommentsExtensionDefinition->setArgument(4, $config['excluded_templates']);
+        // $htmlCommentsExtensionDefinition->setArgument(5, $config['excluded_blocks']);
+        // $htmlCommentsExtensionDefinition->setArgument(6, $config['cookie_name']);
+        // $htmlCommentsExtensionDefinition->setArgument(7, $config['max_injection_depth']);
+        // $htmlCommentsExtensionDefinition->setArgument(8, $config['excluded_templates_regex']);
+        // $htmlCommentsExtensionDefinition->setArgument(9, $config['excluded_templates_prefixes']);
+        // $htmlCommentsExtensionDefinition->setArgument(10, $config['excluded_blocks_regex']);
+        // $htmlCommentsExtensionDefinition->setArgument(11, $config['inject_on_sub_requests']);
+        //
+        // Discarded (DataCollector): services.yaml already binds args 0–8 to references and parameters.
+        // $collectorDefinition = $container->getDefinition('Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector');
+        // $collectorDefinition->setArgument(0, new Reference('Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber'));
+        // $collectorDefinition->setArgument(1, new Reference('request_stack'));
+        // $collectorDefinition->setArgument(2, new Reference('twig'));
+        // $collectorDefinition->setArgument(3, $config['cookie_name']);
+        // $collectorDefinition->setArgument(4, $config['enable_metrics']);
+        // $collectorDefinition->setArgument(5, $config['overlay_theme']);
+        // $collectorDefinition->setArgument(6, $config['overlay_compact']);
+        // $collectorDefinition->setArgument(7, $config['reduced_motion']);
+        // $collectorDefinition->setArgument(8, $config['keyboard_shortcut']);
     }
 
     /**
