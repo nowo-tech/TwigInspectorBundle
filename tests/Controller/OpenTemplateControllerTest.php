@@ -587,10 +587,13 @@ final class OpenTemplateControllerTest extends TestCase
             $pathsProperty = $loaderReflection->getProperty('paths');
             $pathsProperty->setAccessible(true);
 
-            // Get current paths and add an invalid one
+            // Get current paths and add an invalid one to the main namespace
+            // (paths structure is namespace => list<string>; appending at top level would add numeric keys
+            // that getNamespaces() would return as int, causing getPaths(int) to fail)
             $currentPaths = $pathsProperty->getValue($loader);
             $invalidPath = '/nonexistent/path/that/does/not/exist';
-            $currentPaths[] = $invalidPath;
+            $mainNs = FilesystemLoader::MAIN_NAMESPACE;
+            $currentPaths[$mainNs][] = $invalidPath;
             $pathsProperty->setValue($loader, $currentPaths);
 
             // Now test validateFilePath - it should skip the invalid path (realpath returns false)
