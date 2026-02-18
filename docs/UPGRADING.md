@@ -2,16 +2,26 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
-## Upgrading from 1.0.13 to the next release
+## Upgrading from 1.0.14 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.13 to 1.0.14
+
+**No action required** — backward-compatible release.
+
+### What changed
+- **Internal**: Service IDs for some bundle services now use FQCN (fully qualified class names). If you referenced these by ID in your code (e.g. for decoration), update the reference. The controller `nowo_twig_inspector.controller.open_template` is unchanged for route compatibility.
+- **Dependencies**: Composer lock file updated.
+
+No breaking changes for typical usage; no configuration changes required.
 
 ## Upgrading from 1.0.12 to 1.0.13
 
 **No action required** — documentation-only release.
 
 ### What changed
-- **Documentation**: Asset pipeline (TypeScript source → JavaScript output) is now documented in DEVELOPMENT.md, CONTRIBUTING.md, and FEEDBACK-REVISION.md. The bundle requires both: TS for the build and compiled JS for runtime. Asset locations (`assets/src`, `views/assets/dist`, `public/assets`) are documented.
+- **Documentation**: Asset pipeline (TypeScript source → JavaScript output) is now documented in DEVELOPMENT.md and CONTRIBUTING.md. The bundle requires both: TS for the build and compiled JS for runtime. Asset locations (`assets/src`, `views/assets/dist`, `public/assets`) are documented.
 - **.gitattributes**: Fixed malformed line that could cause git attribute parsing errors.
 
 No code or configuration changes; no breaking changes.
