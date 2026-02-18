@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Loader\ArrayLoader;
+use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
 use Twig\TemplateWrapper;
 
@@ -411,6 +412,82 @@ final class OpenTemplateControllerTest extends TestCase
             }
             if (is_dir($tempDir)) {
                 rmdir($tempDir);
+            }
+        }
+    }
+
+    public function testInvokeWorksWithChainLoader(): void
+    {
+        // Symfony uses ChainLoader wrapping FilesystemLoader(s); validateFilePath must collect paths from nested loaders
+        $tempDir = sys_get_temp_dir() . '/twig_inspector_chain_' . uniqid();
+        mkdir($tempDir, 0o777, true);
+        $templateFile = $tempDir . '/chain_test.html.twig';
+        file_put_contents($templateFile, 'content');
+
+        try {
+            $filesystemLoader = new FilesystemLoader([$tempDir]);
+            $chainLoader = new ChainLoader([$filesystemLoader]);
+            $twig = new Environment($chainLoader);
+
+            $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
+            $fileLinkFormatter->expects($this->once())
+                ->method('format')
+                ->with($this->stringContains($templateFile), 1)
+                ->willReturn('phpstorm://open?file=' . $templateFile . '&line=1');
+
+            $controller = new OpenTemplateController($twig, $fileLinkFormatter, 'dev');
+            $request = new Request();
+            $response = ($controller)($request, 'chain_test.html.twig');
+
+            $this->assertInstanceOf(RedirectResponse::class, $response);
+        } finally {
+            if (file_exists($templateFile)) {
+                unlink($templateFile);
+            }
+            if (is_dir($tempDir)) {
+                rmdir($tempDir);
+            }
+        }
+    }
+
+    public function testInvokeRejectsFileOutsideAllowedDirectoriesWithChainLoader(): void
+    {
+        // ChainLoader with FilesystemLoader: file from other dir must be rejected
+        $allowedDir = sys_get_temp_dir() . '/twig_inspector_chain_allowed_' . uniqid();
+        $otherDir = sys_get_temp_dir() . '/twig_inspector_chain_other_' . uniqid();
+        mkdir($allowedDir, 0o777, true);
+        mkdir($otherDir, 0o777, true);
+        $allowedFile = $allowedDir . '/allowed.html.twig';
+        $outsideFile = $otherDir . '/outside.html.twig';
+        file_put_contents($allowedFile, 'allowed');
+        file_put_contents($outsideFile, 'outside');
+
+        try {
+            $chainLoader = new ChainLoader([new FilesystemLoader([$allowedDir])]);
+            $twig = new Environment($chainLoader);
+            $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
+            $controller = new OpenTemplateController($twig, $fileLinkFormatter, 'dev');
+
+            $reflection = new \ReflectionClass($controller);
+            $method = $reflection->getMethod('validateFilePath');
+            $method->setAccessible(true);
+
+            $this->expectException(BadRequestException::class);
+            $this->expectExceptionMessage('outside allowed Twig template directories');
+
+            $method->invoke($controller, $outsideFile);
+        } finally {
+            if (file_exists($allowedFile)) {
+                unlink($allowedFile);
+            }
+            if (file_exists($outsideFile)) {
+                unlink($outsideFile);
+            }
+            if (is_dir($otherDir)) {
+                rmdir($otherDir);
+            }
+            if (is_dir($allowedDir)) {
+                rmdir($allowedDir);
             }
         }
     }

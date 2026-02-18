@@ -13,7 +13,9 @@ use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
+use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
+use Twig\Loader\LoaderInterface;
 use Twig\TemplateWrapper;
 
 /**
@@ -133,18 +135,12 @@ class OpenTemplateController
             throw new BadRequestException('Template file path could not be resolved.');
         }
 
-        // Get all Twig template paths from the loader
+        // Get all Twig template paths from the loader (supports ChainLoader and FilesystemLoader)
         $loader = $this->twig->getLoader();
-        $paths = [];
+        $paths = $this->collectFilesystemPaths($loader);
 
-        // FilesystemLoader has getPaths() method
-        if ($loader instanceof FilesystemLoader) {
-            $paths = $loader->getPaths();
-        } else {
-            // For other loaders (ArrayLoader, etc.), we rely on Twig's own security
-            // Twig will only load templates that are registered in the loader
-            // The validateTemplateName() method already prevents path traversal
-            // So if we got here, the template was successfully loaded by Twig
+        if ($paths === []) {
+            // No FilesystemLoader (e.g. ArrayLoader): rely on Twig's own security
             return;
         }
 
@@ -161,5 +157,33 @@ class OpenTemplateController
         if (!$isValid) {
             throw new BadRequestException('Template file is outside allowed Twig template directories.');
         }
+    }
+
+    /**
+     * Collects all filesystem paths from the loader (ChainLoader, FilesystemLoader, or nested).
+     *
+     * @param LoaderInterface $loader The Twig loader
+     *
+     * @return list<string> Flat list of absolute or relative paths where templates may reside
+     */
+    private function collectFilesystemPaths(LoaderInterface $loader): array
+    {
+        $paths = [];
+
+        if ($loader instanceof ChainLoader) {
+            foreach ($loader->getLoaders() as $child) {
+                $paths = array_merge($paths, $this->collectFilesystemPaths($child));
+            }
+
+            return $paths;
+        }
+
+        if ($loader instanceof FilesystemLoader) {
+            foreach ($loader->getNamespaces() as $namespace) {
+                $paths = array_merge($paths, $loader->getPaths($namespace));
+            }
+        }
+
+        return $paths;
     }
 }
