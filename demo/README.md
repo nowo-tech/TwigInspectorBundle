@@ -366,9 +366,6 @@ nowo_twig_inspector:
     # Enable template usage metrics
     enable_metrics: true
     
-    # Performance optimization
-    optimize_output_buffering: true
-    
     # Inject on sub-requests (e.g. when main content is rendered as fragment)
     inject_on_sub_requests: false
     

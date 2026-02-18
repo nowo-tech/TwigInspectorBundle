@@ -121,7 +121,6 @@ when@dev:
 | `excluded_templates_prefixes` | array | `[]` | Template name prefixes to exclude (e.g. `['@Admin/']`) |
 | `excluded_blocks_regex` | array | `[]` | Regex patterns for block exclusion |
 | `enable_metrics` | bool | `true` | Collect template/block metrics and render times in Web Profiler |
-| `optimize_output_buffering` | bool | `true` | Skip output buffering when inspector is disabled |
 | `inject_on_sub_requests` | bool | `false` | When true, inject comments also during sub-requests (e.g. when main content is rendered as fragment). Enable if all templates show "sub-request" and none get inspected. |
 | `cookie_name` | string | `'twig_inspector_is_active'` | Cookie used to enable/disable the inspector |
 | `max_injection_depth` | int | `0` | Max nesting depth for comments (0 = unlimited) |
