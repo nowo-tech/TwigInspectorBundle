@@ -6,7 +6,7 @@ COMPOSE_FILE := docker-compose.yml
 COMPOSE := docker-compose -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down shell install test test-coverage cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-dev assets-watch assets-clean
+.PHONY: help up down shell install test test-coverage cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-dev assets-watch assets-clean release-check release-check-demos composer-sync
 
 # Default target
 help:
@@ -18,7 +18,7 @@ help:
 	@echo "  up            Start Docker container"
 	@echo "  down          Stop Docker container"
 	@echo "  shell         Open shell in container"
-	@echo "  install       Install Composer dependencies"
+	@echo "  install       Install Composer and pnpm dependencies"
 	@echo "  test          Run PHPUnit tests (starts container if needed)"
 	@echo "  test-coverage Run tests with code coverage (starts container if needed)"
 	@echo "  test-up       Start test container"
@@ -27,6 +27,8 @@ help:
 	@echo "  cs-check      Check code style"
 	@echo "  cs-fix        Fix code style"
 	@echo "  qa            Run all QA checks (cs-check + test)"
+	@echo "  release-check Pre-release: cs-fix, cs-check, test-coverage, demo healthchecks"
+	@echo "  composer-sync Validate composer.json and align composer.lock (no install)"
 	@echo "  clean         Remove vendor and cache"
 	@echo "  setup-hooks   Install git pre-commit hooks"
 	@echo "  assets  Build TypeScript and SCSS assets"
@@ -51,9 +53,11 @@ down:
 shell:
 	$(COMPOSE) exec $(SERVICE_PHP) sh
 
-# Install dependencies
+# Install dependencies (composer + pnpm for assets)
 install: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer install
+	$(COMPOSE) exec -T -e CI=true $(SERVICE_PHP) pnpm install
+	@echo "✅ Dependencies installed (composer + pnpm)."
 
 # Ensure root container is running (start if not). Used by cs-fix, cs-check, qa, install, test, test-coverage.
 ensure-up:
@@ -72,21 +76,21 @@ test: ensure-up
 test-coverage: ensure-up
 	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage
 
-# Start test container
+# Start container (same as up; alias for test workflow)
 test-up:
-	docker-compose -f docker-compose.test.yml build
-	docker-compose -f docker-compose.test.yml up -d
+	$(COMPOSE) build
+	$(COMPOSE) up -d
 	@echo "Installing dependencies..."
-	docker-compose -f docker-compose.test.yml exec test composer install --no-interaction
-	@echo "✅ Test container ready!"
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer install --no-interaction
+	@echo "✅ Container ready!"
 
-# Stop test container
+# Stop container
 test-down:
-	docker-compose -f docker-compose.test.yml down
+	$(COMPOSE) down
 
-# Open shell in test container
+# Open shell in container
 test-shell:
-	docker-compose -f docker-compose.test.yml exec test sh
+	$(COMPOSE) exec $(SERVICE_PHP) sh
 
 # Check code style
 cs-check: ensure-up
@@ -99,6 +103,16 @@ cs-fix: ensure-up
 # Run all QA
 qa: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer qa
+
+# Pre-release: cs-fix, cs-check, test-coverage, demo healthchecks
+release-check: ensure-up composer-sync cs-fix cs-check test-coverage release-check-demos
+
+release-check-demos:
+	@$(MAKE) -C demo release-verify
+
+composer-sync: ensure-up
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer validate --strict
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer update --no-install
 
 # Clean vendor and cache — runs inside container
 clean: ensure-up

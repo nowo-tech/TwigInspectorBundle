@@ -13,9 +13,9 @@ get-version = $(shell echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | s
 # Helper function to get demo version for shell commands
 get-version-shell = $(shell echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/')
 
-.PHONY: help clean test-all test-coverage-all verify-all check-all
-.PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) install-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo) verify-$(demo))
-.PHONY: up down install test shell logs test-coverage verify
+.PHONY: help clean test-all test-coverage-all verify-all check-all release-verify
+.PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) restart-$(demo) build-$(demo) install-$(demo) update-bundle-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo) verify-$(demo))
+.PHONY: up down restart build install update-bundle test shell logs test-coverage verify
 
 # Default target
 help:
@@ -28,7 +28,10 @@ help:
 		echo "$$version Demo (Port 8001):"; \
 		echo "  up-$$demo        Start $$version demo containers"; \
 		echo "  down-$$demo      Stop $$version demo containers"; \
+		echo "  restart-$$demo   Restart $$version demo containers"; \
+		echo "  build-$$demo     Rebuild $$version image (no cache)"; \
 		echo "  install-$$demo   Install dependencies for $$version demo"; \
+		echo "  update-bundle-$$demo  Update bundle from path repo and clear cache"; \
 		echo "  shell-$$demo     Open shell in $$version PHP container"; \
 		echo "  logs-$$demo      Show $$version container logs"; \
 		echo "  test-$$demo      Run tests for $$version demo"; \
@@ -47,7 +50,10 @@ help:
 	@echo "Generic commands (use with DEMO=<name>):"
 	@echo "  up <demo>         Start a specific demo (e.g., make up DEMO=symfony6)"
 	@echo "  down <demo>        Stop a specific demo (e.g., make down DEMO=symfony6)"
+	@echo "  restart <demo>     Restart containers (e.g., make restart DEMO=symfony6)"
+	@echo "  build <demo>       Rebuild image no cache (e.g., make build DEMO=symfony6)"
 	@echo "  install <demo>     Install dependencies (e.g., make install DEMO=symfony6)"
+	@echo "  update-bundle <demo>  Update bundle from path repo (e.g., make update-bundle DEMO=symfony6)"
 	@echo "  test <demo>        Run tests (e.g., make test DEMO=symfony6)"
 	@echo "  test-coverage <demo>  Run tests with coverage (e.g., make test-coverage DEMO=symfony6)"
 	@echo "  shell <demo>       Open shell in a specific demo container"
@@ -115,6 +121,25 @@ down-$(1):
 	echo "✅ $$VERSION demo stopped!"
 endef
 
+# Generate restart targets for each demo
+define restart-target-template
+restart-$(1):
+	@$(MAKE) -C $(1) ensure-up; \
+	VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
+	echo "🔄 Restarting $$VERSION demo..."; \
+	cd $(1) && docker-compose restart; \
+	echo "✅ $$VERSION demo restarted!"
+endef
+
+# Generate build targets for each demo
+define build-target-template
+build-$(1):
+	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
+	echo "🔨 Rebuilding $$VERSION image (no cache)..."; \
+	cd $(1) && docker-compose build --no-cache; \
+	echo "✅ $$VERSION image rebuilt!"
+endef
+
 # Generate install targets for each demo
 define install-target-template
 install-$(1):
@@ -129,6 +154,12 @@ install-$(1):
 		fi; \
 		docker-compose up -d && sleep 2 && docker-compose exec php composer install); \
 	echo "✅ $$VERSION dependencies installed!"
+endef
+
+# Generate update-bundle targets for each demo
+define update-bundle-target-template
+update-bundle-$(1):
+	@$(MAKE) -C $(1) update-bundle
 endef
 
 # Generate shell targets for each demo
@@ -176,7 +207,10 @@ endef
 # Generate all targets for each demo
 $(foreach demo,$(DEMOS),$(eval $(call up-target-template,$(demo))))
 $(foreach demo,$(DEMOS),$(eval $(call down-target-template,$(demo))))
+$(foreach demo,$(DEMOS),$(eval $(call restart-target-template,$(demo))))
+$(foreach demo,$(DEMOS),$(eval $(call build-target-template,$(demo))))
 $(foreach demo,$(DEMOS),$(eval $(call install-target-template,$(demo))))
+$(foreach demo,$(DEMOS),$(eval $(call update-bundle-target-template,$(demo))))
 $(foreach demo,$(DEMOS),$(eval $(call shell-target-template,$(demo))))
 $(foreach demo,$(DEMOS),$(eval $(call logs-target-template,$(demo))))
 $(foreach demo,$(DEMOS),$(eval $(call test-target-template,$(demo))))
@@ -212,6 +246,24 @@ down:
 	fi
 	@$(MAKE) down-$(DEMO)
 
+# Generic restart command
+restart:
+	@if [ -z "$(DEMO)" ]; then \
+		echo "❌ Error: Please specify a demo. Usage: make restart DEMO=<demo-name>"; \
+		echo "Available demos: $(DEMOS)"; \
+		exit 1; \
+	fi
+	@$(MAKE) restart-$(DEMO)
+
+# Generic build command
+build:
+	@if [ -z "$(DEMO)" ]; then \
+		echo "❌ Error: Please specify a demo. Usage: make build DEMO=<demo-name>"; \
+		echo "Available demos: $(DEMOS)"; \
+		exit 1; \
+	fi
+	@$(MAKE) build-$(DEMO)
+
 # Generic install command
 install:
 	@if [ -z "$(DEMO)" ]; then \
@@ -220,6 +272,14 @@ install:
 		exit 1; \
 	fi
 	@$(MAKE) install-$(DEMO)
+
+update-bundle:
+	@if [ -z "$(DEMO)" ]; then \
+		echo "❌ Error: Please specify a demo. Usage: make update-bundle DEMO=<demo-name>"; \
+		echo "Available demos: $(DEMOS)"; \
+		exit 1; \
+	fi
+	@$(MAKE) update-bundle-$(DEMO)
 
 # Generic test command
 test:
@@ -371,6 +431,21 @@ verify:
 
 # Alias for verify-all
 check-all: verify-all
+
+# Release verify: for each demo, up → sleep → healthcheck (HTTP 200) → down
+release-verify:
+	@for demo in $(DEMOS); do \
+		port=$$(grep '^PORT=' $$demo/.env 2>/dev/null | cut -d= -f2 | tr -d '\r'); \
+		[ -z "$$port" ] && port=8001; \
+		echo "🔍 Release verify: $$demo (port $$port)..."; \
+		$(MAKE) up-$$demo; \
+		echo "⏳ Waiting for $$demo to be ready..."; sleep 15; \
+		code=$$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:$$port 2>/dev/null || echo "000"); \
+		$(MAKE) down-$$demo 2>/dev/null || true; \
+		if [ "$$code" != "200" ]; then echo "❌ $$demo healthcheck failed (HTTP $$code)"; exit 1; fi; \
+		echo "✅ $$demo OK (HTTP $$code)"; \
+	done
+	@echo "✅ All demos passed release-verify."
 
 # Clean vendor and cache from all demos
 clean:

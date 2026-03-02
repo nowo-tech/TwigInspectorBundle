@@ -1,7 +1,7 @@
 # Makefile for Symfony 7.0 Demo (Twig Inspector Bundle)
 # Run from this directory: make up, make install, etc.
 
-.PHONY: help up down build install shell logs test test-coverage cache-clear link-bundle update-bundle
+.PHONY: help up down build install shell logs test test-coverage cache-clear link-bundle update-bundle ensure-up
 
 help:
 	@echo "Symfony 7.0 Demo - Twig Inspector Bundle"
@@ -22,36 +22,51 @@ help:
 up:
 	@if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || true; fi
 	docker-compose up -d
+	@echo "Waiting for container to be ready..."
+	@sleep 5
+	@echo "Installing dependencies..."
+	@docker-compose exec -T -e COMPOSER_MEMORY_LIMIT=-1 php composer install --no-interaction
+	@echo "App ready (see .env for PORT)."
 
 down:
 	docker-compose down
 
+restart: ensure-up
+	docker-compose restart
+
 build:
 	docker-compose build --no-cache
 
-install:
-	docker-compose exec php composer install
+ensure-up:
+	@if ! docker-compose exec -T php true 2>/dev/null; then \
+		echo "Starting container..."; \
+		docker-compose up -d; \
+		sleep 3; \
+	fi
 
-shell:
+install: ensure-up
+	docker-compose exec -T -e COMPOSER_MEMORY_LIMIT=-1 php composer install --no-interaction
+
+shell: ensure-up
 	docker-compose exec php sh
 
 logs:
 	docker-compose logs -f
 
-test:
+test: ensure-up
 	docker-compose exec -e APP_ENV=test php composer test
 
-test-coverage:
+test-coverage: ensure-up
 	docker-compose exec php composer test-coverage
 
-cache-clear:
+cache-clear: ensure-up
 	docker-compose exec php php bin/console cache:clear
 
-link-bundle:
+link-bundle: ensure-up
 	docker-compose exec php sh -c "rm -rf vendor/nowo-tech/twig-inspector-bundle && ln -s /var/twig-inspector-bundle vendor/nowo-tech/twig-inspector-bundle && php bin/console cache:clear"
 	@echo "Bundle linked to mounted source. Reload the page in the browser."
 
-update-bundle:
+update-bundle: ensure-up
 	docker-compose exec php composer update nowo-tech/twig-inspector-bundle --no-interaction
 	docker-compose exec php php bin/console cache:clear
 	@echo "Bundle updated. Reload the page in the browser."

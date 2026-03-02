@@ -1,3 +1,4 @@
+name: twig-inspector-bundle-demo-symfony-6
 services:
   php:
     build:

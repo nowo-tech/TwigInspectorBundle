@@ -1,34 +1,31 @@
-# FrankenPHP (Dunglas) - PHP 8.5 Alpine
-# https://frankenphp.dev/docs/docker/
-# https://hub.docker.com/r/dunglas/frankenphp
-FROM dunglas/frankenphp:1-php8.5-alpine
+# PHP 8.2 Alpine + Node/pnpm for Vite asset builds and tests
+FROM php:8.2-cli-alpine
 
-# Install system dependencies (including Node.js and pnpm for asset builds)
 RUN apk add --no-cache \
     git \
     unzip \
     bash \
+    libzip-dev \
     nodejs \
     npm
 
-# Install pnpm for asset builds
-RUN npm install -g pnpm@10.29.2
+RUN docker-php-ext-install -j$(nproc) zip
 
-# Install PHP extensions (install-php-extensions is provided by the base image)
-RUN install-php-extensions \
-    zip \
-    pcov
+# PCOV for code coverage
+RUN apk add --no-cache $PHPIZE_DEPS \
+    && pecl install pcov \
+    && docker-php-ext-enable pcov \
+    && apk del $PHPIZE_DEPS
 
-# Install Composer
+# pnpm for asset builds (Vite)
+RUN npm install -g pnpm@10
+
+# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Configure git safe directory
 RUN git config --global --add safe.directory /app
 
-# Set working directory (FrankenPHP uses /app by default)
 WORKDIR /app
 
-# Set environment
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV PATH="/app/vendor/bin:${PATH}"
-ENV XDEBUG_MODE=coverage
