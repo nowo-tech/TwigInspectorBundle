@@ -27,11 +27,12 @@ ENV SERVER_NAME=:80
 # Custom Caddyfile: HTTP on port 80 (no HTTPS)
 COPY docker/frankenphp/Caddyfile /etc/frankenphp/Caddyfile
 
-# Entrypoint: ensure var dirs exist and are writable, then run FrankenPHP
+# Entrypoint: ensure var dirs, install deps if needed, then run FrankenPHP
 RUN echo '#!/bin/sh' > /usr/local/bin/docker-entrypoint.sh && \
     echo 'set -e' >> /usr/local/bin/docker-entrypoint.sh && \
     echo 'mkdir -p /app/var/cache /app/var/log' >> /usr/local/bin/docker-entrypoint.sh && \
     echo 'chmod -R 777 /app/var' >> /usr/local/bin/docker-entrypoint.sh && \
+    echo 'if [ ! -f /app/vendor/autoload_runtime.php ]; then composer install --no-interaction; fi' >> /usr/local/bin/docker-entrypoint.sh && \
     echo 'exec frankenphp run --config /etc/frankenphp/Caddyfile --adapter caddyfile' >> /usr/local/bin/docker-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-entrypoint.sh
 

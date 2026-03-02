@@ -63,7 +63,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
         private readonly RequestStack $requestStack,
         private ?Environment $twig = null,
         private readonly string $cookieName = 'twig_inspector_is_active',
-        private readonly bool $enableMetrics = true,
+        private bool $enableMetrics = true,
         private readonly string $overlayTheme = 'light',
         private readonly bool $overlayCompact = false,
         private readonly bool $reducedMotion = false,
@@ -72,20 +72,22 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     }
 
     /**
-     * Serialize only collected data; exclude Twig Environment (may contain closures) and service refs.
-     * The profiler storage serializes collector instances; after unserialize only getData() etc. are used.
+     * Serialize collected data and enableMetrics so lateCollect() works after unserialize (twig is excluded).
      *
-     * @return array{data: array}
+     * @return array{data: array, enableMetrics: bool}
      */
     public function __serialize(): array
     {
-        return ['data' => $this->data];
+        return [
+            'data'          => $this->data,
+            'enableMetrics' => $this->enableMetrics,
+        ];
     }
 
     /**
-     * Restore collected data after unserialization. Twig is set to null (not serialized).
+     * Restore state after unserialization. Twig is set to null (not serialized).
      *
-     * @param array{data?: array} $data
+     * @param array{data?: array, enableMetrics?: bool} $data
      */
     public function __unserialize(array $data): void
     {
@@ -100,7 +102,8 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
             'enabled'           => false,
             'config'            => [],
         ];
-        $this->twig = null;
+        $this->enableMetrics = $data['enableMetrics'] ?? true;
+        $this->twig          = null;
     }
 
     /**
