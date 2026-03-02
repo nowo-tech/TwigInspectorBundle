@@ -8,6 +8,8 @@ use Twig\Attribute\YieldReady;
 use Twig\Compiler;
 use Twig\Node\Node;
 
+use function sprintf;
+
 /**
  * Twig AST node that compiles to a call to HtmlCommentsExtension::end() with the same NodeReference.
  *
@@ -31,8 +33,6 @@ class NodeEnd extends Node
      * Compiles the node to PHP that calls the extension's end() with the stored NodeReference.
      *
      * @param Compiler $compiler Twig compiler
-     *
-     * @return void
      */
     public function compile(Compiler $compiler): void
     {
@@ -42,8 +42,8 @@ class NodeEnd extends Node
               sprintf(
                   "\$%s->end(\$%s);\n\n",
                   $this->getAttribute('var_name'),
-                  $this->getAttribute('var_name') . '_ref'
-              )
+                  $this->getAttribute('var_name') . '_ref',
+              ),
           );
     }
 }

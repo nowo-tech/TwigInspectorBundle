@@ -25,13 +25,13 @@ final class NodeEndTest extends TestCase
 
     public function testCompile(): void
     {
-        $node = new NodeEnd('var123');
+        $node     = new NodeEnd('var123');
         $compiler = $this->createMock(Compiler::class);
 
         $compiler->method('write')
           ->willReturnCallback(function ($arg) use ($compiler) {
               static $callCount = 0;
-              $callCount++;
+              ++$callCount;
               if ($callCount === 1) {
                   $this->assertSame("\n", $arg);
               } else {

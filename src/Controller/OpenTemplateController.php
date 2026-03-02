@@ -18,6 +18,10 @@ use Twig\Loader\FilesystemLoader;
 use Twig\Loader\LoaderInterface;
 use Twig\TemplateWrapper;
 
+use function in_array;
+use function is_string;
+use function sprintf;
+
 /**
  * Controller that redirects to an IDE file link for a given Twig template and line.
  * Used by the inspector overlay when clicking "open in IDE".
@@ -33,9 +37,9 @@ class OpenTemplateController
     /**
      * Constructor.
      *
-     * @param Environment       $twig              The Twig environment (to resolve template path)
+     * @param Environment $twig The Twig environment (to resolve template path)
      * @param FileLinkFormatter $fileLinkFormatter Formats file path and line into an IDE URL
-     * @param string            $environment       Kernel environment (e.g. dev, prod, test). Route returns 404 in prod.
+     * @param string $environment Kernel environment (e.g. dev, prod, test). Route returns 404 in prod.
      */
     public function __construct(
         private readonly Environment $twig,
@@ -48,21 +52,21 @@ class OpenTemplateController
      * Opens a Twig template in the IDE.
      * Loads the template, gets its file path, and generates an IDE link using the file link formatter.
      *
-     * @param Request $request  The request object containing the optional 'line' query parameter
-     * @param string  $template The template name to open
+     * @param Request $request The request object containing the optional 'line' query parameter
+     * @param string $template The template name to open
      *
-     * @throws BadRequestException   When the template name is invalid or contains path traversal
+     * @throws BadRequestException When the template name is invalid or contains path traversal
      * @throws NotFoundHttpException When the template cannot be found
-     * @throws LoaderError           When the template cannot be loaded
-     * @throws RuntimeError          When a runtime error occurs
-     * @throws SyntaxError           When a syntax error is found in the template
+     * @throws LoaderError When the template cannot be loaded
+     * @throws RuntimeError When a runtime error occurs
+     * @throws SyntaxError When a syntax error is found in the template
      *
      * @return RedirectResponse Redirect response to the IDE with the file path and line number
      */
     public function __invoke(Request $request, string $template): RedirectResponse
     {
         // Restrict to dev/test: in prod, return 404 even if routes were accidentally enabled
-        if (!\in_array($this->environment, self::ALLOWED_ENVIRONMENTS, true)) {
+        if (!in_array($this->environment, self::ALLOWED_ENVIRONMENTS, true)) {
             throw new NotFoundHttpException();
         }
 
@@ -78,7 +82,7 @@ class OpenTemplateController
         try {
             /** @var TemplateWrapper $templateWrapper */
             $templateWrapper = $this->twig->load($template);
-            $file = $templateWrapper->getSourceContext()->getPath();
+            $file            = $templateWrapper->getSourceContext()->getPath();
 
             // Additional security: Verify the resolved file path is within allowed directories
             $this->validateFilePath($file);
@@ -97,13 +101,11 @@ class OpenTemplateController
      * @param string $template Template name (e.g. @App/demo/home.html.twig or demo/home.html.twig)
      *
      * @throws BadRequestException When the template name is empty or contains invalid characters
-     *
-     * @return void
      */
     private function validateTemplateName(string $template): void
     {
         // Reject empty template names
-        if ('' === trim($template)) {
+        if (trim($template) === '') {
             throw new BadRequestException('Template name cannot be empty.');
         }
 
@@ -124,20 +126,18 @@ class OpenTemplateController
      * @param string $filePath Absolute path to the template file
      *
      * @throws BadRequestException When the path cannot be resolved or is outside allowed directories
-     *
-     * @return void
      */
     private function validateFilePath(string $filePath): void
     {
         // Normalize the file path first
         $realFilePath = realpath($filePath);
-        if (false === $realFilePath) {
+        if ($realFilePath === false) {
             throw new BadRequestException('Template file path could not be resolved.');
         }
 
         // Get all Twig template paths from the loader (supports ChainLoader and FilesystemLoader)
         $loader = $this->twig->getLoader();
-        $paths = $this->collectFilesystemPaths($loader);
+        $paths  = $this->collectFilesystemPaths($loader);
 
         if ($paths === []) {
             // No FilesystemLoader (e.g. ArrayLoader): rely on Twig's own security
@@ -148,7 +148,7 @@ class OpenTemplateController
         $isValid = false;
         foreach ($paths as $path) {
             $realPath = realpath($path);
-            if (false !== $realPath && str_starts_with($realFilePath, $realPath)) {
+            if ($realPath !== false && str_starts_with($realFilePath, $realPath)) {
                 $isValid = true;
                 break;
             }
@@ -180,7 +180,7 @@ class OpenTemplateController
 
         if ($loader instanceof FilesystemLoader) {
             foreach ($loader->getNamespaces() as $namespace) {
-                if (!\is_string($namespace)) {
+                if (!is_string($namespace)) {
                     continue;
                 }
                 $paths = array_merge($paths, $loader->getPaths($namespace));

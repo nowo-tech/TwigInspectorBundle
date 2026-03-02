@@ -11,6 +11,8 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Extension\AbstractExtension;
 
+use function in_array;
+
 /**
  * Twig extension that injects HTML comments before and after every block and template.
  * Comments contain template name, link, and a unique id for the inspector overlay.
@@ -29,19 +31,19 @@ class HtmlCommentsExtension extends AbstractExtension
     /**
      * Constructor.
      *
-     * @param RequestStack          $requestStack              The request stack
-     * @param UrlGeneratorInterface $urlGenerator              The URL generator for template links
-     * @param BoxDrawings           $boxDrawings               The box-drawing character helper
-     * @param array<string>         $enabledExtensions         Template extensions to inspect (e.g. ['.html.twig'])
-     * @param array<string>         $excludedTemplates         Template names or wildcard patterns to exclude
-     * @param array<string>         $excludedBlocks            Block names or wildcard patterns to exclude
-     * @param string                $cookieName                Cookie name used to enable the inspector
-     * @param int                   $maxInjectionDepth         Max nesting depth for comments (0 = unlimited)
-     * @param array<string>         $excludedTemplatesRegex    Regex patterns for template exclusion
-     * @param array<string>         $excludedTemplatesPrefixes Template name prefixes to exclude
-     * @param array<string>         $excludedBlocksRegex       Regex patterns for block exclusion
-     * @param bool                  $injectOnSubRequests       When true, inject comments also during sub-requests (e.g. fragment rendering)
-     * @param bool                  $debug                     When false (e.g. prod), no injection to avoid any overhead
+     * @param RequestStack $requestStack The request stack
+     * @param UrlGeneratorInterface $urlGenerator The URL generator for template links
+     * @param BoxDrawings $boxDrawings The box-drawing character helper
+     * @param array<string> $enabledExtensions Template extensions to inspect (e.g. ['.html.twig'])
+     * @param array<string> $excludedTemplates Template names or wildcard patterns to exclude
+     * @param array<string> $excludedBlocks Block names or wildcard patterns to exclude
+     * @param string $cookieName Cookie name used to enable the inspector
+     * @param int $maxInjectionDepth Max nesting depth for comments (0 = unlimited)
+     * @param array<string> $excludedTemplatesRegex Regex patterns for template exclusion
+     * @param array<string> $excludedTemplatesPrefixes Template name prefixes to exclude
+     * @param array<string> $excludedBlocksRegex Regex patterns for block exclusion
+     * @param bool $injectOnSubRequests When true, inject comments also during sub-requests (e.g. fragment rendering)
+     * @param bool $debug When false (e.g. prod), no injection to avoid any overhead
      */
     public function __construct(
         private readonly RequestStack $requestStack,
@@ -68,8 +70,6 @@ class HtmlCommentsExtension extends AbstractExtension
      * Only starts buffering if the inspector is enabled and the node should be inspected.
      *
      * @param NodeReference $ref The node reference
-     *
-     * @return void
      */
     public function start(NodeReference $ref): void
     {
@@ -91,8 +91,6 @@ class HtmlCommentsExtension extends AbstractExtension
      * Handles nested blocks by tracking nesting levels and updating box drawing styles.
      *
      * @param NodeReference $ref The node reference
-     *
-     * @return void
      */
     public function end(NodeReference $ref): void
     {
@@ -157,7 +155,7 @@ class HtmlCommentsExtension extends AbstractExtension
      * - The cookie is set to true
      * - The template file extension is in the enabled extensions list
      * - The template is not in the excluded templates list
-     * - The block is not in the excluded blocks list
+     * - The block is not in the excluded blocks list.
      *
      * @param NodeReference $ref The node reference
      *
@@ -218,17 +216,16 @@ class HtmlCommentsExtension extends AbstractExtension
         if ($blockName !== $template && $this->isExcluded($blockName, $this->excludedBlocks)) {
             return false;
         }
-        if ($blockName !== $template && $this->isExcludedByRegex($blockName, $this->excludedBlocksRegex)) {
-            return false;
-        }
 
-        return true;
+        return !($blockName !== $template && $this->isExcludedByRegex($blockName, $this->excludedBlocksRegex))
+
+        ;
     }
 
     /**
      * Checks if a name matches any exclusion pattern.
      *
-     * @param string        $name     The name to check
+     * @param string $name The name to check
      * @param array<string> $patterns List of patterns (supports wildcards with *)
      *
      * @return bool True if excluded, false otherwise
@@ -239,7 +236,7 @@ class HtmlCommentsExtension extends AbstractExtension
             // Support wildcard patterns
             // Escape special regex characters, then replace * with .*
             $escaped = preg_quote($pattern, '/');
-            $regex = '/^' . str_replace('\*', '.*', $escaped) . '$/';
+            $regex   = '/^' . str_replace('\*', '.*', $escaped) . '$/';
             if (preg_match($regex, $name)) {
                 return true;
             }
@@ -251,7 +248,7 @@ class HtmlCommentsExtension extends AbstractExtension
     /**
      * Checks if a name matches any regex exclusion pattern.
      *
-     * @param string        $name    The name to check
+     * @param string $name The name to check
      * @param array<string> $regexes List of regex patterns
      *
      * @return bool True if excluded, false otherwise
@@ -270,7 +267,7 @@ class HtmlCommentsExtension extends AbstractExtension
     /**
      * Checks if a name has any of the given prefixes (namespace-style exclusion).
      *
-     * @param string        $name     The name to check
+     * @param string $name The name to check
      * @param array<string> $prefixes List of prefixes (e.g. ['@Admin/', 'components/'])
      *
      * @return bool True if excluded, false otherwise
@@ -303,7 +300,7 @@ class HtmlCommentsExtension extends AbstractExtension
 
         // Check if content starts with JSON brackets (faster than json_decode)
         $trimmed = trim($string);
-        if ($trimmed !== '' && \in_array($trimmed[0], ['[', '{'], true)) {
+        if ($trimmed !== '' && in_array($trimmed[0], ['[', '{'], true)) {
             return false;
         }
 
@@ -342,8 +339,8 @@ class HtmlCommentsExtension extends AbstractExtension
     /**
      * Gets a comment string for a node.
      *
-     * @param string        $prefix The comment prefix
-     * @param NodeReference $ref    The node reference
+     * @param string $prefix The comment prefix
+     * @param NodeReference $ref The node reference
      *
      * @return string The comment string
      */
@@ -369,8 +366,8 @@ class HtmlCommentsExtension extends AbstractExtension
                 'nowo_twig_inspector_template_link',
                 [
                     'template' => $ref->getTemplate(),
-                    'line' => $ref->getLine(),
-                ]
+                    'line'     => $ref->getLine(),
+                ],
             );
         } catch (RouteNotFoundException $e) {
             // Route not available (e.g., in production or routes not loaded)

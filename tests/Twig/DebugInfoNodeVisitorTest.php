@@ -27,7 +27,7 @@ final class DebugInfoNodeVisitorTest extends TestCase
     protected function setUp(): void
     {
         $this->visitor = new DebugInfoNodeVisitor();
-        $this->env = $this->createMock(Environment::class);
+        $this->env     = $this->createMock(Environment::class);
     }
 
     public function testEnterNodeReturnsNodeUnchanged(): void
@@ -43,24 +43,24 @@ final class DebugInfoNodeVisitorTest extends TestCase
     {
         // Create a real ModuleNode instance
         // Use BodyNode instead of Node to avoid deprecation warnings in Twig 3.15+
-        $body = new BodyNode([]);
-        $parent = null;
-        $blocks = new BodyNode([]);
-        $macros = new BodyNode([]);
-        $traits = new BodyNode([]);
+        $body              = new BodyNode([]);
+        $parent            = null;
+        $blocks            = new BodyNode([]);
+        $macros            = new BodyNode([]);
+        $traits            = new BodyNode([]);
         $embeddedTemplates = [];
-        $source = new \Twig\Source('', 'test.html.twig');
-        $moduleNode = new ModuleNode($body, $parent, $blocks, $macros, $traits, $embeddedTemplates, $source);
+        $source            = new \Twig\Source('', 'test.html.twig');
+        $moduleNode        = new ModuleNode($body, $parent, $blocks, $macros, $traits, $embeddedTemplates, $source);
 
         $originalDisplayStart = $moduleNode->getNode('display_start');
-        $originalDisplayEnd = $moduleNode->getNode('display_end');
+        $originalDisplayEnd   = $moduleNode->getNode('display_end');
 
         $result = $this->visitor->leaveNode($moduleNode, $this->env);
 
         $this->assertSame($moduleNode, $result);
         // Verify that display_start and display_end were modified
         $newDisplayStart = $moduleNode->getNode('display_start');
-        $newDisplayEnd = $moduleNode->getNode('display_end');
+        $newDisplayEnd   = $moduleNode->getNode('display_end');
         $this->assertNotSame($originalDisplayStart, $newDisplayStart);
         $this->assertNotSame($originalDisplayEnd, $newDisplayEnd);
     }
@@ -108,14 +108,14 @@ final class DebugInfoNodeVisitorTest extends TestCase
 
         // Create a real ModuleNode instance
         // Use BodyNode instead of Node to avoid deprecation warnings in Twig 3.15+
-        $body = new BodyNode([]);
-        $parent = null;
-        $blocks = new BodyNode([]);
-        $macros = new BodyNode([]);
-        $traits = new BodyNode([]);
+        $body              = new BodyNode([]);
+        $parent            = null;
+        $blocks            = new BodyNode([]);
+        $macros            = new BodyNode([]);
+        $traits            = new BodyNode([]);
         $embeddedTemplates = [];
-        $source = new \Twig\Source('', 'test.html.twig');
-        $moduleNode = new ModuleNode($body, $parent, $blocks, $macros, $traits, $embeddedTemplates, $source);
+        $source            = new \Twig\Source('', 'test.html.twig');
+        $moduleNode        = new ModuleNode($body, $parent, $blocks, $macros, $traits, $embeddedTemplates, $source);
 
         $visitor1->leaveNode($moduleNode, $this->env);
         $visitor2->leaveNode($moduleNode, $this->env);

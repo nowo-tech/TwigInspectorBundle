@@ -8,6 +8,8 @@ use Twig\Attribute\YieldReady;
 use Twig\Compiler;
 use Twig\Node\Node;
 
+use function sprintf;
+
 /**
  * Twig AST node that compiles to a call to HtmlCommentsExtension::start() with a NodeReference.
  *
@@ -21,15 +23,15 @@ class NodeStart extends Node
      * Constructor.
      *
      * @param string $extensionName Extension class name (HtmlCommentsExtension::class)
-     * @param string $name          Block or template name
-     * @param int    $line          Line number in the template
-     * @param string $varName       Variable name for the extension instance in compiled code
+     * @param string $name Block or template name
+     * @param int $line Line number in the template
+     * @param string $varName Variable name for the extension instance in compiled code
      */
     public function __construct(string $extensionName, string $name, int $line, string $varName)
     {
         parent::__construct(
             [],
-            ['extension_name' => $extensionName, 'name' => $name, 'line' => $line, 'var_name' => $varName]
+            ['extension_name' => $extensionName, 'name' => $name, 'line' => $line, 'var_name' => $varName],
         );
     }
 
@@ -37,8 +39,6 @@ class NodeStart extends Node
      * Compiles the node to PHP that calls the extension's start() with a NodeReference.
      *
      * @param Compiler $compiler Twig compiler
-     *
-     * @return void
      */
     public function compile(Compiler $compiler): void
     {
@@ -50,8 +50,8 @@ class NodeStart extends Node
               sprintf(
                   '$%s->start($%s = new \Nowo\TwigInspectorBundle\Twig\NodeReference(',
                   $this->getAttribute('var_name'),
-                  $this->getAttribute('var_name') . '_ref'
-              )
+                  $this->getAttribute('var_name') . '_ref',
+              ),
           )
           ->repr($this->getAttribute('name'))
           ->raw(', $this->getTemplateName(), ')

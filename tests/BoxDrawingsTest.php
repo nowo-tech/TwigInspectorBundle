@@ -7,6 +7,8 @@ namespace Nowo\TwigInspectorBundle\Tests;
 use Nowo\TwigInspectorBundle\BoxDrawings;
 use PHPUnit\Framework\TestCase;
 
+use function strlen;
+
 /**
  * Tests for BoxDrawings.
  *
@@ -41,12 +43,12 @@ final class BoxDrawingsTest extends TestCase
     public function testBlockChanged(): void
     {
         $initialStart = $this->boxDrawings->getStartCommentPrefix();
-        $initialEnd = $this->boxDrawings->getEndCommentPrefix();
+        $initialEnd   = $this->boxDrawings->getEndCommentPrefix();
 
         $this->boxDrawings->blockChanged(5);
 
         $newStart = $this->boxDrawings->getStartCommentPrefix();
-        $newEnd = $this->boxDrawings->getEndCommentPrefix();
+        $newEnd   = $this->boxDrawings->getEndCommentPrefix();
 
         // After blockChanged, the prefix should change
         $this->assertNotSame($initialStart, $newStart);
@@ -71,7 +73,7 @@ final class BoxDrawingsTest extends TestCase
         // Call 2: charsetIndex 1->2 (╭->╔)
         // Call 3: charsetIndex 2->3, then resets to 0 (╔->┏) because 3 === count-1
         // Call 4: charsetIndex 0->1 (┏->╭)
-        for ($i = 1; $i <= 4; $i++) {
+        for ($i = 1; $i <= 4; ++$i) {
             $this->boxDrawings->blockChanged($i);
         }
 
@@ -83,7 +85,7 @@ final class BoxDrawingsTest extends TestCase
     public function testBlockChangedWithMaxCharsetIndex(): void
     {
         // Set to last charset index (3 calls: index 0->1, 1->2, 2->3)
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             $this->boxDrawings->blockChanged(1);
         }
 

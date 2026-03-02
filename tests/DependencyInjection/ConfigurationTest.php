@@ -22,7 +22,7 @@ final class ConfigurationTest extends TestCase
     protected function setUp(): void
     {
         $this->configuration = new Configuration();
-        $this->processor = new Processor();
+        $this->processor     = new Processor();
     }
 
     public function testGetConfigTreeBuilder(): void
@@ -47,12 +47,12 @@ final class ConfigurationTest extends TestCase
     {
         $configs = [
             [
-                'enabled_extensions' => ['.twig', '.xml.twig'],
-                'excluded_templates' => ['admin/*', 'email/*'],
-                'excluded_blocks' => ['javascript', 'head_*'],
-                'enable_metrics' => false,
+                'enabled_extensions'     => ['.twig', '.xml.twig'],
+                'excluded_templates'     => ['admin/*', 'email/*'],
+                'excluded_blocks'        => ['javascript', 'head_*'],
+                'enable_metrics'         => false,
                 'inject_on_sub_requests' => true,
-                'cookie_name' => 'custom_cookie',
+                'cookie_name'            => 'custom_cookie',
             ],
         ];
 
@@ -122,14 +122,14 @@ final class ConfigurationTest extends TestCase
     {
         $configs = [
             [
-                'overlay_theme' => 'dark',
-                'overlay_compact' => true,
-                'reduced_motion' => true,
-                'keyboard_shortcut' => 'Ctrl+Alt+I',
-                'max_injection_depth' => 3,
-                'excluded_templates_regex' => ['/^email\\//'],
+                'overlay_theme'               => 'dark',
+                'overlay_compact'             => true,
+                'reduced_motion'              => true,
+                'keyboard_shortcut'           => 'Ctrl+Alt+I',
+                'max_injection_depth'         => 3,
+                'excluded_templates_regex'    => ['/^email\\//'],
                 'excluded_templates_prefixes' => ['@Admin/', 'components/'],
-                'excluded_blocks_regex' => ['/^head_/'],
+                'excluded_blocks_regex'       => ['/^head_/'],
             ],
         ];
 
@@ -148,7 +148,7 @@ final class ConfigurationTest extends TestCase
     public function testOverlayThemeValidation(): void
     {
         $configs = [['overlay_theme' => 'auto']];
-        $config = $this->processor->processConfiguration($this->configuration, $configs);
+        $config  = $this->processor->processConfiguration($this->configuration, $configs);
         $this->assertSame('auto', $config['overlay_theme']);
     }
 

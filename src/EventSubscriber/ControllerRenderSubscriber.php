@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\EventSubscriber;
 
+use Closure;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+
+use function count;
+use function is_array;
+use function is_object;
+use function is_string;
 
 /**
  * Records every controller invocation (main request + sub-requests from render(controller(...)))
@@ -42,7 +48,7 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
     {
         return [
             KernelEvents::CONTROLLER => ['onController', 0],
-            KernelEvents::TERMINATE => ['onTerminate', 0],
+            KernelEvents::TERMINATE  => ['onTerminate', 0],
         ];
     }
 
@@ -54,7 +60,7 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
     public function onController(ControllerEvent $event): void
     {
         $request = $event->getRequest();
-        $master = $this->getMainOrMasterRequest();
+        $master  = $this->getMainOrMasterRequest();
         $master ??= $request;
         $key = spl_object_id($master);
 
@@ -62,9 +68,9 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
             $this->controllersByMasterRequest[$key] = [];
         }
 
-        $controller = $event->getController();
+        $controller                               = $event->getController();
         $this->controllersByMasterRequest[$key][] = [
-            'name' => $this->controllerToString($controller),
+            'name'    => $this->controllerToString($controller),
             'is_main' => $request === $master,
         ];
     }
@@ -77,7 +83,7 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
     public function onTerminate(TerminateEvent $event): void
     {
         $request = $event->getRequest();
-        $master = $this->getMainOrMasterRequest();
+        $master  = $this->getMainOrMasterRequest();
         if ($master === null || $request !== $master) {
             return;
         }
@@ -107,7 +113,7 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
      */
     public function getControllersForRequest(object $masterRequest): array
     {
-        $key = spl_object_id($masterRequest);
+        $key  = spl_object_id($masterRequest);
         $list = $this->controllersByMasterRequest[$key] ?? [];
 
         $byName = [];
@@ -116,7 +122,7 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
             if (!isset($byName[$name])) {
                 $byName[$name] = ['name' => $name, 'count' => 0, 'is_main' => false];
             }
-            $byName[$name]['count']++;
+            ++$byName[$name]['count'];
             if ($entry['is_main']) {
                 $byName[$name]['is_main'] = true;
             }
@@ -134,15 +140,15 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
      */
     private function controllerToString(mixed $controller): string
     {
-        if (\is_string($controller)) {
+        if (is_string($controller)) {
             return $controller;
         }
-        if (\is_array($controller) && \count($controller) === 2) {
-            $class = \is_object($controller[0]) ? $controller[0]::class : (string) $controller[0];
+        if (is_array($controller) && count($controller) === 2) {
+            $class = is_object($controller[0]) ? $controller[0]::class : (string) $controller[0];
 
             return $class . '::' . (string) $controller[1];
         }
-        if ($controller instanceof \Closure) {
+        if ($controller instanceof Closure) {
             return 'Closure';
         }
 

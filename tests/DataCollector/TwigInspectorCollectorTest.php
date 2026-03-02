@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\Tests\DataCollector;
 
+use Exception;
 use Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector;
 use Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionProperty;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,7 +43,7 @@ final class TwigInspectorCollectorTest extends TestCase
     {
         $profile = new Profile($templateName, Profile::TEMPLATE, $templateName);
         $profile->enter();
-        $ref = new \ReflectionClass($profile);
+        $ref        = new ReflectionClass($profile);
         $startsProp = $ref->getProperty('starts');
         $startsProp->setAccessible(true);
         $endsProp = $ref->getProperty('ends');
@@ -54,7 +57,7 @@ final class TwigInspectorCollectorTest extends TestCase
     protected function setUp(): void
     {
         $this->requestStack = new RequestStack();
-        $twig = $this->createMock(Environment::class);
+        $twig               = $this->createMock(Environment::class);
         $twig->method('hasExtension')->willReturn(false);
         $this->collector = new TwigInspectorCollector(
             $this->createControllerSubscriber(),
@@ -65,13 +68,13 @@ final class TwigInspectorCollectorTest extends TestCase
             'light',
             false,
             false,
-            'Ctrl+Shift+T'
+            'Ctrl+Shift+T',
         );
     }
 
     public function testCollect(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $response = new Response();
 
         $this->collector->collect($request, $response);
@@ -86,9 +89,9 @@ final class TwigInspectorCollectorTest extends TestCase
 
     public function testCollectWithException(): void
     {
-        $request = new Request();
-        $response = new Response();
-        $exception = new \Exception('Test exception');
+        $request   = new Request();
+        $response  = new Response();
+        $exception = new Exception('Test exception');
 
         $this->collector->collect($request, $response, $exception);
 
@@ -131,19 +134,19 @@ final class TwigInspectorCollectorTest extends TestCase
         $this->assertSame([], $this->collector->getControllers());
         $this->assertSame(0, $this->collector->getTotalControllers());
 
-        $subscriber = new ControllerRenderSubscriber($this->requestStack);
+        $subscriber  = new ControllerRenderSubscriber($this->requestStack);
         $mainRequest = new Request();
-        $subRequest = new Request();
+        $subRequest  = new Request();
         $this->requestStack->push($mainRequest);
         $this->requestStack->push($subRequest);
 
-        $kernel = $this->createMock(HttpKernelInterface::class);
-        $mainController = [new class () {
+        $kernel         = $this->createMock(HttpKernelInterface::class);
+        $mainController = [new class {
             public function home(): void
             {
             }
         }, 'home'];
-        $subController = [new class () {
+        $subController = [new class {
             public function __invoke(): void
             {
             }
@@ -162,7 +165,7 @@ final class TwigInspectorCollectorTest extends TestCase
             'light',
             false,
             false,
-            'Ctrl+Shift+T'
+            'Ctrl+Shift+T',
         );
         $collector->collect($mainRequest, new Response());
 
@@ -170,7 +173,7 @@ final class TwigInspectorCollectorTest extends TestCase
         $this->assertCount(2, $controllers);
         $this->assertSame(2, $collector->getTotalControllers());
         $mainByName = null;
-        $subByName = null;
+        $subByName  = null;
         foreach ($controllers as $c) {
             if ($c['is_main']) {
                 $mainByName = $c;
@@ -224,7 +227,7 @@ final class TwigInspectorCollectorTest extends TestCase
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1'); // matches collector cookie_name
         $response = new Response();
-        $content = '<!-- ┏━ template1.html.twig [/_template/template1.html.twig?line=1] #id1-->';
+        $content  = '<!-- ┏━ template1.html.twig [/_template/template1.html.twig?line=1] #id1-->';
         $content .= '<!-- ┏━ template2.html.twig [/_template/template2.html.twig?line=1] #id2-->';
         $response->setContent($content);
 
@@ -246,7 +249,7 @@ final class TwigInspectorCollectorTest extends TestCase
 
     public function testIsEnabledWithoutCookie(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $response = new Response();
 
         $this->collector->collect($request, $response);
@@ -311,7 +314,7 @@ final class TwigInspectorCollectorTest extends TestCase
 
     public function testGetConfig(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $response = new Response();
         $this->collector->collect($request, $response);
         $config = $this->collector->getConfig();
@@ -336,7 +339,7 @@ final class TwigInspectorCollectorTest extends TestCase
             'light',
             false,
             false,
-            'Ctrl+Shift+T'
+            'Ctrl+Shift+T',
         );
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
@@ -348,7 +351,7 @@ final class TwigInspectorCollectorTest extends TestCase
 
     public function testLateCollectWhenNotEnabled(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $response = new Response();
         $this->collector->collect($request, $response);
         $this->collector->lateCollect();
@@ -375,7 +378,7 @@ final class TwigInspectorCollectorTest extends TestCase
         $this->collector->collect($request, $response);
         $dataBefore = $this->collector->getData();
         $serialized = serialize($this->collector);
-        $restored = unserialize($serialized);
+        $restored   = unserialize($serialized);
         $this->assertInstanceOf(TwigInspectorCollector::class, $restored);
         $dataAfter = $restored->getData();
         $this->assertSame($dataBefore['templates'], $dataAfter['templates']);
@@ -400,7 +403,7 @@ final class TwigInspectorCollectorTest extends TestCase
 
     public function testLateCollectPopulatesTemplateTimesWhenProfilerExtensionPresent(): void
     {
-        $profile = $this->createProfileWithDuration('demo/page.html.twig', 0.002);
+        $profile   = $this->createProfileWithDuration('demo/page.html.twig', 0.002);
         $extension = new ProfilerExtension($profile);
 
         $twig = $this->createMock(Environment::class);
@@ -419,7 +422,7 @@ final class TwigInspectorCollectorTest extends TestCase
             'light',
             false,
             false,
-            'Ctrl+Shift+T'
+            'Ctrl+Shift+T',
         );
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
@@ -438,10 +441,10 @@ final class TwigInspectorCollectorTest extends TestCase
             $this->markTestSkipped('Symfony Twig Bridge ProfilerExtension not available');
         }
 
-        $profile = $this->createProfileWithDuration('symfony_template.html.twig', 0.003);
+        $profile   = $this->createProfileWithDuration('symfony_template.html.twig', 0.003);
         $extension = new ProfilerExtension($profile);
 
-        $twig = $this->createMock(Environment::class);
+        $twig                 = $this->createMock(Environment::class);
         $symfonyProfilerClass = \Symfony\Bridge\Twig\Extension\ProfilerExtension::class;
         $twig->method('hasExtension')->willReturnMap([
             [$symfonyProfilerClass, true],
@@ -461,7 +464,7 @@ final class TwigInspectorCollectorTest extends TestCase
             'light',
             false,
             false,
-            'Ctrl+Shift+T'
+            'Ctrl+Shift+T',
         );
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
@@ -476,7 +479,7 @@ final class TwigInspectorCollectorTest extends TestCase
 
     public function testLateCollectReturnsEmptyWhenExtensionNotProfilerExtension(): void
     {
-        $twig = $this->createMock(Environment::class);
+        $twig                 = $this->createMock(Environment::class);
         $symfonyProfilerClass = \Symfony\Bridge\Twig\Extension\ProfilerExtension::class;
         $twig->method('hasExtension')->willReturnMap([
             [$symfonyProfilerClass, false],
@@ -493,7 +496,7 @@ final class TwigInspectorCollectorTest extends TestCase
             'light',
             false,
             false,
-            'Ctrl+Shift+T'
+            'Ctrl+Shift+T',
         );
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
@@ -507,7 +510,7 @@ final class TwigInspectorCollectorTest extends TestCase
     public function testLateCollectReturnsEmptyWhenActivesEmpty(): void
     {
         $extension = $this->createMock(ProfilerExtension::class);
-        $ref = new \ReflectionProperty(ProfilerExtension::class, 'actives');
+        $ref       = new ReflectionProperty(ProfilerExtension::class, 'actives');
         $ref->setAccessible(true);
         $ref->setValue($extension, []);
 
@@ -527,7 +530,7 @@ final class TwigInspectorCollectorTest extends TestCase
             'light',
             false,
             false,
-            'Ctrl+Shift+T'
+            'Ctrl+Shift+T',
         );
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
@@ -540,7 +543,7 @@ final class TwigInspectorCollectorTest extends TestCase
 
     public function testLateCollectAggregatesProfileWithChildren(): void
     {
-        $childProfile = $this->createProfileWithDuration('child.html.twig', 0.001);
+        $childProfile  = $this->createProfileWithDuration('child.html.twig', 0.001);
         $parentProfile = new Profile('main', Profile::ROOT, 'main');
         $parentProfile->addProfile($childProfile);
         $parentProfile->enter();
@@ -563,7 +566,7 @@ final class TwigInspectorCollectorTest extends TestCase
             'light',
             false,
             false,
-            'Ctrl+Shift+T'
+            'Ctrl+Shift+T',
         );
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');

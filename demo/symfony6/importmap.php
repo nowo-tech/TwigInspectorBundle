@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Returns the importmap for this application.
  *
@@ -13,7 +15,7 @@
  */
 return [
     'app' => [
-        'path' => './assets/app.js',
+        'path'       => './assets/app.js',
         'entrypoint' => true,
     ],
 ];

@@ -32,11 +32,10 @@ final class TwigInspectorBundleTest extends TestCase
      */
     public function testBundleHasContainerExtension(): void
     {
-        $bundle = new NowoTwigInspectorBundle();
+        $bundle    = new NowoTwigInspectorBundle();
         $extension = $bundle->getContainerExtension();
 
         $this->assertNotNull($extension);
         $this->assertSame('nowo_twig_inspector', $extension->getAlias());
     }
 }
-

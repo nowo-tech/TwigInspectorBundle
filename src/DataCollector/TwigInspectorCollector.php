@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle\DataCollector;
 
 use Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber;
+use ReflectionProperty;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +15,13 @@ use Throwable;
 use Twig\Environment;
 use Twig\Extension\ProfilerExtension;
 use Twig\Profiler\Profile;
+
+use function count;
+use function is_array;
+
+use const PATHINFO_FILENAME;
+use const PREG_SET_ORDER;
+use const SORT_NUMERIC;
 
 /**
  * Web Profiler data collector for the Twig Inspector.
@@ -26,29 +34,29 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
 {
     /** @var array{templates: array, blocks: array, controllers: array, template_times: array, total_templates: int, total_blocks: int, total_controllers: int, enabled: bool, config: array} Collected data for the profiler panel */
     private array $data = [
-        'templates' => [],
-        'blocks' => [],
-        'controllers' => [],
-        'template_times' => [],
-        'total_templates' => 0,
-        'total_blocks' => 0,
+        'templates'         => [],
+        'blocks'            => [],
+        'controllers'       => [],
+        'template_times'    => [],
+        'total_templates'   => 0,
+        'total_blocks'      => 0,
         'total_controllers' => 0,
-        'enabled' => false,
-        'config' => [],
+        'enabled'           => false,
+        'config'            => [],
     ];
 
     /**
      * Constructor.
      *
      * @param ControllerRenderSubscriber $controllerRenderSubscriber Records controller invocations (main + sub-requests)
-     * @param RequestStack               $requestStack               The request stack
-     * @param Environment|null           $twig                       The Twig environment (for template times; null after unserialize)
-     * @param string                     $cookieName                 Cookie name used to enable the inspector
-     * @param bool                       $enableMetrics              Whether to collect template render times from Twig profiler
-     * @param string                     $overlayTheme               Overlay theme: "light", "dark", or "auto"
-     * @param bool                       $overlayCompact             Use compact tooltip style
-     * @param bool                       $reducedMotion              Respect reduced-motion preference
-     * @param string                     $keyboardShortcut           Keyboard shortcut to toggle inspector (e.g. "Ctrl+Shift+T")
+     * @param RequestStack $requestStack The request stack
+     * @param Environment|null $twig The Twig environment (for template times; null after unserialize)
+     * @param string $cookieName Cookie name used to enable the inspector
+     * @param bool $enableMetrics Whether to collect template render times from Twig profiler
+     * @param string $overlayTheme Overlay theme: "light", "dark", or "auto"
+     * @param bool $overlayCompact Use compact tooltip style
+     * @param bool $reducedMotion Respect reduced-motion preference
+     * @param string $keyboardShortcut Keyboard shortcut to toggle inspector (e.g. "Ctrl+Shift+T")
      */
     public function __construct(
         private readonly ControllerRenderSubscriber $controllerRenderSubscriber,
@@ -69,17 +77,15 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
      *
      * @return list<string>
      */
-    public function __sleep(): array
+    public function __serialize(): array
     {
         return ['data', 'controllerRenderSubscriber', 'requestStack', 'cookieName', 'enableMetrics', 'overlayTheme', 'overlayCompact', 'reducedMotion', 'keyboardShortcut'];
     }
 
     /**
      * Restore state after unserialization. Twig environment is not serialized and is set to null here.
-     *
-     * @return void
      */
-    public function __wakeup(): void
+    public function __unserialize(array $data): void
     {
         $this->twig = null;
     }
@@ -88,24 +94,22 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
      * Collects data for the given request and response.
      * Analyzes the response content to extract template usage statistics.
      *
-     * @param Request        $request   The request object
-     * @param Response       $response  The response object
+     * @param Request $request The request object
+     * @param Response $response The response object
      * @param Throwable|null $exception The exception if any
-     *
-     * @return void
      */
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
         $this->data['enabled'] = $request->cookies->getBoolean($this->cookieName, false);
-        $this->data['config'] = [
-            'cookie_name' => $this->cookieName,
-            'overlay_theme' => $this->overlayTheme,
-            'overlay_compact' => $this->overlayCompact,
-            'reduced_motion' => $this->reducedMotion,
+        $this->data['config']  = [
+            'cookie_name'       => $this->cookieName,
+            'overlay_theme'     => $this->overlayTheme,
+            'overlay_compact'   => $this->overlayCompact,
+            'reduced_motion'    => $this->reducedMotion,
             'keyboard_shortcut' => $this->keyboardShortcut,
         ];
 
-        $this->data['controllers'] = $this->controllerRenderSubscriber->getControllersForRequest($request);
+        $this->data['controllers']       = $this->controllerRenderSubscriber->getControllersForRequest($request);
         $this->data['total_controllers'] = count($this->data['controllers']);
 
         if (!$this->data['enabled']) {
@@ -113,7 +117,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
         }
 
         $content = $response->getContent();
-        if (false === $content) {
+        if ($content === false) {
             return;
         }
 
@@ -122,17 +126,17 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
         preg_match_all($pattern, $content, $matches, PREG_SET_ORDER);
 
         $templates = [];
-        $blocks = [];
+        $blocks    = [];
 
         foreach ($matches as $match) {
             $name = $match[1];
             $link = $match[2];
-            $id = $match[3];
+            $id   = $match[3];
 
             // Extract template name from link
             if (preg_match('/\/_template\/([^?]+)/', $link, $linkMatch)) {
-                $templateName = urldecode($linkMatch[1]);
-                $templateBaseName = pathinfo($templateName, PATHINFO_FILENAME);
+                $templateName          = urldecode($linkMatch[1]);
+                $templateBaseName      = pathinfo($templateName, PATHINFO_FILENAME);
                 $templateNameFirstPart = strtok($templateName, '.');
 
                 // Determine if it's a template or a block
@@ -141,12 +145,12 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
                     // It's a template
                     if (!isset($templates[$templateName])) {
                         $templates[$templateName] = [
-                            'name' => $templateName,
+                            'name'  => $templateName,
                             'count' => 0,
-                            'ids' => [],
+                            'ids'   => [],
                         ];
                     }
-                    $templates[$templateName]['count']++;
+                    ++$templates[$templateName]['count'];
                     $templates[$templateName]['ids'][] = $id;
                 } else {
                     // It's a block
@@ -154,27 +158,25 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
                     if (!isset($blocks[$blockKey])) {
                         $blocks[$blockKey] = [
                             'template' => $templateName,
-                            'name' => $name,
-                            'count' => 0,
-                            'ids' => [],
+                            'name'     => $name,
+                            'count'    => 0,
+                            'ids'      => [],
                         ];
                     }
-                    $blocks[$blockKey]['count']++;
+                    ++$blocks[$blockKey]['count'];
                     $blocks[$blockKey]['ids'][] = $id;
                 }
             }
         }
 
-        $this->data['templates'] = array_values($templates);
-        $this->data['blocks'] = array_values($blocks);
+        $this->data['templates']       = array_values($templates);
+        $this->data['blocks']          = array_values($blocks);
         $this->data['total_templates'] = count($templates);
-        $this->data['total_blocks'] = count($blocks);
+        $this->data['total_blocks']    = count($blocks);
     }
 
     /**
      * Late collect: runs after response is sent. Used to gather Twig profiler template times.
-     *
-     * @return void
      */
     public function lateCollect(): void
     {
@@ -230,11 +232,11 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     private function getProfileFromExtension(ProfilerExtension $extension): ?Profile
     {
         try {
-            $r = new \ReflectionProperty($extension, 'actives');
+            $r = new ReflectionProperty($extension, 'actives');
             $r->setAccessible(true);
             $actives = $r->getValue($extension);
 
-            return \is_array($actives) && isset($actives[0]) && $actives[0] instanceof Profile ? $actives[0] : null;
+            return is_array($actives) && isset($actives[0]) && $actives[0] instanceof Profile ? $actives[0] : null;
         } catch (Throwable) {
             return null;
         }
@@ -243,15 +245,13 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     /**
      * Recursively aggregates template durations from a Twig Profile.
      *
-     * @param Profile              $profile The profile node
-     * @param array<string, float> $times   Accumulator: template name => total ms
-     *
-     * @return void
+     * @param Profile $profile The profile node
+     * @param array<string, float> $times Accumulator: template name => total ms
      */
     private function aggregateTemplateTimes(Profile $profile, array &$times): void
     {
         if ($profile->isTemplate()) {
-            $name = $profile->getTemplate();
+            $name       = $profile->getTemplate();
             $durationMs = $profile->getDuration() * 1000;
             if (!isset($times[$name])) {
                 $times[$name] = 0.0;
@@ -268,21 +268,19 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
 
     /**
      * Resets the data collector.
-     *
-     * @return void
      */
     public function reset(): void
     {
         $this->data = [
-            'templates' => [],
-            'blocks' => [],
-            'controllers' => [],
-            'template_times' => [],
-            'total_templates' => 0,
-            'total_blocks' => 0,
+            'templates'         => [],
+            'blocks'            => [],
+            'controllers'       => [],
+            'template_times'    => [],
+            'total_templates'   => 0,
+            'total_blocks'      => 0,
             'total_controllers' => 0,
-            'enabled' => false,
-            'config' => [],
+            'enabled'           => false,
+            'config'            => [],
         ];
     }
 
