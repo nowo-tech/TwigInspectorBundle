@@ -534,7 +534,7 @@ final class InstallCommandTest extends TestCase
                     return false;
                 }
 
-                return (bool) (str_ends_with($path, 'routes.yaml'))
+                return (bool) str_ends_with($path, 'routes.yaml')
 
                 ;
             });

@@ -196,7 +196,7 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
             return true;
         }
 
-        return (bool) (preg_match('/<body[^>]*>/iu', $content))
+        return (bool) preg_match('/<body[^>]*>/iu', $content)
 
         ;
     }
