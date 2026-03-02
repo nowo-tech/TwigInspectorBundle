@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.18] - 2026-03-02
+
+### Changed
+- **CI**: Simplified GitHub Actions workflow; testing integrated into main `docker-compose.yml` (removed `docker-compose.test.yml`).
+- **Docker**: Root `Dockerfile` updated to PHP 8.2 and Node.js for asset management. Root `docker-compose.yml` streamlined.
+- **Makefile**: Container readiness checks before running commands; new demo management targets. See root and demo Makefiles.
+- **PHP-CS-Fixer**: Configuration updated for improved code style consistency.
+- **Demos (Symfony 6, 7, 8)**: Added README per demo with quick start; Makefile and docker-compose adjustments; composer.json updates.
+
+### Removed
+- **docker-compose.test.yml**: Removed; tests run via main docker-compose setup.
+
 ## [1.0.17] - 2026-02-18
 
 ### Fixed
