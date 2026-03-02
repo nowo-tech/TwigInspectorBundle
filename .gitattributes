@@ -36,7 +36,6 @@
 # Development / Demos
 /demo export-ignore
 /docker-compose.yml export-ignore
-/docker-compose.test.yml export-ignore
 /Dockerfile export-ignore
 /Makefile export-ignore
 /.symfony export-ignore
