@@ -2,9 +2,20 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
-## Upgrading from 1.0.17 to the next release
+## Upgrading from 1.0.18 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.17 to 1.0.18
+
+**No action required** — backward-compatible release (tooling and demos only).
+
+### What changed
+- **CI/Docker**: Single docker-compose for tests; root Dockerfile on PHP 8.2 with Node.js. If you rely on `docker-compose.test.yml`, use the main `docker-compose.yml` and Makefile targets instead.
+- **Makefile**: New/updated targets for demos and container readiness; run `make help` for details.
+- **Demos**: Each demo (Symfony 6, 7, 8) has a README and updated Makefile/docker-compose.
+
+No configuration or API changes for bundle users.
 
 ## Upgrading from 1.0.16 to 1.0.17
 
