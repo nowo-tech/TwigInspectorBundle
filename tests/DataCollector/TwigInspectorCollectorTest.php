@@ -364,9 +364,10 @@ final class TwigInspectorCollectorTest extends TestCase
         $request->cookies->set('twig_inspector_is_active', '1');
         $response = new Response();
         $this->collector->collect($request, $response);
-        $this->collector->__wakeup();
-        $this->collector->lateCollect();
-        $this->assertSame([], $this->collector->getTemplateTimes());
+        // After unserialize, twig is null (simulate profiler storage)
+        $collector = unserialize(serialize($this->collector));
+        $collector->lateCollect();
+        $this->assertSame([], $collector->getTemplateTimes());
     }
 
     public function testSleepAndWakeup(): void

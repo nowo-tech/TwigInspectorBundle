@@ -72,21 +72,34 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     }
 
     /**
-     * Exclude Twig Environment from serialization (it may contain closures).
-     * The profiler storage serializes collector instances; Environment is not serializable.
+     * Serialize only collected data; exclude Twig Environment (may contain closures) and service refs.
+     * The profiler storage serializes collector instances; after unserialize only getData() etc. are used.
      *
-     * @return list<string>
+     * @return array{data: array}
      */
     public function __serialize(): array
     {
-        return ['data', 'controllerRenderSubscriber', 'requestStack', 'cookieName', 'enableMetrics', 'overlayTheme', 'overlayCompact', 'reducedMotion', 'keyboardShortcut'];
+        return ['data' => $this->data];
     }
 
     /**
-     * Restore state after unserialization. Twig environment is not serialized and is set to null here.
+     * Restore collected data after unserialization. Twig is set to null (not serialized).
+     *
+     * @param array{data?: array} $data
      */
     public function __unserialize(array $data): void
     {
+        $this->data = $data['data'] ?? [
+            'templates'         => [],
+            'blocks'            => [],
+            'controllers'       => [],
+            'template_times'    => [],
+            'total_templates'   => 0,
+            'total_blocks'      => 0,
+            'total_controllers' => 0,
+            'enabled'           => false,
+            'config'            => [],
+        ];
         $this->twig = null;
     }
 
