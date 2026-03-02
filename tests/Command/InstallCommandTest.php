@@ -6,6 +6,7 @@ namespace Nowo\TwigInspectorBundle\Tests\Command;
 
 use Nowo\TwigInspectorBundle\Command\InstallCommand;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -13,6 +14,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
+
+use function dirname;
 
 /**
  * Tests for InstallCommand.
@@ -28,7 +31,7 @@ final class InstallCommandTest extends TestCase
     protected function setUp(): void
     {
         $this->testProjectDir = sys_get_temp_dir() . '/twig_inspector_test_' . uniqid();
-        $this->filesystem = new Filesystem();
+        $this->filesystem     = new Filesystem();
         $this->filesystem->mkdir($this->testProjectDir);
     }
 
@@ -85,7 +88,7 @@ final class InstallCommandTest extends TestCase
 
     public function testExecuteCreatesConfigFileInDevEnvironment(): void
     {
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -100,7 +103,7 @@ final class InstallCommandTest extends TestCase
 
     public function testExecuteCreatesConfigFileInTestEnvironment(): void
     {
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute(['--env' => 'test']);
@@ -113,7 +116,7 @@ final class InstallCommandTest extends TestCase
 
     public function testExecuteCreatesConfigFileInProdEnvironment(): void
     {
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute(['--env' => 'prod']);
@@ -125,7 +128,7 @@ final class InstallCommandTest extends TestCase
 
     public function testExecuteCreatesDirectoryIfNotExists(): void
     {
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $configDir = $this->testProjectDir . '/config/packages/dev';
@@ -142,7 +145,7 @@ final class InstallCommandTest extends TestCase
         $configDir = $this->testProjectDir . '/config/packages/dev';
         $this->filesystem->mkdir($configDir);
 
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -156,7 +159,7 @@ final class InstallCommandTest extends TestCase
         $configFile = $this->testProjectDir . '/config/packages/dev/nowo_twig_inspector.yaml';
         $this->filesystem->dumpFile($configFile, 'existing content');
 
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         // Simulate "no" answer
@@ -174,7 +177,7 @@ final class InstallCommandTest extends TestCase
         $configFile = $this->testProjectDir . '/config/packages/dev/nowo_twig_inspector.yaml';
         $this->filesystem->dumpFile($configFile, 'existing content');
 
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute(['--force' => true]);
@@ -190,7 +193,7 @@ final class InstallCommandTest extends TestCase
         $configFile = $this->testProjectDir . '/config/packages/dev/nowo_twig_inspector.yaml';
         $this->filesystem->dumpFile($configFile, 'existing content');
 
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         // Simulate "yes" answer
@@ -210,7 +213,7 @@ final class InstallCommandTest extends TestCase
         try {
             chdir($this->testProjectDir);
 
-            $command = new InstallCommand(null);
+            $command       = new InstallCommand(null);
             $commandTester = new CommandTester($command);
 
             $commandTester->execute([]);
@@ -225,7 +228,7 @@ final class InstallCommandTest extends TestCase
 
     public function testExecuteHandlesConfigFileCreationFailure(): void
     {
-        $configDir = $this->testProjectDir . '/config/packages/dev';
+        $configDir  = $this->testProjectDir . '/config/packages/dev';
         $configFile = $this->testProjectDir . '/config/packages/dev/nowo_twig_inspector.yaml';
 
         $mockFilesystem = $this->createMock(Filesystem::class);
@@ -236,7 +239,7 @@ final class InstallCommandTest extends TestCase
             ->with($configFile, $this->isType('string'))
             ->willThrowException(new IOException('Permission denied'));
 
-        $command = new InstallCommand($this->testProjectDir, $mockFilesystem);
+        $command       = new InstallCommand($this->testProjectDir, $mockFilesystem);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -247,13 +250,13 @@ final class InstallCommandTest extends TestCase
 
     public function testConfigFileContainsAllExpectedOptions(): void
     {
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
 
         $configFile = $this->testProjectDir . '/config/packages/dev/nowo_twig_inspector.yaml';
-        $content = file_get_contents($configFile);
+        $content    = file_get_contents($configFile);
 
         $this->assertStringContainsString('enabled_extensions:', $content);
         $this->assertStringContainsString("'.html.twig'", $content);
@@ -266,13 +269,13 @@ final class InstallCommandTest extends TestCase
 
     public function testConfigFileContainsHelpfulComments(): void
     {
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
 
         $configFile = $this->testProjectDir . '/config/packages/dev/nowo_twig_inspector.yaml';
-        $content = file_get_contents($configFile);
+        $content    = file_get_contents($configFile);
 
         $this->assertStringContainsString('# Twig Inspector Bundle Configuration', $content);
         $this->assertStringContainsString('# This file was automatically generated', $content);
@@ -294,7 +297,7 @@ final class InstallCommandTest extends TestCase
 
     public function testExecuteCreatesRoutesFileIfNotExists(): void
     {
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $routesFile = $this->testProjectDir . '/config/routes.yaml';
@@ -311,11 +314,11 @@ final class InstallCommandTest extends TestCase
 
     public function testExecuteAppendsToExistingRoutesFile(): void
     {
-        $routesFile = $this->testProjectDir . '/config/routes.yaml';
+        $routesFile     = $this->testProjectDir . '/config/routes.yaml';
         $initialContent = "existing_route:\n    path: /existing\n";
         $this->filesystem->dumpFile($routesFile, $initialContent);
 
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -327,11 +330,11 @@ final class InstallCommandTest extends TestCase
 
     public function testExecuteDoesNotDuplicateRoutesImport(): void
     {
-        $routesFile = $this->testProjectDir . '/config/routes.yaml';
+        $routesFile      = $this->testProjectDir . '/config/routes.yaml';
         $existingContent = "# Twig Inspector Bundle routes\nwhen@dev:\n    nowo_twig_inspector:\n        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'\n";
         $this->filesystem->dumpFile($routesFile, $existingContent);
 
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -344,11 +347,11 @@ final class InstallCommandTest extends TestCase
 
     public function testExecuteDetectsExistingImportByBundleName(): void
     {
-        $routesFile = $this->testProjectDir . '/config/routes.yaml';
+        $routesFile      = $this->testProjectDir . '/config/routes.yaml';
         $existingContent = "some_route:\n    path: /test\n\n# Some comment about NowoTwigInspectorBundle\n";
         $this->filesystem->dumpFile($routesFile, $existingContent);
 
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -360,11 +363,11 @@ final class InstallCommandTest extends TestCase
 
     public function testExecuteDetectsExistingImportByRouteName(): void
     {
-        $routesFile = $this->testProjectDir . '/config/routes.yaml';
+        $routesFile      = $this->testProjectDir . '/config/routes.yaml';
         $existingContent = "nowo_twig_inspector:\n    path: /test\n";
         $this->filesystem->dumpFile($routesFile, $existingContent);
 
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -384,7 +387,7 @@ final class InstallCommandTest extends TestCase
             // Try to make it unreadable - this might not work on all systems
             @chmod($routesFile, 0o000);
 
-            $command = new InstallCommand($this->testProjectDir);
+            $command       = new InstallCommand($this->testProjectDir);
             $commandTester = new CommandTester($command);
 
             $commandTester->execute([]);
@@ -392,9 +395,9 @@ final class InstallCommandTest extends TestCase
             // Should show warning about not being able to read
             $display = $commandTester->getDisplay();
             $this->assertTrue(
-                str_contains($display, 'Could not read') ||
-                str_contains($display, 'Routes file') ||
-                $commandTester->getStatusCode() === 0
+                str_contains($display, 'Could not read')
+                || str_contains($display, 'Routes file')
+                || $commandTester->getStatusCode() === 0,
             );
 
             // Restore permissions for cleanup
@@ -412,7 +415,7 @@ final class InstallCommandTest extends TestCase
         if (file_exists($routesFile)) {
             @chmod($routesFile, 0o000);
 
-            $command = new InstallCommand($this->testProjectDir);
+            $command       = new InstallCommand($this->testProjectDir);
             $commandTester = new CommandTester($command);
 
             $commandTester->execute([]);
@@ -420,9 +423,9 @@ final class InstallCommandTest extends TestCase
             // Should handle the error gracefully
             $display = $commandTester->getDisplay();
             $this->assertTrue(
-                str_contains($display, 'Could not read') ||
-                str_contains($display, 'Routes file') ||
-                $commandTester->getStatusCode() === 0
+                str_contains($display, 'Could not read')
+                || str_contains($display, 'Routes file')
+                || $commandTester->getStatusCode() === 0,
             );
 
             @chmod($routesFile, 0o644);
@@ -439,17 +442,17 @@ final class InstallCommandTest extends TestCase
             unlink($routesFile);
         }
 
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         // Use reflection to test ensureRoutesFile with a mock Filesystem that throws exception
-        $reflection = new \ReflectionClass($command);
-        $method = $reflection->getMethod('ensureRoutesFile');
+        $reflection = new ReflectionClass($command);
+        $method     = $reflection->getMethod('ensureRoutesFile');
         $method->setAccessible(true);
 
-        $input = new ArrayInput([]);
+        $input  = new ArrayInput([]);
         $output = new BufferedOutput();
-        $io = new SymfonyStyle($input, $output);
+        $io     = new SymfonyStyle($input, $output);
 
         $mockFilesystem = $this->createMock(Filesystem::class);
         $mockFilesystem->expects($this->once())
@@ -473,21 +476,21 @@ final class InstallCommandTest extends TestCase
     public function testEnsureRoutesFileHandlesAppendToFileException(): void
     {
         // Test error handling when appendToFile throws exception using reflection
-        $routesFile = $this->testProjectDir . '/config/routes.yaml';
+        $routesFile     = $this->testProjectDir . '/config/routes.yaml';
         $initialContent = "existing_route:\n    path: /existing\n";
         $this->filesystem->dumpFile($routesFile, $initialContent);
 
-        $command = new InstallCommand($this->testProjectDir);
+        $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
 
         // Use reflection to test ensureRoutesFile with a mock Filesystem that throws exception
-        $reflection = new \ReflectionClass($command);
-        $method = $reflection->getMethod('ensureRoutesFile');
+        $reflection = new ReflectionClass($command);
+        $method     = $reflection->getMethod('ensureRoutesFile');
         $method->setAccessible(true);
 
-        $input = new ArrayInput([]);
+        $input  = new ArrayInput([]);
         $output = new BufferedOutput();
-        $io = new SymfonyStyle($input, $output);
+        $io     = new SymfonyStyle($input, $output);
 
         $mockFilesystem = $this->createMock(Filesystem::class);
         $mockFilesystem->expects($this->once())
@@ -526,22 +529,21 @@ final class InstallCommandTest extends TestCase
 
         $mockFilesystem = $this->createMock(Filesystem::class);
         $mockFilesystem->method('exists')
-            ->willReturnCallback(static function (string $path) use ($configFile, $routesFile): bool {
+            ->willReturnCallback(static function (string $path): bool {
                 if (str_ends_with($path, 'nowo_twig_inspector.yaml')) {
                     return false;
                 }
-                if (str_ends_with($path, 'routes.yaml')) {
-                    return true;
-                }
 
-                return false;
+                return (bool) (str_ends_with($path, 'routes.yaml'))
+
+                ;
             });
         $mockFilesystem->method('mkdir');
         $mockFilesystem->method('dumpFile');
         $mockFilesystem->method('appendToFile')
             ->willThrowException(new IOException('Permission denied'));
 
-        $command = new InstallCommand($this->testProjectDir, $mockFilesystem);
+        $command       = new InstallCommand($this->testProjectDir, $mockFilesystem);
         $commandTester = new CommandTester($command);
 
         $commandTester->execute([]);
@@ -550,7 +552,7 @@ final class InstallCommandTest extends TestCase
         $display = $this->normalizeDisplay($commandTester->getDisplay());
         $this->assertTrue(
             str_contains($display, 'Could not update') || str_contains($display, 'Permission denied'),
-            'Expected warning about routes file update failure: ' . $display
+            'Expected warning about routes file update failure: ' . $display,
         );
     }
 

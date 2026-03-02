@@ -14,12 +14,12 @@ class DemoController extends AbstractController
     public function home(): Response
     {
         return $this->render('demo/home.html.twig', [
-            'title' => 'Twig Inspector Bundle - Demo',
-            'message' => 'This is a demo page to showcase the Twig Inspector Bundle functionality with Symfony 7.0.',
+            'title'         => 'Twig Inspector Bundle - Demo',
+            'message'       => 'This is a demo page to showcase the Twig Inspector Bundle functionality with Symfony 7.0.',
             'version_badge' => 'Symfony 7.0',
-            'subtitle' => 'Symfony Bundle Demo',
-            'sy_version' => 'Symfony 7.0',
-            'items' => [
+            'subtitle'      => 'Symfony Bundle Demo',
+            'sy_version'    => 'Symfony 7.0',
+            'items'         => [
                 'Enable Twig Inspector in the Web Profiler toolbar',
                 'Hover over HTML elements to see which templates rendered them',
                 'Click on elements to open templates in your IDE',
@@ -37,4 +37,3 @@ class DemoController extends AbstractController
         return $this->render('demo/_controller_fragment.html.twig');
     }
 }
-

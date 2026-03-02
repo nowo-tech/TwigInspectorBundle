@@ -19,9 +19,9 @@ class NodeReference
     /**
      * Constructor.
      *
-     * @param string $name     Block or template name
+     * @param string $name Block or template name
      * @param string $template Template name (e.g. @App/demo/home.html.twig)
-     * @param int    $line     Line number in the template
+     * @param int $line Line number in the template
      */
     public function __construct(
         private readonly string $name,

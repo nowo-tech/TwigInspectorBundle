@@ -23,7 +23,7 @@ class NowoTwigInspectorBundle extends Bundle
      */
     public function getContainerExtension(): ?ExtensionInterface
     {
-        if (null === $this->extension) {
+        if ($this->extension === null) {
             $this->extension = new NowoTwigInspectorExtension();
         }
 

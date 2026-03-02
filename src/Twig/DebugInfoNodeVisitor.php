@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\Twig;
 
-use Nowo\TwigInspectorBundle\Twig\Node\{NodeEnd, NodeStart};
+use Nowo\TwigInspectorBundle\Twig\Node\NodeEnd;
+use Nowo\TwigInspectorBundle\Twig\Node\NodeStart;
 use Twig\Environment;
 use Twig\Node\BlockNode;
 use Twig\Node\BodyNode;
 use Twig\Node\ModuleNode;
 use Twig\Node\Node;
 use Twig\NodeVisitor\NodeVisitorInterface;
+
+use function sprintf;
 
 /**
  * Node visitor that wraps each block and the template display with NodeStart/NodeEnd
@@ -27,8 +30,8 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
     /**
      * Called before child nodes are visited. This visitor does not modify the node at this stage.
      *
-     * @param Node        $node The current node
-     * @param Environment $env  The Twig environment
+     * @param Node $node The current node
+     * @param Environment $env The Twig environment
      *
      * @return Node The node unchanged
      */
@@ -40,8 +43,8 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
     /**
      * Called after child nodes are visited. Injects NodeStart/NodeEnd around display and block body.
      *
-     * @param Node        $node The current node (ModuleNode or BlockNode)
-     * @param Environment $env  The Twig environment
+     * @param Node $node The current node (ModuleNode or BlockNode)
+     * @param Environment $env The Twig environment
      *
      * @return Node The node with display_start/display_end or body wrapped
      */
@@ -59,11 +62,11 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
                             self::EXTENSION_NAME,
                             $node->getTemplateName(),
                             $node->getTemplateLine(),
-                            $varName
+                            $varName,
                         ),
                         $node->getNode('display_start'),
-                    ]
-                )
+                    ],
+                ),
             );
             $node->setNode(
                 'display_end',
@@ -71,8 +74,8 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
                     [
                         new NodeEnd($varName),
                         $node->getNode('display_end'),
-                    ]
-                )
+                    ],
+                ),
             );
         }
         // Wrap block body with start/end comments
@@ -85,12 +88,12 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
                             self::EXTENSION_NAME,
                             $node->getAttribute('name'),
                             $node->getTemplateLine(),
-                            $varName
+                            $varName,
                         ),
                         $node->getNode('body'),
                         new NodeEnd($varName),
-                    ]
-                )
+                    ],
+                ),
             );
         }
 

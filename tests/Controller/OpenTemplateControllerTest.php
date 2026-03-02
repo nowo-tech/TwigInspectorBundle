@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\Tests\Controller;
 
+use Exception;
 use Nowo\TwigInspectorBundle\Controller\OpenTemplateController;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -32,19 +34,19 @@ final class OpenTemplateControllerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->twig = $this->createMock(Environment::class);
+        $this->twig              = $this->createMock(Environment::class);
         $this->fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
-        $this->controller = new OpenTemplateController($this->twig, $this->fileLinkFormatter);
+        $this->controller        = new OpenTemplateController($this->twig, $this->fileLinkFormatter);
     }
 
     public function testInvokeWithDefaultLine(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $template = 'test.html.twig';
 
         // Create a real Twig environment with ArrayLoader to create real TemplateWrapper
-        $loader = new ArrayLoader([$template => 'test content']);
-        $realTwig = new Environment($loader);
+        $loader          = new ArrayLoader([$template => 'test content']);
+        $realTwig        = new Environment($loader);
         $templateWrapper = $realTwig->load($template);
 
         $this->twig->expects($this->once())
@@ -65,12 +67,12 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeWithCustomLine(): void
     {
-        $request = new Request(['line' => 42]);
+        $request  = new Request(['line' => 42]);
         $template = 'test.html.twig';
 
         // Create a real Twig environment with ArrayLoader to create real TemplateWrapper
-        $loader = new ArrayLoader([$template => 'test content']);
-        $realTwig = new Environment($loader);
+        $loader          = new ArrayLoader([$template => 'test content']);
+        $realTwig        = new Environment($loader);
         $templateWrapper = $realTwig->load($template);
 
         $this->twig->expects($this->once())
@@ -91,12 +93,12 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeWithStringLine(): void
     {
-        $request = new Request(['line' => '100']);
+        $request  = new Request(['line' => '100']);
         $template = 'test.html.twig';
 
         // Create a real Twig environment with ArrayLoader to create real TemplateWrapper
-        $loader = new ArrayLoader([$template => 'test content']);
-        $realTwig = new Environment($loader);
+        $loader          = new ArrayLoader([$template => 'test content']);
+        $realTwig        = new Environment($loader);
         $templateWrapper = $realTwig->load($template);
 
         $this->twig->expects($this->once())
@@ -118,7 +120,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeRejectsPathTraversalWithDoubleDot(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $template = '../etc/passwd';
 
         $this->expectException(BadRequestException::class);
@@ -129,7 +131,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeRejectsPathTraversalWithMultipleDots(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $template = '../../../../etc/passwd';
 
         $this->expectException(BadRequestException::class);
@@ -140,7 +142,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeRejectsNullByte(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $template = "test\x00.html.twig";
 
         $this->expectException(BadRequestException::class);
@@ -151,7 +153,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeRejectsAbsolutePathUnix(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $template = '/etc/passwd';
 
         $this->expectException(BadRequestException::class);
@@ -162,7 +164,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeRejectsAbsolutePathWindows(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $template = 'C:\\Windows\\System32\\config\\sam';
 
         $this->expectException(BadRequestException::class);
@@ -173,7 +175,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeRejectsEmptyTemplateName(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $template = '';
 
         $this->expectException(BadRequestException::class);
@@ -184,7 +186,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeRejectsWhitespaceOnlyTemplateName(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $template = '   ';
 
         $this->expectException(BadRequestException::class);
@@ -195,7 +197,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeRejectsNegativeLineNumber(): void
     {
-        $request = new Request(['line' => -1]);
+        $request  = new Request(['line' => -1]);
         $template = 'test.html.twig';
 
         $this->expectException(BadRequestException::class);
@@ -206,7 +208,7 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeRejectsZeroLineNumber(): void
     {
-        $request = new Request(['line' => 0]);
+        $request  = new Request(['line' => 0]);
         $template = 'test.html.twig';
 
         $this->expectException(BadRequestException::class);
@@ -217,19 +219,19 @@ final class OpenTemplateControllerTest extends TestCase
 
     public function testInvokeRejectsNonNumericLineNumber(): void
     {
-        $request = new Request(['line' => 'invalid']);
+        $request  = new Request(['line' => 'invalid']);
         $template = 'test.html.twig';
 
         // getInt() in Symfony 7.0+ throws an exception for invalid input before our validation
         // We expect an exception to be thrown (either from Symfony or our validation)
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
 
         ($this->controller)($request, $template);
     }
 
     public function testInvokeThrowsNotFoundWhenTemplateDoesNotExist(): void
     {
-        $request = new Request();
+        $request  = new Request();
         $template = 'nonexistent.html.twig';
 
         $this->twig->expects($this->once())
@@ -252,8 +254,8 @@ final class OpenTemplateControllerTest extends TestCase
         file_put_contents($templateFile, 'test content');
 
         try {
-            $loader = new FilesystemLoader([$tempDir]);
-            $twig = new Environment($loader);
+            $loader          = new FilesystemLoader([$tempDir]);
+            $twig            = new Environment($loader);
             $templateWrapper = $twig->load('test.html.twig');
 
             // Create a new controller with real Twig environment
@@ -265,7 +267,7 @@ final class OpenTemplateControllerTest extends TestCase
 
             $realController = new OpenTemplateController($twig, $realFileLinkFormatter);
 
-            $request = new Request();
+            $request  = new Request();
             $response = ($realController)($request, 'test.html.twig');
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -290,11 +292,11 @@ final class OpenTemplateControllerTest extends TestCase
         file_put_contents($templateFile, 'test content');
 
         try {
-            $loader = new FilesystemLoader([$allowedDir]);
-            $twig = new Environment($loader);
+            $loader                = new FilesystemLoader([$allowedDir]);
+            $twig                  = new Environment($loader);
             $realFileLinkFormatter = $this->createMock(FileLinkFormatter::class);
-            $realController = new OpenTemplateController($twig, $realFileLinkFormatter);
-            $request = new Request();
+            $realController        = new OpenTemplateController($twig, $realFileLinkFormatter);
+            $request               = new Request();
 
             $this->expectException(NotFoundHttpException::class);
             ($realController)($request, 'nonexistent.html.twig');
@@ -312,14 +314,14 @@ final class OpenTemplateControllerTest extends TestCase
     {
         // Create a temporary directory structure for templates
         $tempDir = sys_get_temp_dir() . '/twig_inspector_test_' . uniqid();
-        $subDir = $tempDir . '/admin/users';
+        $subDir  = $tempDir . '/admin/users';
         mkdir($subDir, 0o777, true);
         $templateFile = $subDir . '/list.html.twig';
         file_put_contents($templateFile, 'template content');
 
         try {
-            $loader = new FilesystemLoader([$tempDir]);
-            $twig = new Environment($loader);
+            $loader          = new FilesystemLoader([$tempDir]);
+            $twig            = new Environment($loader);
             $templateWrapper = $twig->load('admin/users/list.html.twig');
 
             $realFileLinkFormatter = $this->createMock(FileLinkFormatter::class);
@@ -330,7 +332,7 @@ final class OpenTemplateControllerTest extends TestCase
 
             $realController = new OpenTemplateController($twig, $realFileLinkFormatter);
 
-            $request = new Request();
+            $request  = new Request();
             $response = ($realController)($request, 'admin/users/list.html.twig');
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -351,8 +353,8 @@ final class OpenTemplateControllerTest extends TestCase
     public function testInvokeReturns404InProdEnvironment(): void
     {
         $controller = new OpenTemplateController($this->twig, $this->fileLinkFormatter, 'prod');
-        $request = new Request();
-        $template = 'test.html.twig';
+        $request    = new Request();
+        $template   = 'test.html.twig';
 
         $this->expectException(NotFoundHttpException::class);
         ($controller)($request, $template);
@@ -362,14 +364,14 @@ final class OpenTemplateControllerTest extends TestCase
     {
         // Test case where realpath() returns false using reflection
         $loader = new FilesystemLoader([sys_get_temp_dir()]);
-        $twig = new Environment($loader);
+        $twig   = new Environment($loader);
 
         $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
-        $controller = new OpenTemplateController($twig, $fileLinkFormatter, 'dev');
+        $controller        = new OpenTemplateController($twig, $fileLinkFormatter, 'dev');
 
         // Use reflection to test validateFilePath directly with a non-existent path
-        $reflection = new \ReflectionClass($controller);
-        $method = $reflection->getMethod('validateFilePath');
+        $reflection = new ReflectionClass($controller);
+        $method     = $reflection->getMethod('validateFilePath');
         $method->setAccessible(true);
 
         // Test with a path that realpath() will return false for
@@ -391,14 +393,14 @@ final class OpenTemplateControllerTest extends TestCase
 
         try {
             $loader = new FilesystemLoader([$tempDir]);
-            $twig = new Environment($loader);
+            $twig   = new Environment($loader);
 
             $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
-            $controller = new OpenTemplateController($twig, $fileLinkFormatter);
+            $controller        = new OpenTemplateController($twig, $fileLinkFormatter);
 
             // Use reflection to test validateFilePath
-            $reflection = new \ReflectionClass($controller);
-            $method = $reflection->getMethod('validateFilePath');
+            $reflection = new ReflectionClass($controller);
+            $method     = $reflection->getMethod('validateFilePath');
             $method->setAccessible(true);
 
             // Test with a valid file path - should not throw exception
@@ -426,8 +428,8 @@ final class OpenTemplateControllerTest extends TestCase
 
         try {
             $filesystemLoader = new FilesystemLoader([$tempDir]);
-            $chainLoader = new ChainLoader([$filesystemLoader]);
-            $twig = new Environment($chainLoader);
+            $chainLoader      = new ChainLoader([$filesystemLoader]);
+            $twig             = new Environment($chainLoader);
 
             $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
             $fileLinkFormatter->expects($this->once())
@@ -436,8 +438,8 @@ final class OpenTemplateControllerTest extends TestCase
                 ->willReturn('phpstorm://open?file=' . $templateFile . '&line=1');
 
             $controller = new OpenTemplateController($twig, $fileLinkFormatter, 'dev');
-            $request = new Request();
-            $response = ($controller)($request, 'chain_test.html.twig');
+            $request    = new Request();
+            $response   = ($controller)($request, 'chain_test.html.twig');
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
         } finally {
@@ -454,7 +456,7 @@ final class OpenTemplateControllerTest extends TestCase
     {
         // ChainLoader with FilesystemLoader: file from other dir must be rejected
         $allowedDir = sys_get_temp_dir() . '/twig_inspector_chain_allowed_' . uniqid();
-        $otherDir = sys_get_temp_dir() . '/twig_inspector_chain_other_' . uniqid();
+        $otherDir   = sys_get_temp_dir() . '/twig_inspector_chain_other_' . uniqid();
         mkdir($allowedDir, 0o777, true);
         mkdir($otherDir, 0o777, true);
         $allowedFile = $allowedDir . '/allowed.html.twig';
@@ -463,13 +465,13 @@ final class OpenTemplateControllerTest extends TestCase
         file_put_contents($outsideFile, 'outside');
 
         try {
-            $chainLoader = new ChainLoader([new FilesystemLoader([$allowedDir])]);
-            $twig = new Environment($chainLoader);
+            $chainLoader       = new ChainLoader([new FilesystemLoader([$allowedDir])]);
+            $twig              = new Environment($chainLoader);
             $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
-            $controller = new OpenTemplateController($twig, $fileLinkFormatter, 'dev');
+            $controller        = new OpenTemplateController($twig, $fileLinkFormatter, 'dev');
 
-            $reflection = new \ReflectionClass($controller);
-            $method = $reflection->getMethod('validateFilePath');
+            $reflection = new ReflectionClass($controller);
+            $method     = $reflection->getMethod('validateFilePath');
             $method->setAccessible(true);
 
             $this->expectException(BadRequestException::class);
@@ -495,11 +497,11 @@ final class OpenTemplateControllerTest extends TestCase
     public function testInvokeWorksWithArrayLoader(): void
     {
         // ArrayLoader doesn't have getPaths(), so validation should pass
-        $request = new Request();
+        $request  = new Request();
         $template = 'test.html.twig';
 
-        $loader = new ArrayLoader([$template => 'test content']);
-        $realTwig = new Environment($loader);
+        $loader          = new ArrayLoader([$template => 'test content']);
+        $realTwig        = new Environment($loader);
         $templateWrapper = $realTwig->load($template);
 
         $this->twig->expects($this->once())
@@ -524,20 +526,20 @@ final class OpenTemplateControllerTest extends TestCase
     public function testValidateFilePathRejectsFileOutsideAllowedDirectories(): void
     {
         $allowedDir = sys_get_temp_dir() . '/twig_inspector_allowed_' . uniqid();
-        $otherDir = sys_get_temp_dir() . '/twig_inspector_other_' . uniqid();
+        $otherDir   = sys_get_temp_dir() . '/twig_inspector_other_' . uniqid();
         mkdir($allowedDir, 0o777, true);
         mkdir($otherDir, 0o777, true);
         $fileOutside = $otherDir . '/outside.html.twig';
         file_put_contents($fileOutside, 'content');
 
         try {
-            $loader = new FilesystemLoader([$allowedDir]);
-            $twig = new Environment($loader);
+            $loader            = new FilesystemLoader([$allowedDir]);
+            $twig              = new Environment($loader);
             $fileLinkFormatter = $this->createMock(FileLinkFormatter::class);
-            $controller = new OpenTemplateController($twig, $fileLinkFormatter);
+            $controller        = new OpenTemplateController($twig, $fileLinkFormatter);
 
-            $reflection = new \ReflectionClass($controller);
-            $method = $reflection->getMethod('validateFilePath');
+            $reflection = new ReflectionClass($controller);
+            $method     = $reflection->getMethod('validateFilePath');
             $method->setAccessible(true);
 
             $this->expectException(BadRequestException::class);

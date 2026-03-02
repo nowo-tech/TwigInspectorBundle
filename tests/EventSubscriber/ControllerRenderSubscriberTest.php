@@ -6,6 +6,8 @@ namespace Nowo\TwigInspectorBundle\Tests\EventSubscriber;
 
 use Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -22,7 +24,7 @@ final class ControllerRenderSubscriberTest extends TestCase
     protected function setUp(): void
     {
         $this->requestStack = new RequestStack();
-        $this->subscriber = new ControllerRenderSubscriber($this->requestStack);
+        $this->subscriber   = new ControllerRenderSubscriber($this->requestStack);
     }
 
     public function testGetSubscribedEvents(): void
@@ -34,7 +36,7 @@ final class ControllerRenderSubscriberTest extends TestCase
 
     public function testGetControllersForRequestReturnsEmptyForUnknownRequest(): void
     {
-        $request = new Request();
+        $request     = new Request();
         $controllers = $this->subscriber->getControllersForRequest($request);
         $this->assertSame([], $controllers);
     }
@@ -44,9 +46,9 @@ final class ControllerRenderSubscriberTest extends TestCase
         $request = new Request();
         $this->requestStack->push($request);
 
-        $kernel = $this->createMock(HttpKernelInterface::class);
+        $kernel     = $this->createMock(HttpKernelInterface::class);
         $controller = static fn () => null;
-        $event = new ControllerEvent($kernel, $controller, $request, HttpKernelInterface::MAIN_REQUEST);
+        $event      = new ControllerEvent($kernel, $controller, $request, HttpKernelInterface::MAIN_REQUEST);
 
         $this->subscriber->onController($event);
 
@@ -62,8 +64,8 @@ final class ControllerRenderSubscriberTest extends TestCase
         $request = new Request();
         $this->requestStack->push($request);
 
-        $kernel = $this->createMock(HttpKernelInterface::class);
-        $controller = [new class () {
+        $kernel     = $this->createMock(HttpKernelInterface::class);
+        $controller = [new class {
             public function home(): void
             {
             }
@@ -85,8 +87,8 @@ final class ControllerRenderSubscriberTest extends TestCase
         $fragmentRequest = new Request();
         $this->requestStack->push($fragmentRequest);
 
-        $kernel = $this->createMock(HttpKernelInterface::class);
-        $controller = [new class () {
+        $kernel     = $this->createMock(HttpKernelInterface::class);
+        $controller = [new class {
             public function fragment(): void
             {
             }
@@ -107,7 +109,7 @@ final class ControllerRenderSubscriberTest extends TestCase
         $this->requestStack->push($request);
 
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $event = new ControllerEvent($kernel, static fn () => null, $request, HttpKernelInterface::MAIN_REQUEST);
+        $event  = new ControllerEvent($kernel, static fn () => null, $request, HttpKernelInterface::MAIN_REQUEST);
         $this->subscriber->onController($event);
 
         $this->assertCount(1, $this->subscriber->getControllersForRequest($request));
@@ -144,9 +146,9 @@ final class ControllerRenderSubscriberTest extends TestCase
         $requestStack->method('getMainRequest')->willReturn(null);
 
         $subscriber = new ControllerRenderSubscriber($requestStack);
-        $request = new Request();
-        $kernel = $this->createMock(HttpKernelInterface::class);
-        $event = new ControllerEvent($kernel, static fn () => null, $request, HttpKernelInterface::MAIN_REQUEST);
+        $request    = new Request();
+        $kernel     = $this->createMock(HttpKernelInterface::class);
+        $event      = new ControllerEvent($kernel, static fn () => null, $request, HttpKernelInterface::MAIN_REQUEST);
 
         $subscriber->onController($event);
 
@@ -160,24 +162,24 @@ final class ControllerRenderSubscriberTest extends TestCase
     public function testControllerToStringViaReflection(): void
     {
         $subscriber = new ControllerRenderSubscriber(new RequestStack());
-        $reflection = new \ReflectionClass($subscriber);
-        $method = $reflection->getMethod('controllerToString');
+        $reflection = new ReflectionClass($subscriber);
+        $method     = $reflection->getMethod('controllerToString');
         $method->setAccessible(true);
 
         $this->assertSame('App\\Controller::index', $method->invoke($subscriber, 'App\\Controller::index'));
-        $this->assertSame('unknown', $method->invoke($subscriber, new \stdClass()));
+        $this->assertSame('unknown', $method->invoke($subscriber, new stdClass()));
     }
 
     /** Covers getMainOrMasterRequest via reflection. */
     public function testGetMainOrMasterRequestViaReflection(): void
     {
         $requestStack = new RequestStack();
-        $request = new Request();
+        $request      = new Request();
         $requestStack->push($request);
 
         $subscriber = new ControllerRenderSubscriber($requestStack);
-        $reflection = new \ReflectionClass($subscriber);
-        $method = $reflection->getMethod('getMainOrMasterRequest');
+        $reflection = new ReflectionClass($subscriber);
+        $method     = $reflection->getMethod('getMainOrMasterRequest');
         $method->setAccessible(true);
 
         $this->assertSame($request, $method->invoke($subscriber));

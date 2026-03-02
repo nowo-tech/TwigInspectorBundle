@@ -22,16 +22,14 @@ class NowoTwigInspectorExtension extends Extension
     /**
      * Loads bundle services and applies the processed configuration to the container.
      *
-     * @param array<string, mixed> $configs   Raw config arrays (from config files)
-     * @param ContainerBuilder     $container Container builder to register parameters and definitions
-     *
-     * @return void
+     * @param array<string, mixed> $configs Raw config arrays (from config files)
+     * @param ContainerBuilder $container Container builder to register parameters and definitions
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $processor = new Processor();
+        $processor     = new Processor();
         $configuration = new Configuration();
-        $config = $processor->processConfiguration($configuration, $configs);
+        $config        = $processor->processConfiguration($configuration, $configs);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');

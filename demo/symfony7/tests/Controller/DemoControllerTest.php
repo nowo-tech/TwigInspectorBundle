@@ -78,4 +78,3 @@ final class DemoControllerTest extends WebTestCase
         $this->assertSelectorTextContains('.info-box', 'Instructions');
     }
 }
-

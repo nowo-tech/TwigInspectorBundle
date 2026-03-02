@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\Command;
 
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,6 +12,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
+
+use function sprintf;
+
+use const E_WARNING;
 
 /**
  * Console command that creates the Twig Inspector config file and ensures routes are imported.
@@ -20,7 +25,7 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 #[AsCommand(
     name: 'nowo:twig-inspector:install',
-    description: 'Creates the Twig Inspector Bundle configuration file'
+    description: 'Creates the Twig Inspector Bundle configuration file',
 )]
 class InstallCommand extends Command
 {
@@ -88,7 +93,7 @@ class InstallCommand extends Command
     /**
      * Constructor.
      *
-     * @param string|null     $projectDir The project directory (kernel.project_dir parameter)
+     * @param string|null $projectDir The project directory (kernel.project_dir parameter)
      * @param Filesystem|null $filesystem Optional filesystem (for testing; defaults to new Filesystem())
      */
     public function __construct(
@@ -100,8 +105,6 @@ class InstallCommand extends Command
 
     /**
      * Configures the command options (env, force).
-     *
-     * @return void
      */
     protected function configure(): void
     {
@@ -111,13 +114,13 @@ class InstallCommand extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'The environment name (dev, test, prod)',
-                'dev'
+                'dev',
             )
             ->addOption(
                 'force',
                 'f',
                 InputOption::VALUE_NONE,
-                'Overwrite existing configuration file'
+                'Overwrite existing configuration file',
             )
             ->setHelp(
                 <<<'HELP'
@@ -148,27 +151,27 @@ class InstallCommand extends Command
     /**
      * Creates the config file for the chosen environment and updates routes.yaml if needed.
      *
-     * @param InputInterface  $input  The input instance
+     * @param InputInterface $input The input instance
      * @param OutputInterface $output The output instance
      *
      * @return int Command::SUCCESS or Command::FAILURE
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
+        $io         = new SymfonyStyle($input, $output);
         $filesystem = $this->filesystem ?? new Filesystem();
 
-        $env = $input->getOption('env') ?? 'dev';
+        $env   = $input->getOption('env') ?? 'dev';
         $force = $input->getOption('force');
 
         // Determine project directory
         $projectDir = $this->projectDir;
-        if (null === $projectDir) {
+        if ($projectDir === null) {
             // Try to get from kernel or use current working directory
             $projectDir = getcwd() ?: '.';
         }
 
-        $configDir = $projectDir . '/config/packages/' . $env;
+        $configDir  = $projectDir . '/config/packages/' . $env;
         $configFile = $configDir . '/nowo_twig_inspector.yaml';
 
         // Check if file already exists
@@ -191,7 +194,7 @@ class InstallCommand extends Command
         try {
             $filesystem->dumpFile($configFile, self::CONFIG_TEMPLATE);
             $io->success(sprintf('Configuration file created successfully: %s', $configFile));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error(sprintf('Failed to create configuration file: %s', $e->getMessage()));
 
             return Command::FAILURE;
@@ -210,11 +213,9 @@ class InstallCommand extends Command
     /**
      * Ensures routes.yaml exists and contains the bundle route import.
      *
-     * @param SymfonyStyle $io         The IO helper
-     * @param Filesystem   $filesystem The filesystem helper
-     * @param string       $routesFile The path to routes.yaml
-     *
-     * @return void
+     * @param SymfonyStyle $io The IO helper
+     * @param Filesystem $filesystem The filesystem helper
+     * @param string $routesFile The path to routes.yaml
      */
     private function ensureRoutesFile(SymfonyStyle $io, Filesystem $filesystem, string $routesFile): void
     {
@@ -236,7 +237,7 @@ class InstallCommand extends Command
             try {
                 $filesystem->dumpFile($routesFile, $routeImport);
                 $io->success(sprintf('Routes file created: %s', $routesFile));
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $io->warning(sprintf('Could not create routes file: %s', $e->getMessage()));
                 $io->note('Please manually add the route import to config/routes.yaml:');
                 $io->text($routeImport);
@@ -256,7 +257,7 @@ class InstallCommand extends Command
         } finally {
             restore_error_handler();
         }
-        if (false === $content) {
+        if ($content === false) {
             $io->warning('Could not read routes.yaml file.');
             $io->note('Please manually add the route import to config/routes.yaml:');
             $io->text($routeImport);
@@ -275,7 +276,7 @@ class InstallCommand extends Command
         try {
             $filesystem->appendToFile($routesFile, $routeImport);
             $io->success('Added Twig Inspector Bundle route import to routes.yaml');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->warning(sprintf('Could not update routes file: %s', $e->getMessage()));
             $io->note('Please manually add the route import to config/routes.yaml:');
             $io->text($routeImport);

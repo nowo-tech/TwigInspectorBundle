@@ -28,14 +28,14 @@ final class NodeStartTest extends TestCase
 
     public function testCompile(): void
     {
-        $node = new NodeStart('ExtensionName', 'block_name', 10, 'var123');
+        $node     = new NodeStart('ExtensionName', 'block_name', 10, 'var123');
         $compiler = $this->createMock(Compiler::class);
 
         $writeCallCount = 0;
         $compiler->expects($this->exactly(2))
           ->method('write')
           ->willReturnCallback(function ($arg) use (&$writeCallCount, $compiler) {
-              $writeCallCount++;
+              ++$writeCallCount;
               if ($writeCallCount === 1) {
                   $this->assertStringContainsString('$var123 = $this->env->getExtension(', $arg);
               } else {
@@ -49,7 +49,7 @@ final class NodeStartTest extends TestCase
         $compiler->expects($this->exactly(3))
           ->method('repr')
           ->willReturnCallback(function ($arg) use (&$reprCallCount, $compiler) {
-              $reprCallCount++;
+              ++$reprCallCount;
               if ($reprCallCount === 1) {
                   $this->assertSame('ExtensionName', $arg);
               } elseif ($reprCallCount === 2) {
@@ -65,7 +65,7 @@ final class NodeStartTest extends TestCase
         $compiler->expects($this->exactly(3))
           ->method('raw')
           ->willReturnCallback(function ($arg) use (&$rawCallCount, $compiler) {
-              $rawCallCount++;
+              ++$rawCallCount;
               if ($rawCallCount === 1) {
                   $this->assertSame(");\n", $arg);
               } elseif ($rawCallCount === 2) {

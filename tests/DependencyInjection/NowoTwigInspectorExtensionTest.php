@@ -41,11 +41,11 @@ final class NowoTwigInspectorExtensionTest extends TestCase
     public function testLoadWithConfig(): void
     {
         $container = new ContainerBuilder();
-        $configs = [
-          [
-            'enabled_extensions' => ['.html.twig', '.twig'],
-            'excluded_templates' => ['admin/*'],
-          ],
+        $configs   = [
+            [
+                'enabled_extensions' => ['.html.twig', '.twig'],
+                'excluded_templates' => ['admin/*'],
+            ],
         ];
 
         // Should not throw any exception with valid config

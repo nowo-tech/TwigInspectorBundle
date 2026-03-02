@@ -8,6 +8,9 @@ use Nowo\TwigInspectorBundle\BoxDrawings;
 use Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension;
 use Nowo\TwigInspectorBundle\Twig\NodeReference;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
@@ -30,8 +33,8 @@ final class HtmlCommentsExtensionTest extends TestCase
     {
         $this->requestStack = $this->createMock(RequestStack::class);
         $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
-        $this->boxDrawings = new BoxDrawings();
-        $this->extension = new HtmlCommentsExtension($this->requestStack, $this->urlGenerator, $this->boxDrawings);
+        $this->boxDrawings  = new BoxDrawings();
+        $this->extension    = new HtmlCommentsExtension($this->requestStack, $this->urlGenerator, $this->boxDrawings);
     }
 
     public function testStartWhenDisabled(): void
@@ -192,7 +195,7 @@ final class HtmlCommentsExtensionTest extends TestCase
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
         $this->urlGenerator->method('generate')
-          ->willReturnCallback(function ($route, $params) {
+          ->willReturnCallback(static function ($route, $params) {
               return '/_template/' . $params['template'] . '?line=' . $params['line'];
           });
 
@@ -221,8 +224,8 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $this->requestStack->method('getCurrentRequest')->willReturn(null);
 
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
@@ -232,13 +235,13 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithoutCookie(): void
     {
-        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
         $request = new Request();
 
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
@@ -248,14 +251,14 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithCookie(): void
     {
-        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
 
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
@@ -265,7 +268,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithCustomCookieName(): void
     {
-        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
         $request = new Request();
         $request->cookies->set('custom_cookie_name', '1');
 
@@ -278,11 +281,11 @@ final class HtmlCommentsExtensionTest extends TestCase
             ['.html.twig'],
             [],
             [],
-            'custom_cookie_name'
+            'custom_cookie_name',
         );
 
-        $reflection = new \ReflectionClass($extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
@@ -292,7 +295,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithEnabledExtensions(): void
     {
-        $ref = new NodeReference('block', 'template.xml.twig', 1);
+        $ref     = new NodeReference('block', 'template.xml.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
 
@@ -302,11 +305,11 @@ final class HtmlCommentsExtensionTest extends TestCase
             $this->requestStack,
             $this->urlGenerator,
             $this->boxDrawings,
-            ['.xml.twig'] // Only .xml.twig is enabled
+            ['.xml.twig'], // Only .xml.twig is enabled
         );
 
-        $reflection = new \ReflectionClass($extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
@@ -316,7 +319,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithDisabledExtension(): void
     {
-        $ref = new NodeReference('block', 'template.xml.twig', 1);
+        $ref     = new NodeReference('block', 'template.xml.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
 
@@ -326,11 +329,11 @@ final class HtmlCommentsExtensionTest extends TestCase
             $this->requestStack,
             $this->urlGenerator,
             $this->boxDrawings,
-            ['.html.twig'] // Only .html.twig is enabled
+            ['.html.twig'], // Only .html.twig is enabled
         );
 
-        $reflection = new \ReflectionClass($extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
@@ -340,7 +343,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithExcludedTemplate(): void
     {
-        $ref = new NodeReference('block', 'admin/dashboard.html.twig', 1);
+        $ref     = new NodeReference('block', 'admin/dashboard.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
 
@@ -353,11 +356,11 @@ final class HtmlCommentsExtensionTest extends TestCase
             ['.html.twig'],
             ['admin/*'], // Exclude admin templates
             [],
-            'twig_inspector_is_active'
+            'twig_inspector_is_active',
         );
 
-        $reflection = new \ReflectionClass($extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
@@ -367,7 +370,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithExcludedBlock(): void
     {
-        $ref = new NodeReference('javascript', 'template.html.twig', 1);
+        $ref     = new NodeReference('javascript', 'template.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
 
@@ -379,11 +382,11 @@ final class HtmlCommentsExtensionTest extends TestCase
             $this->boxDrawings,
             ['.html.twig'],
             [],
-            ['javascript'] // Exclude javascript block
+            ['javascript'], // Exclude javascript block
         );
 
-        $reflection = new \ReflectionClass($extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
@@ -393,7 +396,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithExcludedBlockWildcard(): void
     {
-        $ref = new NodeReference('head_scripts', 'template.html.twig', 1);
+        $ref     = new NodeReference('head_scripts', 'template.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
 
@@ -406,11 +409,11 @@ final class HtmlCommentsExtensionTest extends TestCase
             ['.html.twig'],
             [],
             ['head_*'], // Exclude blocks starting with head_
-            'twig_inspector_is_active'
+            'twig_inspector_is_active',
         );
 
-        $reflection = new \ReflectionClass($extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
@@ -427,11 +430,11 @@ final class HtmlCommentsExtensionTest extends TestCase
             ['.html.twig'],
             ['admin/*', 'email/*.html.twig'],
             [],
-            'twig_inspector_is_active'
+            'twig_inspector_is_active',
         );
 
-        $reflection = new \ReflectionClass($extension);
-        $method = $reflection->getMethod('isExcluded');
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('isExcluded');
         $method->setAccessible(true);
 
         $this->assertTrue($method->invoke($extension, 'admin/dashboard.html.twig', ['admin/*']));
@@ -449,7 +452,7 @@ final class HtmlCommentsExtensionTest extends TestCase
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
         $this->urlGenerator->method('generate')
-          ->willReturnCallback(function ($route, $params) {
+          ->willReturnCallback(static function ($route, $params) {
               return '/_template/' . $params['template'] . '?line=' . $params['line'];
           });
 
@@ -483,8 +486,8 @@ final class HtmlCommentsExtensionTest extends TestCase
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
@@ -495,8 +498,8 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testIsSupportedWithEmptyString(): void
     {
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('isSupported');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
         $method->setAccessible(true);
 
         // Test with empty string - trimmed will be empty
@@ -508,8 +511,8 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testIsSupportedWithWhitespaceOnly(): void
     {
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('isSupported');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
         $method->setAccessible(true);
 
         // Test with whitespace only - trimmed will be empty
@@ -521,8 +524,8 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testIsSupportedWithNonEmptyTrimmedButStartsWithBracket(): void
     {
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('isSupported');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
         $method->setAccessible(true);
 
         // Test with content that has HTML tags but starts with [ or {
@@ -537,8 +540,8 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testIsSupportedWithBackboneTemplate(): void
     {
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('isSupported');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
         $method->setAccessible(true);
 
         // Test with Backbone template (contains <% %>)
@@ -550,8 +553,8 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testIsSupportedWithValidHTML(): void
     {
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('isSupported');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
         $method->setAccessible(true);
 
         // Test with valid HTML that doesn't start with brackets and doesn't contain Backbone syntax
@@ -563,8 +566,8 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testIsSupportedWithHTMLStartingWithWhitespace(): void
     {
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('isSupported');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
         $method->setAccessible(true);
 
         // Test with HTML that starts with whitespace (trimmed will be empty, so trimmed[0] won't be accessed)
@@ -578,8 +581,8 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testIsSupportedWithEmptyStringAfterTrim(): void
     {
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('isSupported');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
         $method->setAccessible(true);
 
         // Test with string that is empty after trim - this tests the trimmed !== '' check
@@ -597,8 +600,8 @@ final class HtmlCommentsExtensionTest extends TestCase
           ->with('nowo_twig_inspector_template_link', ['template' => 'template.html.twig', 'line' => 10])
           ->willReturn('/_template/template.html.twig?line=10');
 
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('getComment');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('getComment');
         $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, '┏━', $ref);
@@ -618,8 +621,8 @@ final class HtmlCommentsExtensionTest extends TestCase
           ->with('nowo_twig_inspector_template_link', ['template' => 'template.html.twig', 'line' => 5])
           ->willReturn('/_template/template.html.twig?line=5');
 
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('getLink');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('getLink');
         $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
@@ -636,8 +639,8 @@ final class HtmlCommentsExtensionTest extends TestCase
           ->with('nowo_twig_inspector_template_link', ['template' => 'template.html.twig', 'line' => 10])
           ->willThrowException(new RouteNotFoundException('Route not found'));
 
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('getLink');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('getLink');
         $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
@@ -650,14 +653,14 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithSubRequest(): void
     {
-        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
         $this->requestStack->method('getParentRequest')->willReturn(new Request());
 
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($this->extension, $ref));
@@ -665,7 +668,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithSubRequestWhenInjectOnSubRequestsEnabled(): void
     {
-        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
@@ -684,11 +687,11 @@ final class HtmlCommentsExtensionTest extends TestCase
             [],
             [],
             true,  // injectOnSubRequests
-            true   // debug
+            true,   // debug
         );
 
-        $reflection = new \ReflectionClass($extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $this->assertTrue($method->invoke($extension, $ref));
@@ -696,14 +699,14 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithWdtPath(): void
     {
-        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
         $request = Request::create('http://localhost/_wdt/abc123');
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
         $this->requestStack->method('getParentRequest')->willReturn(null);
 
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($this->extension, $ref));
@@ -711,14 +714,14 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithProfilerPath(): void
     {
-        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
         $request = Request::create('http://localhost/_profiler/abc123');
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
         $this->requestStack->method('getParentRequest')->willReturn(null);
 
-        $reflection = new \ReflectionClass($this->extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($this->extension, $ref));
@@ -726,7 +729,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithExcludedTemplateRegex(): void
     {
-        $ref = new NodeReference('block', 'email/welcome.html.twig', 1);
+        $ref     = new NodeReference('block', 'email/welcome.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
@@ -740,11 +743,11 @@ final class HtmlCommentsExtensionTest extends TestCase
             [],
             'twig_inspector_is_active',
             0,
-            ['/^email\\//']
+            ['/^email\\//'],
         );
 
-        $reflection = new \ReflectionClass($extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($extension, $ref));
@@ -752,7 +755,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithExcludedTemplatePrefix(): void
     {
-        $ref = new NodeReference('block', 'components/button.html.twig', 1);
+        $ref     = new NodeReference('block', 'components/button.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
@@ -767,11 +770,11 @@ final class HtmlCommentsExtensionTest extends TestCase
             'twig_inspector_is_active',
             0,
             [],
-            ['components/']
+            ['components/'],
         );
 
-        $reflection = new \ReflectionClass($extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($extension, $ref));
@@ -779,7 +782,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testShouldInspectWithExcludedBlockRegex(): void
     {
-        $ref = new NodeReference('head_scripts', 'base.html.twig', 1);
+        $ref     = new NodeReference('head_scripts', 'base.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
@@ -795,11 +798,11 @@ final class HtmlCommentsExtensionTest extends TestCase
             0,
             [],
             [],
-            ['/^head_/']
+            ['/^head_/'],
         );
 
-        $reflection = new \ReflectionClass($extension);
-        $method = $reflection->getMethod('shouldInspect');
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
         $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($extension, $ref));
@@ -807,7 +810,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testEndWhenNoBufferStartedReturnsEarly(): void
     {
-        $ref = new NodeReference('block_name', 'template.txt', 10);
+        $ref     = new NodeReference('block_name', 'template.txt', 10);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
@@ -822,7 +825,7 @@ final class HtmlCommentsExtensionTest extends TestCase
 
     public function testEndWhenNoOutputBufferReturnsEarly(): void
     {
-        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
@@ -849,14 +852,14 @@ final class HtmlCommentsExtensionTest extends TestCase
             [],
             [],
             false,  // injectOnSubRequests
-            false   // debug
+            false,   // debug
         );
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
-        $ref = new NodeReference('block', 'template.html.twig', 1);
-        $method = new \ReflectionMethod($extension, 'shouldInspect');
+        $ref    = new NodeReference('block', 'template.html.twig', 1);
+        $method = new ReflectionMethod($extension, 'shouldInspect');
         $result = $method->invoke($extension, $ref);
         $this->assertFalse($result);
     }
@@ -876,15 +879,15 @@ final class HtmlCommentsExtensionTest extends TestCase
             [],
             [],
             false,  // injectOnSubRequests
-            true    // debug
+            true,    // debug
         );
-        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
         $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
 
-        $nestingLevel = new \ReflectionProperty($extension, 'nestingLevel');
+        $nestingLevel = new ReflectionProperty($extension, 'nestingLevel');
         $nestingLevel->setAccessible(true);
         $nestingLevel->setValue($extension, 2);
 
@@ -914,15 +917,15 @@ final class HtmlCommentsExtensionTest extends TestCase
             [],
             [],
             false,  // injectOnSubRequests
-            true    // debug
+            true,    // debug
         );
-        $ref = new NodeReference('block', 'template.html.twig', 1);
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
         $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
         $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
 
-        $nestingLevel = new \ReflectionProperty($extension, 'nestingLevel');
+        $nestingLevel = new ReflectionProperty($extension, 'nestingLevel');
         $nestingLevel->setAccessible(true);
         $nestingLevel->setValue($extension, 2);
 
