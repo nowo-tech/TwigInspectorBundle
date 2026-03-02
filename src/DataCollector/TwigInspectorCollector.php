@@ -196,7 +196,8 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
      */
     public function lateCollect(): void
     {
-        if (!$this->enableMetrics || !($this->data['enabled'] ?? false)) {
+        // Guard: after unserialize, $enableMetrics is restored in __unserialize; isset() avoids access-before-init on older payloads or PHP 8.5
+        if (!isset($this->enableMetrics) || !$this->enableMetrics || !($this->data['enabled'] ?? false)) {
             return;
         }
 
