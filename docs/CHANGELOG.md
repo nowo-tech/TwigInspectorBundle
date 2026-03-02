@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.19] - 2026-03-02
+
+### Fixed
+- **DataCollector**: Serialization for web profiler — `$enableMetrics` is restored in `__unserialize()` and `lateCollect()` guards with `isset()` so the collector does not throw "Typed property $enableMetrics must not be accessed before initialization" on PHP 8.5 or when loading from profiler storage.
+
+### Changed
+- **Demos**: Symfony 6 demo uses FrankenPHP without worker mode (`php_server` only) for reliable startup in CI; Dockerfile entrypoint runs `composer install` when `vendor/autoload_runtime.php` is missing. Symfony 7 and 8 demos keep worker mode.
+- **Dependencies**: Composer lock and Symfony 7.4.6 in demos; PHP-CS-Fixer 3.94.2.
+
 ## [1.0.18] - 2026-03-02
 
 ### Changed

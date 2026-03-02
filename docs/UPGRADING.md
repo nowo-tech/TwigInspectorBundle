@@ -2,9 +2,19 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
-## Upgrading from 1.0.18 to the next release
+## Upgrading from 1.0.19 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.18 to 1.0.19
+
+**No action required** — backward-compatible release.
+
+### What changed
+- **DataCollector**: Profiler serialization fix so the collector works correctly after unserialize (e.g. PHP 8.5, profiler storage). No configuration or API changes.
+- **Demos**: Symfony 6 demo runs without FrankenPHP worker for stability; Symfony 7/8 demos unchanged. Demo Dockerfile entrypoints install Composer dependencies when missing.
+
+No configuration changes for bundle users.
 
 ## Upgrading from 1.0.17 to 1.0.18
 
