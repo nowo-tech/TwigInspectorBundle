@@ -2,9 +2,18 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
-## Upgrading from 1.0.20 to the next release
+## Upgrading from 1.0.21 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.20 to 1.0.21
+
+**No action required** — backward-compatible release (bug fix).
+
+### What changed
+- **InstallCommand**: Help text is now set in `configure()` instead of the `AsCommand` attribute so the command works with Symfony Console 6.4 (PHP 8.1). Output of `php bin/console nowo:twig-inspector:install --help` is unchanged.
+
+No configuration changes for bundle users.
 
 ## Upgrading from 1.0.19 to 1.0.20
 

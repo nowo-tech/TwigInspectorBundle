@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.21] - 2025-02-19
+
+### Fixed
+- **InstallCommand**: Moved help text from `#[AsCommand(help: ...)]` to `setHelp()` in `configure()`. Symfony Console 6.x does not accept the `help` named parameter in `Command::__construct()`, which caused "Unknown named parameter $help" on PHP 8.1 with Symfony 6.4. The command help is unchanged; it is now set in a way compatible with Console 6.4, 7 and 8.
+
 ## [1.0.20] - 2025-02-18
 
 ### Fixed
