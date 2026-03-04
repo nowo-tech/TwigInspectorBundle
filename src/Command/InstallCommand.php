@@ -23,28 +23,7 @@ use const E_WARNING;
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
  * @copyright 2025 Nowo.tech
  */
-#[AsCommand(name: 'nowo:twig-inspector:install', description: 'Creates the Twig Inspector Bundle configuration file', help: <<<'TXT'
-The <info>%command.name%</info> command creates the Twig Inspector Bundle configuration file and ensures routes are set up.
-
-                      <info>php %command.full_name%</info>
-
-This command:
-  - Creates a configuration file at <comment>config/packages/{env}/nowo_twig_inspector.yaml</comment>
-  - Creates or updates <comment>config/routes.yaml</comment> with the bundle route import
-
-                    By default, it creates the file for the <comment>dev</comment> environment.
-                    You can specify a different environment:
-
-                      <info>php %command.full_name% --env=test</info>
-
-                    If the configuration file already exists, the command will ask for confirmation
-                    unless you use the <comment>--force</comment> option:
-
-                      <info>php %command.full_name% --force</info>
-
-The bundle works without the configuration file using default values.
-The routes file is required for the bundle to work properly.
-TXT)]
+#[AsCommand(name: 'nowo:twig-inspector:install', description: 'Creates the Twig Inspector Bundle configuration file')]
 class InstallCommand extends Command
 {
     /** @var string Default YAML configuration content written by the install command */
@@ -123,9 +102,32 @@ class InstallCommand extends Command
 
     /**
      * Configures the command options: --env (environment name) and --force (overwrite existing config).
+     * Help text is set here for compatibility with Symfony Console 6.x (AsCommand attribute does not support help in 6.4).
      */
     protected function configure(): void
     {
+        $this->setHelp(<<<'TXT'
+The <info>%command.name%</info> command creates the Twig Inspector Bundle configuration file and ensures routes are set up.
+
+                      <info>php %command.full_name%</info>
+
+This command:
+  - Creates a configuration file at <comment>config/packages/{env}/nowo_twig_inspector.yaml</comment>
+  - Creates or updates <comment>config/routes.yaml</comment> with the bundle route import
+
+                    By default, it creates the file for the <comment>dev</comment> environment.
+                    You can specify a different environment:
+
+                      <info>php %command.full_name% --env=test</info>
+
+                    If the configuration file already exists, the command will ask for confirmation
+                    unless you use the <comment>--force</comment> option:
+
+                      <info>php %command.full_name% --force</info>
+
+The bundle works without the configuration file using default values.
+The routes file is required for the bundle to work properly.
+TXT);
         $this
             ->addOption(
                 'env',
