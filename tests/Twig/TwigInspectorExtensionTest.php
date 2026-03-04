@@ -11,8 +11,8 @@ use PHPUnit\Framework\TestCase;
 /**
  * Tests for TwigInspectorExtension.
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 final class TwigInspectorExtensionTest extends TestCase
 {

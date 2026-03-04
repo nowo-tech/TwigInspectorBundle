@@ -10,8 +10,8 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 /**
  * Defines the configuration tree for the Twig Inspector Bundle (nowo_twig_inspector).
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 class Configuration implements ConfigurationInterface
 {

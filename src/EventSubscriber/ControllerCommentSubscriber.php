@@ -24,8 +24,8 @@ use function strlen;
  * Each comment includes: render type (main/fragment), controller and template used.
  * Template name is set by HtmlCommentsExtension during Twig render.
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 final class ControllerCommentSubscriber implements EventSubscriberInterface
 {

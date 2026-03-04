@@ -100,20 +100,21 @@ Full options and behavior: [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [**Installation**](docs/INSTALLATION.md) | Step-by-step install (Flex and manual), routes, IDE setup |
-| [**Usage**](docs/USAGE.md) | Overlay (green/yellow icon, highlight, popup, open in IDE) |
-| [**Configuration**](docs/CONFIGURATION.md) | All options, defaults, and exclusion rules |
-| [**Demo**](docs/DEMO.md) | Demo projects (Symfony 6/7/8) and how to run them |
-| [**Development**](docs/DEVELOPMENT.md) | Testing, code quality, CI, building assets |
-| [**Changelog**](docs/CHANGELOG.md) | Version history |
-| [**Upgrading**](docs/UPGRADING.md) | Upgrade notes between versions |
-| [**Roadmap**](docs/ROADMAP.md) | Vision and future ideas |
-| [**Security**](docs/SECURITY.md) | Reporting vulnerabilities and security notes |
-| [**Contributing**](docs/CONTRIBUTING.md) | How to contribute and code style |
-| [**Branching**](docs/BRANCHING.md) | Git workflow and release strategy |
-| [**Release**](docs/RELEASE.md) | Release checklist and tagging (for maintainers) |
+- [Installation](docs/INSTALLATION.md)
+- [Configuration](docs/CONFIGURATION.md)
+- [Usage](docs/USAGE.md)
+- [Contributing](docs/CONTRIBUTING.md)
+- [Changelog](docs/CHANGELOG.md)
+- [Upgrading](docs/UPGRADING.md)
+- [Release](docs/RELEASE.md)
+- [Security](docs/SECURITY.md)
+- [Roadmap](docs/ROADMAP.md)
+
+### Additional documentation
+
+- [Demo](docs/DEMO.md)
+- [Development](docs/DEVELOPMENT.md)
+- [Branching](docs/BRANCHING.md)
 
 **Security**: The bundle validates template paths and restricts routes to `dev`/`test`. See [docs/SECURITY.md](docs/SECURITY.md).
 

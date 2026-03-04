@@ -13,8 +13,8 @@ use function sprintf;
 /**
  * Twig AST node that compiles to a call to HtmlCommentsExtension::end() with the same NodeReference.
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 #[YieldReady]
 class NodeEnd extends Node

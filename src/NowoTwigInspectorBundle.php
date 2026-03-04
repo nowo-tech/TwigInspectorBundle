@@ -11,8 +11,8 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 /**
  * Symfony bundle that adds Twig Inspector: HTML comments and overlay to map rendered output to templates.
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 class NowoTwigInspectorBundle extends Bundle
 {

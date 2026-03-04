@@ -20,8 +20,8 @@ use const E_WARNING;
 /**
  * Console command that creates the Twig Inspector config file and ensures routes are imported.
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 #[AsCommand(name: 'nowo:twig-inspector:install', description: 'Creates the Twig Inspector Bundle configuration file')]
 class InstallCommand extends Command
