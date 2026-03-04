@@ -17,8 +17,8 @@ use function in_array;
  * Twig extension that injects HTML comments before and after every block and template.
  * Comments contain template name, link, and a unique id for the inspector overlay.
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 class HtmlCommentsExtension extends AbstractExtension
 {

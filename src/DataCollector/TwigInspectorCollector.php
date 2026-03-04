@@ -27,8 +27,8 @@ use const SORT_NUMERIC;
  * Web Profiler data collector for the Twig Inspector.
  * Collects template and block usage from HTML comments and optional Twig profiler timings.
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 class TwigInspectorCollector implements DataCollectorInterface, LateDataCollectorInterface
 {

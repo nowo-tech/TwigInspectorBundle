@@ -14,8 +14,8 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
  * Dependency injection extension for the Twig Inspector Bundle.
  * Loads services, processes config, and wires the HtmlCommentsExtension and DataCollector.
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 class NowoTwigInspectorExtension extends Extension
 {

@@ -21,8 +21,8 @@ use function is_string;
  * Records every controller invocation (main request + sub-requests from render(controller(...)))
  * so the Twig Inspector collector can display them in the profiler panel.
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 final class ControllerRenderSubscriber implements EventSubscriberInterface
 {

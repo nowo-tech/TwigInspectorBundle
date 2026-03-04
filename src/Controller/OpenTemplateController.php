@@ -27,8 +27,8 @@ use function sprintf;
  * Controller that redirects to an IDE file link for a given Twig template and line.
  * Used by the inspector overlay when clicking "open in IDE".
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 class OpenTemplateController
 {

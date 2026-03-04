@@ -19,8 +19,8 @@ use function sprintf;
  * Node visitor that wraps each block and the template display with NodeStart/NodeEnd
  * so that HtmlCommentsExtension injects HTML comments (used by the inspector overlay).
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 class DebugInfoNodeVisitor implements NodeVisitorInterface
 {

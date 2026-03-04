@@ -4,7 +4,7 @@ Thank you for your interest in contributing to Twig Inspector Bundle! This docum
 
 ## Code of Conduct
 
-This project adheres to a code of conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to hectorfranco@nowo.com.
+This project adheres to a code of conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to hectorfranco@nowo.tech.
 
 ## How can I contribute?
 
@@ -237,7 +237,7 @@ For detailed information about branch naming conventions, workflow, and release 
 If you have questions about how to contribute, you can:
 
 - Open an issue on GitHub
-- Contact the maintainers at hectorfranco@nowo.com
+- Contact the maintainers at hectorfranco@nowo.tech
 
 ## Acknowledgments
 

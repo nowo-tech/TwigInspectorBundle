@@ -199,6 +199,6 @@ git push origin feature/my-feature
 
 If you have questions about branching:
 - Open an issue on GitHub
-- Contact maintainers at hectorfranco@nowo.com
+- Contact maintainers at hectorfranco@nowo.tech
 - Check [docs/CONTRIBUTING.md](CONTRIBUTING.md) for general contribution guidelines
 

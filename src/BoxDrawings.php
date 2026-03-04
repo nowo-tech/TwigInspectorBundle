@@ -10,8 +10,8 @@ use function count;
  * Generates box-drawing character prefixes for start and end HTML comment tags.
  * Used to visually distinguish nested Twig blocks in the inspector overlay.
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 class BoxDrawings
 {

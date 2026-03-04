@@ -8,8 +8,8 @@ namespace Nowo\TwigInspectorBundle\Twig;
  * Value object holding template name, block/template name, line number, and a unique id.
  * Passed from compiled Twig code to HtmlCommentsExtension::start() and ::end().
  *
- * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
- * @copyright 2025 Nowo.tech
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
  */
 class NodeReference
 {
