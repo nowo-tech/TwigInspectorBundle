@@ -60,7 +60,11 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.0",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-symfony": "^2.0",
         "phpunit/phpunit": "^10.0",
+        "rector/rector": "^2.0",
         "symfony/yaml": "^6.0 || ^7.0 || ^8.0"
     },
     "autoload": {
@@ -79,7 +83,8 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "composer/package-versions-deprecated": true
+            "composer/package-versions-deprecated": true,
+            "phpstan/extension-installer": true
         }
     },
     "minimum-stability": "stable",
@@ -89,6 +94,9 @@
         "test-coverage": "phpunit --coverage-html coverage --coverage-clover coverage.xml --coverage-text",
         "cs-check": "php-cs-fixer fix --dry-run --diff",
         "cs-fix": "php-cs-fixer fix",
+        "rector": "rector process",
+        "rector-dry": "rector process --dry-run --no-progress-bar",
+        "phpstan": "phpstan analyse --memory-limit=512M",
         "qa": [
             "@cs-check",
             "@test"
@@ -99,6 +107,9 @@
         "test-coverage": "Run PHPUnit tests with code coverage",
         "cs-check": "Check code style with PHP-CS-Fixer",
         "cs-fix": "Fix code style with PHP-CS-Fixer",
+        "rector": "Apply Rector refactoring",
+        "rector-dry": "Run Rector in dry-run mode",
+        "phpstan": "Run PHPStan static analysis",
         "qa": "Run all quality assurance checks"
     },
     "suggest": {

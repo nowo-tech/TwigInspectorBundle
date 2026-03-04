@@ -55,9 +55,9 @@ services:
 
   Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector:
     class: Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector
+    # Constructor: ControllerRenderSubscriber, ?Environment $twig, cookieName, enableMetrics, overlayTheme, overlayCompact, reducedMotion, keyboardShortcut (no RequestStack)
     arguments:
       - '@Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber'
-      - '@request_stack'
       - '@twig'
       - '%nowo_twig_inspector.cookie_name%'
       - '%nowo_twig_inspector.enable_metrics%'

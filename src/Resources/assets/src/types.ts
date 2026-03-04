@@ -1,5 +1,7 @@
 /**
- * Shared types and global declarations for the Twig Inspector.
+ * Shared types and global declarations for the Twig Inspector overlay and config.
+ *
+ * Defines InspectorConfig(Raw), Template, Block, and the Window.__twig_inspector_config global.
  */
 
 declare global {

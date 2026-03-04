@@ -112,6 +112,9 @@ class HtmlCommentsExtension extends AbstractExtension
         }
 
         $content = ob_get_clean();
+        if ($content === false) {
+            return;
+        }
 
         if ($this->isSupported($content)) {
             if ($this->maxInjectionDepth > 0 && $this->nestingLevel > $this->maxInjectionDepth) {
@@ -143,7 +146,7 @@ class HtmlCommentsExtension extends AbstractExtension
         }
 
         // Only echo when a parent buffer exists (e.g. Twig's render()), never to stdout
-        if (!headers_sent() && ob_get_level() > 0) {
+        if (ob_get_level() > 0) {
             echo $content;
         }
     }
@@ -175,7 +178,7 @@ class HtmlCommentsExtension extends AbstractExtension
         }
 
         // Do not inject on sub-requests (fragments, toolbar, etc.) to avoid "headers already sent" — unless inject_on_sub_requests is enabled
-        if (!$this->injectOnSubRequests && $this->requestStack->getParentRequest() !== null) {
+        if (!$this->injectOnSubRequests && $this->requestStack->getParentRequest() instanceof Request) {
             return false;
         }
 

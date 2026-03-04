@@ -60,7 +60,7 @@ class DebugInfoNodeVisitor implements NodeVisitorInterface
                     [
                         new NodeStart(
                             self::EXTENSION_NAME,
-                            $node->getTemplateName(),
+                            $node->getTemplateName() ?? '',
                             $node->getTemplateLine(),
                             $varName,
                         ),

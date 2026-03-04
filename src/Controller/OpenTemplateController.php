@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\Controller;
 
+use RuntimeException;
 use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -91,6 +92,9 @@ class OpenTemplateController
         }
 
         $url = $this->fileLinkFormatter->format($file, $line);
+        if ($url === false || $url === '') {
+            throw new RuntimeException('Could not generate file link.');
+        }
 
         return new RedirectResponse($url);
     }

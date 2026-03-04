@@ -173,8 +173,8 @@ final class ControllerRenderSubscriberTest extends TestCase
     /** Covers getMainOrMasterRequest via reflection. */
     public function testGetMainOrMasterRequestViaReflection(): void
     {
-        $requestStack = new RequestStack();
         $request      = new Request();
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerRenderSubscriber($requestStack);

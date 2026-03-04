@@ -1,24 +1,31 @@
 /**
- * Value objects for template and block (TemplateClass, BlockClass).
+ * Value objects for template and block used by the overlay and storage.
+ *
+ * TemplateClass: display name and IDE link for a single template or controller.
+ * BlockClass: a DOM element with its associated templates (name + link for tooltip and click).
  */
 
 import type { Block, Template } from './types';
 
-/** Value object for a single template (name + link). */
+/**
+ * Value object for a single template (or controller) entry: display name and link to open in IDE.
+ */
 export class TemplateClass implements Template {
   /**
-   * @param name - Display name for the template.
-   * @param link - URL to open the template in the IDE.
+   * @param name - Display name (e.g. "template.html.twig [/path]" or "Controller: FQCN [main]").
+   * @param link - URL to open in IDE (e.g. /_template/... or # for controller-only).
    */
   constructor(public name: string, public link: string) {}
 }
 
-/** Value object for a block: element index, DOM node, and list of templates. */
+/**
+ * Value object for a block: index in storage, DOM element, and list of templates that rendered it.
+ */
 export class BlockClass implements Block {
   /**
-   * @param index - Index in BlockStorage.
-   * @param element - The DOM element.
-   * @param templates - Templates that rendered this block.
+   * @param index - Index in BlockStorage (used as key for getTemplates).
+   * @param element - The DOM element that was rendered by the listed templates.
+   * @param templates - Templates (and controller comments) that produced this block.
    */
   constructor(
     public index: number,
@@ -26,7 +33,11 @@ export class BlockClass implements Block {
     public templates: Template[]
   ) {}
 
-  /** Renders template names as HTML (with <br/>) for the tooltip. */
+  /**
+   * Renders template names as HTML (separated by <br/>) for the overlay tooltip.
+   *
+   * @returns HTML string of template names for this block
+   */
   toString(): string {
     let text = '';
     for (let i = 0; i < this.templates.length; i++) {

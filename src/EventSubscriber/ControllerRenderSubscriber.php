@@ -84,7 +84,7 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
     {
         $request = $event->getRequest();
         $master  = $this->getMainOrMasterRequest();
-        if ($master === null || $request !== $master) {
+        if (!$master instanceof Request || $request !== $master) {
             return;
         }
         $key = spl_object_id($request);
@@ -92,15 +92,20 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Returns the main (or master) request from the stack (BC: getMainRequest vs getMasterRequest).
+     * Returns the main (or master) request from the stack.
+     * Uses getMainRequest() when available (Symfony 6+), otherwise getMasterRequest() (Symfony 5.x).
+     *
+     * @return Request|null The main or master request, or null if the stack is empty
      */
     private function getMainOrMasterRequest(): ?Request
     {
         if (method_exists($this->requestStack, 'getMainRequest')) {
             return $this->requestStack->getMainRequest();
         }
+        /** @var callable(): ?Request $getMaster */
+        $getMaster = [$this->requestStack, 'getMasterRequest'];
 
-        return $this->requestStack->getMasterRequest();
+        return $getMaster();
     }
 
     /**
@@ -146,7 +151,7 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
         if (is_array($controller) && count($controller) === 2) {
             $class = is_object($controller[0]) ? $controller[0]::class : (string) $controller[0];
 
-            return $class . '::' . (string) $controller[1];
+            return $class . '::' . $controller[1];
         }
         if ($controller instanceof Closure) {
             return 'Closure';

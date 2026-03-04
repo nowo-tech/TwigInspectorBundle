@@ -66,7 +66,7 @@ final class BoxDrawingsTest extends TestCase
 
     public function testBlockChangedCyclesThroughCharsets(): void
     {
-        $initialPrefix = $this->boxDrawings->getStartCommentPrefix();
+        // $initialPrefix = $this->boxDrawings->getStartCommentPrefix();
 
         // Change block multiple times to cycle through charsets (4 charsets: 0,1,2,3)
         // Call 1: charsetIndex 0->1 (┏->╭)

@@ -1,10 +1,13 @@
 /**
  * Inspector config: defaults, merge from toolbar, theme and accessibility.
+ *
+ * Config is read from window.__twig_inspector_config (injected by the profiler collector).
+ * Theme (light/dark/auto), reduced motion, and keyboard shortcut are applied to the document.
  */
 
 import type { InspectorConfig } from './types';
 
-/** Default inspector config when `window.__twig_inspector_config` is not set. */
+/** Default inspector config when window.__twig_inspector_config is not set. */
 export const defaultConfig: InspectorConfig = {
   cookie_name: 'twig_inspector_is_active',
   overlay_theme: 'light',

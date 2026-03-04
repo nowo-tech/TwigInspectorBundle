@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\Tests\EventSubscriber;
 
+use Closure;
 use Nowo\TwigInspectorBundle\EventSubscriber\ControllerCommentSubscriber;
 use Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension;
 use PHPUnit\Framework\TestCase;
@@ -27,9 +28,9 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseDoesNotModifyResponseWhenDebugFalse(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', false);
@@ -48,8 +49,8 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseDoesNotModifyResponseWhenCookieNotSet(): void
     {
-        $requestStack = new RequestStack();
         $request      = new Request();
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -68,10 +69,10 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseInjectsCommentAfterBodyWhenCookieSet(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 'App\\Controller\\DemoController::home');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -95,11 +96,11 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseInjectsCommentWithTemplateWhenRootTemplateAttributeSet(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 'App\\Controller\\DemoController::home');
         $request->attributes->set(HtmlCommentsExtension::REQUEST_ATTR_ROOT_TEMPLATE, 'demo/home.html.twig');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -122,12 +123,11 @@ final class ControllerCommentSubscriberTest extends TestCase
     {
         $mainRequest = new Request();
         $mainRequest->cookies->set('twig_inspector_is_active', '1');
-        $requestStack = new RequestStack();
-        $requestStack->push($mainRequest);
-
         $fragmentRequest = new Request();
         $fragmentRequest->attributes->set('_controller', 'App\\Controller\\DemoController::fragment');
         $fragmentRequest->attributes->set(HtmlCommentsExtension::REQUEST_ATTR_ROOT_TEMPLATE, 'demo/_controller_fragment.html.twig');
+        $requestStack = new RequestStack();
+        $requestStack->push($mainRequest);
         $requestStack->push($fragmentRequest);
 
         $subscriber      = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -154,9 +154,9 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseSkipsWhenNoMasterRequest(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
         $requestStack->pop();
 
@@ -176,10 +176,10 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseSkipsWhenPathIsWdt(): void
     {
-        $requestStack = new RequestStack();
-        $request      = Request::create('/_wdt/abc123');
+        $request = Request::create('/_wdt/abc123');
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 'App\\Controller\\DemoController::home');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -198,10 +198,10 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseSkipsWhenPathIsProfiler(): void
     {
-        $requestStack = new RequestStack();
-        $request      = Request::create('/_profiler/abc123');
+        $request = Request::create('/_profiler/abc123');
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 'App\\Controller\\DemoController::home');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -220,10 +220,10 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseSkipsWhenContentEmpty(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 'App\\Controller\\DemoController::home');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -240,12 +240,35 @@ final class ControllerCommentSubscriberTest extends TestCase
         $this->assertSame('', $response->getContent());
     }
 
-    public function testOnKernelResponseSkipsWhenMainRequestContentNotHtml(): void
+    public function testOnKernelResponseSkipsWhenResponseContentIsFalse(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 'App\\Controller\\DemoController::home');
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
+
+        $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
+        $response   = $this->createMock(Response::class);
+        $response->method('getContent')->willReturn(false);
+        $event = new ResponseEvent(
+            $this->createMock(HttpKernelInterface::class),
+            $request,
+            HttpKernelInterface::MAIN_REQUEST,
+            $response,
+        );
+
+        $subscriber->onKernelResponse($event);
+
+        $this->assertFalse($response->getContent());
+    }
+
+    public function testOnKernelResponseSkipsWhenMainRequestContentNotHtml(): void
+    {
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $request->attributes->set('_controller', 'App\\Controller\\DemoController::home');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -266,11 +289,10 @@ final class ControllerCommentSubscriberTest extends TestCase
     {
         $mainRequest = new Request();
         $mainRequest->cookies->set('twig_inspector_is_active', '1');
-        $requestStack = new RequestStack();
-        $requestStack->push($mainRequest);
-
         $fragmentRequest = new Request();
         $fragmentRequest->attributes->set('_controller', 'App\\Controller\\DemoController::fragment');
+        $requestStack = new RequestStack();
+        $requestStack->push($mainRequest);
         $requestStack->push($fragmentRequest);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -289,10 +311,10 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseInjectsAfterHtmlWhenNoBody(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 'App\\Controller\\DemoController::home');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -317,10 +339,10 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseInjectsAtStartWhenDoctypeButNoHtmlNorBody(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 'App\\Controller\\DemoController::home');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -345,10 +367,10 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseControllerAsString(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 'App\\Controller\\DemoController::index');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -367,10 +389,10 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseControllerUnknownWhenNotStringArrayOrClosure(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 123);
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -389,11 +411,11 @@ final class ControllerCommentSubscriberTest extends TestCase
 
     public function testOnKernelResponseMainCommentWithoutTemplateWhenAttributeEmpty(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 'App\\Controller\\DemoController::home');
         $request->attributes->set(HtmlCommentsExtension::REQUEST_ATTR_ROOT_TEMPLATE, '');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -417,11 +439,10 @@ final class ControllerCommentSubscriberTest extends TestCase
     {
         $mainRequest = new Request();
         $mainRequest->cookies->set('twig_inspector_is_active', '1');
-        $requestStack = new RequestStack();
-        $requestStack->push($mainRequest);
-
         $fragmentRequest = new Request();
         $fragmentRequest->attributes->set('_controller', 'App\\Controller\\DemoController::fragment');
+        $requestStack = new RequestStack();
+        $requestStack->push($mainRequest);
         $requestStack->push($fragmentRequest);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -444,10 +465,10 @@ final class ControllerCommentSubscriberTest extends TestCase
     /** Covers looksLikeHtml when content has only <body> (no DOCTYPE or <html> at start). */
     public function testOnKernelResponseInjectsWhenContentHasOnlyBodyTag(): void
     {
-        $requestStack = new RequestStack();
-        $request      = new Request();
+        $request = new Request();
         $request->cookies->set('twig_inspector_is_active', '1');
         $request->attributes->set('_controller', 'App\\Controller\\DemoController::home');
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);
@@ -469,7 +490,7 @@ final class ControllerCommentSubscriberTest extends TestCase
         $this->assertStringContainsString('Hi</body>', $output);
     }
 
-    /** Covers controllerToString via reflection (string and unknown branches). */
+    /** Covers controllerToString via reflection (string, array with string class, array with object, Closure, unknown). */
     public function testControllerToStringViaReflection(): void
     {
         $subscriber = new ControllerCommentSubscriber(new RequestStack(), 'twig_inspector_is_active', true);
@@ -479,6 +500,20 @@ final class ControllerCommentSubscriberTest extends TestCase
 
         $this->assertSame('App\\Controller::index', $method->invoke($subscriber, 'App\\Controller::index'));
         $this->assertSame('unknown', $method->invoke($subscriber, new stdClass()));
+
+        // Array with string class name (not object)
+        $this->assertSame('App\\Controller::index', $method->invoke($subscriber, ['App\\Controller', 'index']));
+        // Array with object
+        $controller = new class {
+            public function __invoke(): void
+            {
+            }
+        };
+        $this->assertStringContainsString('::__invoke', $method->invoke($subscriber, [$controller, '__invoke']));
+        // Closure
+        $this->assertSame('Closure', $method->invoke($subscriber, static function (): void {}));
+        // Unknown type (e.g. int)
+        $this->assertSame('unknown', $method->invoke($subscriber, 123));
     }
 
     /** Covers looksLikeHtml via reflection. */
@@ -498,8 +533,8 @@ final class ControllerCommentSubscriberTest extends TestCase
     /** Covers getMainOrMasterRequest via reflection when getMainRequest exists. */
     public function testGetMainOrMasterRequestViaReflection(): void
     {
-        $requestStack = new RequestStack();
         $request      = new Request();
+        $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $subscriber = new ControllerCommentSubscriber($requestStack, 'twig_inspector_is_active', true);

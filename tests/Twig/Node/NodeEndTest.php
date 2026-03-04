@@ -29,7 +29,7 @@ final class NodeEndTest extends TestCase
         $compiler = $this->createMock(Compiler::class);
 
         $compiler->method('write')
-          ->willReturnCallback(function ($arg) use ($compiler) {
+          ->willReturnCallback(function ($arg) use ($compiler): \PHPUnit\Framework\MockObject\MockObject {
               static $callCount = 0;
               ++$callCount;
               if ($callCount === 1) {

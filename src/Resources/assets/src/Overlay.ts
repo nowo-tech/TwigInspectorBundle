@@ -218,7 +218,11 @@ export class Overlay {
     this.isEnabled = false;
   }
 
-  /** Mouse move handler: find element under cursor, show overlay if it has templates and matches filter. */
+  /**
+   * Mouse move handler: finds the topmost element under the cursor, looks it up in storage,
+   * and shows the overlay (highlight + tooltip) if the block has templates and matches the filter.
+   * Hides the overlay when the cursor is over the Symfony toolbar.
+   */
   private onMouseMove = (event: MouseEvent): void => {
     const sfToolbar = document.getElementsByClassName('sf-toolbar')[0] as HTMLElement;
     const elements = document.elementsFromPoint(event.clientX, event.clientY);

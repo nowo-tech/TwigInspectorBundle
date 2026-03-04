@@ -65,4 +65,10 @@ describe('blockMatchesFilter', () => {
     expect(blockMatchesFilter(block, ',  , header ,  ')).toBe(true);
     expect(blockMatchesFilter(block, ',  ,  ,  ')).toBe(true);
   });
+
+  it('returns false when block has no templates and filter is non-empty', () => {
+    const block = blockWithTemplates([]);
+    expect(blockMatchesFilter(block, 'foo')).toBe(false);
+    expect(blockMatchesFilter(block, '')).toBe(true);
+  });
 });
