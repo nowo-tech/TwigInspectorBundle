@@ -34,7 +34,7 @@ final class NodeStartTest extends TestCase
         $writeCallCount = 0;
         $compiler->expects($this->exactly(2))
           ->method('write')
-          ->willReturnCallback(function ($arg) use (&$writeCallCount, $compiler) {
+          ->willReturnCallback(function (string $arg) use (&$writeCallCount, $compiler): \PHPUnit\Framework\MockObject\MockObject {
               ++$writeCallCount;
               if ($writeCallCount === 1) {
                   $this->assertStringContainsString('$var123 = $this->env->getExtension(', $arg);
@@ -48,7 +48,7 @@ final class NodeStartTest extends TestCase
         $reprCallCount = 0;
         $compiler->expects($this->exactly(3))
           ->method('repr')
-          ->willReturnCallback(function ($arg) use (&$reprCallCount, $compiler) {
+          ->willReturnCallback(function ($arg) use (&$reprCallCount, $compiler): \PHPUnit\Framework\MockObject\MockObject {
               ++$reprCallCount;
               if ($reprCallCount === 1) {
                   $this->assertSame('ExtensionName', $arg);
@@ -64,7 +64,7 @@ final class NodeStartTest extends TestCase
         $rawCallCount = 0;
         $compiler->expects($this->exactly(3))
           ->method('raw')
-          ->willReturnCallback(function ($arg) use (&$rawCallCount, $compiler) {
+          ->willReturnCallback(function ($arg) use (&$rawCallCount, $compiler): \PHPUnit\Framework\MockObject\MockObject {
               ++$rawCallCount;
               if ($rawCallCount === 1) {
                   $this->assertSame(");\n", $arg);

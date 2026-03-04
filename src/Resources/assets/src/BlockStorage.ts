@@ -1,6 +1,8 @@
 /**
- * Maps DOM elements to the Twig templates (and controller renders) that produced them.
+ * Block storage: maps DOM elements to the Twig templates (and controller renders) that produced them.
+ *
  * Populated by scanning HTML comments injected by the Twig extension and ControllerCommentSubscriber.
+ * Supports both template/block comments (box-drawing ┏┗) and controller comments (┏ controller: … ┗ /controller).
  */
 
 import type { Block, Template } from './types';

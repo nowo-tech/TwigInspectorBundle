@@ -77,7 +77,7 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         $response = $event->getResponse();
 
         $master = $this->getMainOrMasterRequest();
-        if ($master === null) {
+        if (!$master instanceof Request) {
             return;
         }
 
@@ -94,7 +94,6 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         if ($content === false) {
             return;
         }
-        $content = (string) $content;
         if ($content === '') {
             return;
         }
@@ -133,14 +132,12 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         if (preg_match('/<body[^>]*>/iu', $content, $m)) {
             $pos     = strpos($content, $m[0]) + strlen($m[0]);
             $content = substr_replace($content, $comment, $pos, 0);
-        } else {
+        } elseif (preg_match('/<html[^>]*>/iu', $content, $m)) {
             // Fallback: inject right after <html> or at start
-            if (preg_match('/<html[^>]*>/iu', $content, $m)) {
-                $pos     = strpos($content, $m[0]) + strlen($m[0]);
-                $content = substr_replace($content, $comment, $pos, 0);
-            } else {
-                $content = $comment . $content;
-            }
+            $pos     = strpos($content, $m[0]) + strlen($m[0]);
+            $content = substr_replace($content, $comment, $pos, 0);
+        } else {
+            $content = $comment . $content;
         }
         $response->setContent($content);
     }
@@ -188,7 +185,14 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         return '<!-- ' . self::COMMENT_CLOSE . ' /controller -->';
     }
 
-    /** Full page: DOCTYPE, html or body. */
+    /**
+     * Checks whether the content looks like a full HTML page (DOCTYPE, html, or body tag).
+     * Used to skip injection on plain text or non-HTML responses.
+     *
+     * @param string $content Response content to check
+     *
+     * @return bool True if content appears to be HTML (starts with DOCTYPE/html or contains body tag)
+     */
     private function looksLikeHtml(string $content): bool
     {
         $trimmed = ltrim($content, " \t\n\r\x0B\x0C\xEF\xBB\xBF");
@@ -201,7 +205,14 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         ;
     }
 
-    /** Fragment (sub-request): any chunk that contains HTML tags, e.g. <div>...</div>. */
+    /**
+     * Checks whether the content looks like an HTML fragment (contains angle-bracket tags).
+     * Used for sub-request output (e.g. render(controller())) that may be a small HTML chunk.
+     *
+     * @param string $content Fragment content to check
+     *
+     * @return bool True if content contains at least one HTML-like tag (e.g. <div>...</div>)
+     */
     private function looksLikeHtmlFragment(string $content): bool
     {
         return str_contains($content, '<') && str_contains($content, '>');
@@ -239,7 +250,7 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         if (is_array($controller) && count($controller) === 2) {
             $class = is_object($controller[0]) ? $controller[0]::class : (string) $controller[0];
 
-            return $class . '::' . (string) $controller[1];
+            return $class . '::' . $controller[1];
         }
         if ($controller instanceof Closure) {
             return 'Closure';

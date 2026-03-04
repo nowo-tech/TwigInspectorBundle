@@ -61,7 +61,6 @@ final class TwigInspectorCollectorTest extends TestCase
         $twig->method('hasExtension')->willReturn(false);
         $this->collector = new TwigInspectorCollector(
             $this->createControllerSubscriber(),
-            $this->requestStack,
             $twig,
             'twig_inspector_is_active',
             true,
@@ -158,7 +157,6 @@ final class TwigInspectorCollectorTest extends TestCase
 
         $collector = new TwigInspectorCollector(
             $subscriber,
-            $this->requestStack,
             $this->createMock(Environment::class),
             'twig_inspector_is_active',
             true,
@@ -332,7 +330,6 @@ final class TwigInspectorCollectorTest extends TestCase
     {
         $collector = new TwigInspectorCollector(
             $this->createControllerSubscriber(),
-            $this->requestStack,
             $this->createMock(Environment::class),
             'twig_inspector_is_active',
             false, // enableMetrics = false
@@ -416,7 +413,6 @@ final class TwigInspectorCollectorTest extends TestCase
 
         $collector = new TwigInspectorCollector(
             $this->createControllerSubscriber(),
-            $this->requestStack,
             $twig,
             'twig_inspector_is_active',
             true,
@@ -458,7 +454,6 @@ final class TwigInspectorCollectorTest extends TestCase
 
         $collector = new TwigInspectorCollector(
             $this->createControllerSubscriber(),
-            $this->requestStack,
             $twig,
             'twig_inspector_is_active',
             true,
@@ -490,7 +485,6 @@ final class TwigInspectorCollectorTest extends TestCase
 
         $collector = new TwigInspectorCollector(
             $this->createControllerSubscriber(),
-            $this->requestStack,
             $twig,
             'twig_inspector_is_active',
             true,
@@ -524,7 +518,6 @@ final class TwigInspectorCollectorTest extends TestCase
 
         $collector = new TwigInspectorCollector(
             $this->createControllerSubscriber(),
-            $this->requestStack,
             $twig,
             'twig_inspector_is_active',
             true,
@@ -560,7 +553,6 @@ final class TwigInspectorCollectorTest extends TestCase
 
         $collector = new TwigInspectorCollector(
             $this->createControllerSubscriber(),
-            $this->requestStack,
             $twig,
             'twig_inspector_is_active',
             true,

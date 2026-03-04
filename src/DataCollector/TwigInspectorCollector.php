@@ -7,7 +7,6 @@ namespace Nowo\TwigInspectorBundle\DataCollector;
 use Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber;
 use ReflectionProperty;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
 use Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface;
@@ -17,6 +16,7 @@ use Twig\Extension\ProfilerExtension;
 use Twig\Profiler\Profile;
 
 use function count;
+use function in_array;
 use function is_array;
 
 use const PATHINFO_FILENAME;
@@ -32,7 +32,7 @@ use const SORT_NUMERIC;
  */
 class TwigInspectorCollector implements DataCollectorInterface, LateDataCollectorInterface
 {
-    /** @var array{templates: array, blocks: array, controllers: array, template_times: array, total_templates: int, total_blocks: int, total_controllers: int, enabled: bool, config: array} Collected data for the profiler panel */
+    /** @var array<string, mixed> Collected data for the profiler panel (templates, blocks, controllers, template_times, totals, enabled, config) */
     private array $data = [
         'templates'         => [],
         'blocks'            => [],
@@ -49,7 +49,6 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
      * Constructor.
      *
      * @param ControllerRenderSubscriber $controllerRenderSubscriber Records controller invocations (main + sub-requests)
-     * @param RequestStack $requestStack The request stack
      * @param Environment|null $twig The Twig environment (for template times; null after unserialize)
      * @param string $cookieName Cookie name used to enable the inspector
      * @param bool $enableMetrics Whether to collect template render times from Twig profiler
@@ -60,7 +59,6 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
      */
     public function __construct(
         private readonly ControllerRenderSubscriber $controllerRenderSubscriber,
-        private readonly RequestStack $requestStack,
         private ?Environment $twig = null,
         private readonly string $cookieName = 'twig_inspector_is_active',
         private bool $enableMetrics = true,
@@ -74,7 +72,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     /**
      * Serialize collected data and enableMetrics so lateCollect() works after unserialize (twig is excluded).
      *
-     * @return array{data: array, enableMetrics: bool}
+     * @return array{data: array<string, mixed>, enableMetrics: bool}
      */
     public function __serialize(): array
     {
@@ -87,7 +85,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     /**
      * Restore state after unserialization. Twig is set to null (not serialized).
      *
-     * @param array{data?: array, enableMetrics?: bool} $data
+     * @param array{data?: array<string, mixed>, enableMetrics?: bool} $data
      */
     public function __unserialize(array $data): void
     {
@@ -157,7 +155,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
 
                 // Determine if it's a template or a block
                 // Template: name equals full template name, pathinfo filename (e.g. base.html), or first segment (e.g. base for base.html.twig)
-                if ($name === $templateName || $name === $templateBaseName || $name === $templateNameFirstPart) {
+                if (in_array($name, [$templateName, $templateBaseName, $templateNameFirstPart], true)) {
                     // It's a template
                     if (!isset($templates[$templateName])) {
                         $templates[$templateName] = [
@@ -192,12 +190,13 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     }
 
     /**
-     * Late collect: runs after response is sent. Used to gather Twig profiler template times.
+     * Runs after the response has been sent; gathers template render times from the Twig profiler.
+     * Only runs when metrics are enabled and the inspector cookie is set.
      */
     public function lateCollect(): void
     {
-        // Guard: after unserialize, $enableMetrics is restored in __unserialize; isset() avoids access-before-init on older payloads or PHP 8.5
-        if (!isset($this->enableMetrics) || !$this->enableMetrics || !($this->data['enabled'] ?? false)) {
+        // Guard: after unserialize, $enableMetrics is restored in __unserialize
+        if (!$this->enableMetrics || !($this->data['enabled'] ?? false)) {
             return;
         }
 
@@ -211,7 +210,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
      */
     private function collectTemplateTimes(): array
     {
-        if ($this->twig === null) {
+        if (!$this->twig instanceof Environment) {
             return [];
         }
 
@@ -220,7 +219,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
         if (class_exists(\Symfony\Bridge\Twig\Extension\ProfilerExtension::class) && $this->twig->hasExtension(\Symfony\Bridge\Twig\Extension\ProfilerExtension::class)) {
             $extension = $this->twig->getExtension(\Symfony\Bridge\Twig\Extension\ProfilerExtension::class);
         }
-        if ($extension === null && $this->twig->hasExtension(ProfilerExtension::class)) {
+        if (!$extension instanceof \Twig\Extension\ExtensionInterface && $this->twig->hasExtension(ProfilerExtension::class)) {
             $extension = $this->twig->getExtension(ProfilerExtension::class);
         }
         if (!$extension instanceof ProfilerExtension) {
@@ -284,7 +283,8 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     }
 
     /**
-     * Resets the data collector.
+     * Resets the collector state (templates, blocks, controllers, times, enabled, config).
+     * Called by the profiler when starting a new request.
      */
     public function reset(): void
     {
@@ -368,7 +368,9 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
      */
     public function getControllers(): array
     {
-        return $this->data['controllers'] ?? [];
+        $controllers = $this->data['controllers'] ?? [];
+
+        return array_values(is_array($controllers) ? $controllers : []);
     }
 
     /**

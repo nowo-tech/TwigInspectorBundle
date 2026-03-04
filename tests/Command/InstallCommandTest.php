@@ -213,7 +213,7 @@ final class InstallCommandTest extends TestCase
         try {
             chdir($this->testProjectDir);
 
-            $command       = new InstallCommand(null);
+            $command       = new InstallCommand();
             $commandTester = new CommandTester($command);
 
             $commandTester->execute([]);
@@ -345,6 +345,92 @@ final class InstallCommandTest extends TestCase
         $this->assertStringContainsString('Routes file already contains', $this->normalizeDisplay($commandTester->getDisplay()));
     }
 
+    /** Covers ensureRoutesFile when routes.yaml path exists but is invalid (directory or unreadable). */
+    public function testExecuteWhenRoutesPathIsDirectoryShowsWarning(): void
+    {
+        $configDir  = $this->testProjectDir . '/config';
+        $routesPath = $this->testProjectDir . '/config/routes.yaml';
+        $this->filesystem->mkdir($configDir);
+        $this->filesystem->mkdir($routesPath); // routes.yaml as directory: read or append will fail
+
+        $command       = new InstallCommand($this->testProjectDir);
+        $commandTester = new CommandTester($command);
+
+        $commandTester->execute([]);
+
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $display = $this->normalizeDisplay($commandTester->getDisplay());
+        $this->assertTrue(
+            str_contains($display, 'Could not read routes.yaml') || str_contains($display, 'Could not update routes file'),
+            'Expected warning about routes file (read or update). Got: ' . $display,
+        );
+        $this->assertStringContainsString('Please manually add', $display);
+    }
+
+    /** Covers ensureRoutesFile when routes file path exists but file_get_contents returns false (e.g. path is a directory). */
+    public function testEnsureRoutesFileWhenReadReturnsFalseShowsCouldNotReadWarning(): void
+    {
+        $configDir  = $this->testProjectDir . '/config';
+        $routesPath = $this->testProjectDir . '/config/routes.yaml';
+        $this->filesystem->mkdir($configDir);
+        $this->filesystem->mkdir($routesPath);
+
+        $command    = new InstallCommand($this->testProjectDir);
+        $reflection = new ReflectionClass($command);
+        $method     = $reflection->getMethod('ensureRoutesFile');
+        $method->setAccessible(true);
+
+        $input  = new ArrayInput([]);
+        $output = new BufferedOutput();
+        $io     = new SymfonyStyle($input, $output);
+
+        $method->invoke($command, $io, $this->filesystem, $routesPath);
+
+        $outputContent = $this->normalizeDisplay($output->fetch());
+        $this->assertTrue(
+            str_contains($outputContent, 'Could not read routes.yaml file.') || str_contains($outputContent, 'Could not update routes file'),
+            'Expected read or update failure message. Got: ' . $outputContent,
+        );
+        $this->assertStringContainsString('Please manually add', $outputContent);
+    }
+
+    /** Covers ensureRoutesFile when routes file exists but is unreadable (file_get_contents returns false). Skips when chmod 000 does not prevent read (e.g. running as root). */
+    public function testEnsureRoutesFileWhenFileUnreadableShowsCouldNotReadWarning(): void
+    {
+        $configDir  = $this->testProjectDir . '/config';
+        $routesPath = $this->testProjectDir . '/config/routes.yaml';
+        $this->filesystem->mkdir($configDir);
+        $this->filesystem->dumpFile($routesPath, "existing:\n    path: /foo\n");
+
+        if (is_readable($routesPath)) {
+            @chmod($routesPath, 0o000);
+        }
+        if (is_readable($routesPath)) {
+            $this->markTestSkipped('Cannot make routes file unreadable (e.g. running as root); "Could not read" branch not covered in this run.');
+        }
+
+        try {
+            $command    = new InstallCommand($this->testProjectDir);
+            $reflection = new ReflectionClass($command);
+            $method     = $reflection->getMethod('ensureRoutesFile');
+            $method->setAccessible(true);
+
+            $input  = new ArrayInput([]);
+            $output = new BufferedOutput();
+            $io     = new SymfonyStyle($input, $output);
+
+            $method->invoke($command, $io, $this->filesystem, $routesPath);
+
+            $outputContent = $this->normalizeDisplay($output->fetch());
+            $this->assertStringContainsString('Could not read routes.yaml file.', $outputContent);
+            $this->assertStringContainsString('Please manually add', $outputContent);
+        } finally {
+            if (file_exists($routesPath)) {
+                @chmod($routesPath, 0o644);
+            }
+        }
+    }
+
     public function testExecuteDetectsExistingImportByBundleName(): void
     {
         $routesFile      = $this->testProjectDir . '/config/routes.yaml';
@@ -356,7 +442,7 @@ final class InstallCommandTest extends TestCase
 
         $commandTester->execute([]);
 
-        $content = file_get_contents($routesFile);
+        file_get_contents($routesFile);
         // Should not add duplicate
         $this->assertStringContainsString('Routes file already contains', $this->normalizeDisplay($commandTester->getDisplay()));
     }
@@ -442,8 +528,8 @@ final class InstallCommandTest extends TestCase
             unlink($routesFile);
         }
 
-        $command       = new InstallCommand($this->testProjectDir);
-        $commandTester = new CommandTester($command);
+        $command = new InstallCommand($this->testProjectDir);
+        new CommandTester($command);
 
         // Use reflection to test ensureRoutesFile with a mock Filesystem that throws exception
         $reflection = new ReflectionClass($command);
@@ -480,8 +566,8 @@ final class InstallCommandTest extends TestCase
         $initialContent = "existing_route:\n    path: /existing\n";
         $this->filesystem->dumpFile($routesFile, $initialContent);
 
-        $command       = new InstallCommand($this->testProjectDir);
-        $commandTester = new CommandTester($command);
+        $command = new InstallCommand($this->testProjectDir);
+        new CommandTester($command);
 
         // Use reflection to test ensureRoutesFile with a mock Filesystem that throws exception
         $reflection = new ReflectionClass($command);
@@ -523,7 +609,6 @@ final class InstallCommandTest extends TestCase
     public function testExecuteHandlesAppendToRoutesFileFailure(): void
     {
         $routesFile = $this->testProjectDir . '/config/routes.yaml';
-        $configFile = $this->testProjectDir . '/config/packages/dev/nowo_twig_inspector.yaml';
         $this->filesystem->mkdir($this->testProjectDir . '/config');
         $this->filesystem->dumpFile($routesFile, "existing_route:\n    path: /existing\n");
 
@@ -534,7 +619,7 @@ final class InstallCommandTest extends TestCase
                     return false;
                 }
 
-                return (bool) str_ends_with($path, 'routes.yaml')
+                return str_ends_with($path, 'routes.yaml')
 
                 ;
             });

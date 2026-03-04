@@ -19,6 +19,10 @@ import { BlockStorage } from './BlockStorage';
 import { Overlay } from './Overlay';
 import { shortcutMatches } from './shortcut';
 
+/**
+ * Initializes the Twig Inspector: toolbar check, config, cookie handler, overlay, keyboard shortcuts and filter.
+ * Exits immediately if the Web Profiler toolbar is not present (e.g. production).
+ */
 function runTwigInspector(): void {
   // Toolbar not present (e.g. prod, or script loaded without profiler): do nothing
   if (!document.querySelector('.sf-toolbar')) {

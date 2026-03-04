@@ -22,7 +22,7 @@ use Twig\Node\TextNode;
 final class DebugInfoNodeVisitorTest extends TestCase
 {
     private DebugInfoNodeVisitor $visitor;
-    private Environment $env;
+    private \PHPUnit\Framework\MockObject\MockObject $env;
 
     protected function setUp(): void
     {

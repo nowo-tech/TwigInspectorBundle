@@ -24,8 +24,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 final class HtmlCommentsExtensionTest extends TestCase
 {
-    private RequestStack $requestStack;
-    private UrlGeneratorInterface $urlGenerator;
+    private \PHPUnit\Framework\MockObject\MockObject $requestStack;
+    private \PHPUnit\Framework\MockObject\MockObject $urlGenerator;
     private BoxDrawings $boxDrawings;
     private HtmlCommentsExtension $extension;
 
@@ -195,7 +195,7 @@ final class HtmlCommentsExtensionTest extends TestCase
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
         $this->urlGenerator->method('generate')
-          ->willReturnCallback(static function ($route, $params) {
+          ->willReturnCallback(static function ($route, array $params): string {
               return '/_template/' . $params['template'] . '?line=' . $params['line'];
           });
 
@@ -452,7 +452,7 @@ final class HtmlCommentsExtensionTest extends TestCase
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
         $this->urlGenerator->method('generate')
-          ->willReturnCallback(static function ($route, $params) {
+          ->willReturnCallback(static function ($route, array $params): string {
               return '/_template/' . $params['template'] . '?line=' . $params['line'];
           });
 

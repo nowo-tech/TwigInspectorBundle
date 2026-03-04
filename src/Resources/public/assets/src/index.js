@@ -1,3 +1,8 @@
+/**
+ * @file Twig Inspector overlay (legacy ES5 build).
+ * Scans the DOM for Twig Inspector HTML comments, maps elements to templates, and shows highlight/tooltip on hover.
+ * Only runs when the Web Profiler toolbar (.sf-toolbar) is present.
+ */
 /* eslint no-var: off */
 (function() {
   var sfToolbar = document.getElementsByClassName('sf-toolbar')[0];

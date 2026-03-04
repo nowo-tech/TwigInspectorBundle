@@ -27,6 +27,6 @@ class NowoTwigInspectorBundle extends Bundle
             $this->extension = new NowoTwigInspectorExtension();
         }
 
-        return $this->extension;
+        return $this->extension instanceof ExtensionInterface ? $this->extension : null;
     }
 }

@@ -8,6 +8,7 @@ use Exception;
 use Nowo\TwigInspectorBundle\Controller\OpenTemplateController;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use RuntimeException;
 use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,6 +22,19 @@ use Twig\Loader\FilesystemLoader;
 use Twig\TemplateWrapper;
 
 /**
+ * FilesystemLoader that returns a non-string in getNamespaces() to cover the continue branch in collectFilesystemPaths.
+ *
+ * @internal
+ */
+final class FilesystemLoaderWithNonStringNamespace extends FilesystemLoader
+{
+    public function getNamespaces(): array
+    {
+        return array_merge([0], parent::getNamespaces());
+    }
+}
+
+/**
  * Tests for OpenTemplateController.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.com>
@@ -28,8 +42,8 @@ use Twig\TemplateWrapper;
  */
 final class OpenTemplateControllerTest extends TestCase
 {
-    private Environment $twig;
-    private FileLinkFormatter $fileLinkFormatter;
+    private \PHPUnit\Framework\MockObject\MockObject $twig;
+    private \PHPUnit\Framework\MockObject\MockObject $fileLinkFormatter;
     private OpenTemplateController $controller;
 
     protected function setUp(): void
@@ -114,6 +128,56 @@ final class OpenTemplateControllerTest extends TestCase
         $response = ($this->controller)($request, $template);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
+    }
+
+    public function testInvokeThrowsRuntimeExceptionWhenFileLinkFormatterReturnsFalse(): void
+    {
+        $request  = new Request();
+        $template = 'test.html.twig';
+
+        $loader          = new ArrayLoader([$template => 'test content']);
+        $realTwig        = new Environment($loader);
+        $templateWrapper = $realTwig->load($template);
+
+        $this->twig->expects($this->once())
+            ->method('load')
+            ->with($template)
+            ->willReturn($templateWrapper);
+
+        $this->fileLinkFormatter->expects($this->once())
+            ->method('format')
+            ->with($this->anything(), 1)
+            ->willReturn(false);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Could not generate file link');
+
+        ($this->controller)($request, $template);
+    }
+
+    public function testInvokeThrowsRuntimeExceptionWhenFileLinkFormatterReturnsEmpty(): void
+    {
+        $request  = new Request();
+        $template = 'test.html.twig';
+
+        $loader          = new ArrayLoader([$template => 'test content']);
+        $realTwig        = new Environment($loader);
+        $templateWrapper = $realTwig->load($template);
+
+        $this->twig->expects($this->once())
+            ->method('load')
+            ->with($template)
+            ->willReturn($templateWrapper);
+
+        $this->fileLinkFormatter->expects($this->once())
+            ->method('format')
+            ->with($this->anything(), 1)
+            ->willReturn('');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Could not generate file link');
+
+        ($this->controller)($request, $template);
     }
 
     // Security validation tests
@@ -555,6 +619,37 @@ final class OpenTemplateControllerTest extends TestCase
             }
             if (is_dir($allowedDir)) {
                 rmdir($allowedDir);
+            }
+        }
+    }
+
+    /** Covers collectFilesystemPaths when getNamespaces() returns a non-string (skipped via continue). */
+    public function testCollectFilesystemPathsSkipsNonStringNamespace(): void
+    {
+        $tempDir = sys_get_temp_dir() . '/twig_inspector_ns_' . uniqid();
+        mkdir($tempDir, 0o777, true);
+        $templateFile = $tempDir . '/test.html.twig';
+        file_put_contents($templateFile, 'content');
+
+        try {
+            $loader     = new FilesystemLoaderWithNonStringNamespace([$tempDir]);
+            $twig       = new Environment($loader);
+            $formatter  = $this->createMock(FileLinkFormatter::class);
+            $controller = new OpenTemplateController($twig, $formatter);
+
+            $reflection = new ReflectionClass($controller);
+            $method     = $reflection->getMethod('collectFilesystemPaths');
+            $method->setAccessible(true);
+
+            $paths = $method->invoke($controller, $loader);
+            $this->assertIsArray($paths);
+            $this->assertNotEmpty($paths);
+        } finally {
+            if (file_exists($templateFile)) {
+                unlink($templateFile);
+            }
+            if (is_dir($tempDir)) {
+                rmdir($tempDir);
             }
         }
     }

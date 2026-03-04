@@ -1,17 +1,19 @@
 /**
  * Pure filter logic: match a block against a filter query (name or path, comma-separated).
- * Used by Overlay and testable without DOM.
+ *
+ * Used by the Overlay to restrict which blocks get the highlight and tooltip.
+ * No DOM dependency; testable in isolation.
  */
 
 import type { Block } from './types';
 
 /**
  * Returns true if the block matches the filter query.
- * Filter can be comma-separated; each part matches against template name or link (case-insensitive).
+ * Filter can be comma-separated; each part is matched against template name or link (case-insensitive).
  *
- * @param block - Block (element + templates) to test
- * @param filterQuery - Filter string (e.g. "header, footer" or a single template name/path)
- * @returns True if any template name or link contains any of the comma-separated terms (case-insensitive), or if filter is empty
+ * @param block - Block (element + templates) to test.
+ * @param filterQuery - Filter string (e.g. "header, footer" or a single template name/path).
+ * @returns True if any template name or link contains any comma-separated term (case-insensitive), or if filter is empty.
  */
 export function blockMatchesFilter(block: Block, filterQuery: string): boolean {
   const raw = filterQuery.trim();
