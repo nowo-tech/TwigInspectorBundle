@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.20] - 2025-02-18
+
+### Fixed
+- **DataCollector / services.yaml**: Corrected `TwigInspectorCollector` constructor arguments — removed incorrect `@request_stack`; the second argument is `?Twig\Environment` (`@twig`). Fixes `TypeError` when loading the bundle (e.g. Symfony 8 demo) caused by the service definition passing the wrong arguments.
+
+### Changed
+- **Tests**: Added `testOnKernelResponseSkipsWhenResponseContentIsFalse` in `ControllerCommentSubscriberTest` to cover the branch when `$response->getContent()` returns `false`. Improved PHP test coverage (methods 95.06%, lines 97.84%).
+- **Makefile**: `release-check` now includes `assets-test` (Vitest for TypeScript). Run `make assets-test` to execute frontend tests in the container.
+
 ## [1.0.19] - 2026-03-02
 
 ### Fixed

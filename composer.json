@@ -97,6 +97,8 @@
         "rector": "rector process",
         "rector-dry": "rector process --dry-run --no-progress-bar",
         "phpstan": "phpstan analyse --memory-limit=512M",
+        "update": "composer update --no-interaction",
+        "validate": "composer validate --strict",
         "qa": [
             "@cs-check",
             "@test"
@@ -110,6 +112,8 @@
         "rector": "Apply Rector refactoring",
         "rector-dry": "Run Rector in dry-run mode",
         "phpstan": "Run PHPStan static analysis",
+        "update": "Update composer.lock (composer update)",
+        "validate": "Validate composer.json (composer validate --strict)",
         "qa": "Run all quality assurance checks"
     },
     "suggest": {

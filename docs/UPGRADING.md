@@ -2,9 +2,19 @@
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
-## Upgrading from 1.0.19 to the next release
+## Upgrading from 1.0.20 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.19 to 1.0.20
+
+**No action required** — backward-compatible release (bug fix and tooling).
+
+### What changed
+- **DataCollector**: Service definition fixed so the collector receives the correct constructor arguments (`ControllerRenderSubscriber`, `?Twig\Environment`, and config parameters). If you had a custom decoration or override of this service, ensure it matches the constructor signature; normal installs are unaffected.
+- **Development**: `make release-check` now runs TypeScript tests (`assets-test`) as well. No impact on bundle users.
+
+No configuration changes for bundle users.
 
 ## Upgrading from 1.0.18 to 1.0.19
 

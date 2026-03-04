@@ -6,7 +6,7 @@ COMPOSE_FILE := docker-compose.yml
 COMPOSE := docker-compose -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down shell install test test-coverage cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean release-check release-check-demos composer-sync rector rector-dry phpstan
+.PHONY: help up down build shell install test test-coverage cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos composer-sync rector rector-dry phpstan update validate
 
 # Default target
 help:
@@ -18,6 +18,7 @@ help:
 	@echo "  up            Start Docker container"
 	@echo "  down          Stop Docker container"
 	@echo "  shell         Open shell in container"
+	@echo "  build         Rebuild Docker image (no cache)"
 	@echo "  install       Install Composer and pnpm dependencies"
 	@echo "  test          Run PHPUnit tests (starts container if needed)"
 	@echo "  test-coverage Run tests with code coverage (starts container if needed)"
@@ -27,25 +28,32 @@ help:
 	@echo "  rector-dry    Run Rector in dry-run mode"
 	@echo "  phpstan       Run PHPStan static analysis"
 	@echo "  qa            Run all QA checks (cs-check + test)"
-	@echo "  release-check Pre-release: cs-fix, cs-check, rector-dry, phpstan, test-coverage, assets-test, demo healthchecks"
+	@echo "  release-check Pre-release: cs-fix, cs-check, rector-dry, phpstan, test-coverage, test-ts, demo healthchecks"
 	@echo "  composer-sync Validate composer.json and align composer.lock (no install)"
 	@echo "  clean         Remove vendor and cache"
 	@echo "  assets        Build TypeScript and SCSS assets (pnpm install + pnpm run build in container)"
-	@echo "  assets-build  Same as assets (pnpm run build in container)"
-	@echo "  assets-test   Run Vitest tests for TypeScript (pnpm run test in container)"
+	@echo "  update        Update composer.lock (composer update)"
+	@echo "  validate      Run composer validate --strict"
 	@echo ""
 	@echo "Bundle-specific:"
+	@echo "  assets-build  Same as assets (pnpm run build in container)"
+	@echo "  test-ts       Run TypeScript (Vitest) tests (pnpm run test in container)"
+	@echo "  assets-test   Alias of test-ts"
+	@echo "  assets-dev    Build assets in development mode"
+	@echo "  assets-watch  Watch assets for changes"
+	@echo "  assets-clean  Clean built assets"
 	@echo "  setup-hooks   Install git pre-commit hooks"
 	@echo "  test-up       Start test container"
 	@echo "  test-down     Stop test container"
 	@echo "  test-shell    Open shell in test container"
-	@echo "  assets-dev    Build assets in development mode"
-	@echo "  assets-watch  Watch assets for changes"
-	@echo "  assets-clean  Clean built assets"
 	@echo ""
 	@echo "Demos:"
 	@echo "  (use make -C demo or make -C demo/symfonyX)"
 	@echo ""
+
+# Rebuild Docker image (no cache)
+build:
+	$(COMPOSE) build --no-cache
 
 # Build and start container (root docker-compose)
 up:
@@ -123,8 +131,16 @@ phpstan: ensure-up
 qa: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer qa
 
+# Update composer.lock
+update: ensure-up
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer update --no-interaction
+
+# Validate composer.json
+validate: ensure-up
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer validate --strict
+
 # Pre-release: cs-fix, cs-check, rector-dry, phpstan, test-coverage, demo healthchecks
-release-check: ensure-up composer-sync cs-fix cs-check rector-dry phpstan test-coverage assets-test release-check-demos
+release-check: ensure-up composer-sync cs-fix cs-check rector-dry phpstan test-coverage test-ts release-check-demos
 
 release-check-demos:
 	@$(MAKE) -C demo release-verify
@@ -154,11 +170,14 @@ assets: ensure-up
 assets-build: assets
 
 # Run Vitest tests for TypeScript — runs inside container
-assets-test: ensure-up
+test-ts: ensure-up
 	@echo "Running TypeScript tests (Vitest)..."
 	$(COMPOSE) exec -T -e CI=true $(SERVICE_PHP) pnpm install
 	$(COMPOSE) exec -T $(SERVICE_PHP) pnpm run test
-	@echo "✅ Assets tests done!"
+	@echo "✅ TypeScript tests done!"
+
+# Alias of test-ts (deprecated name; use test-ts)
+assets-test: test-ts
 
 # Build assets in development mode — runs inside container
 assets-dev: ensure-up
