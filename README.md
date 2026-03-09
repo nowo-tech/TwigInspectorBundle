@@ -108,6 +108,7 @@ Full options and behavior: [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 - [Upgrading](docs/UPGRADING.md)
 - [Release](docs/RELEASE.md)
 - [Security](docs/SECURITY.md)
+- [Engram](docs/ENGRAM.md)
 - [Roadmap](docs/ROADMAP.md)
 
 ### Additional documentation

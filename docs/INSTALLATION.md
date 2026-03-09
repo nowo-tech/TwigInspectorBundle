@@ -2,6 +2,19 @@
 
 This guide covers installing Twig Inspector Bundle in a Symfony application.
 
+
+## Table of contents
+
+- [Requirements](#requirements)
+- [Install with Composer](#install-with-composer)
+- [Register the bundle](#register-the-bundle)
+  - [With Symfony Flex](#with-symfony-flex)
+  - [Without Flex (manual)](#without-flex-manual)
+  - [Install command (config + routes)](#install-command-config-routes)
+- [IDE integration (optional)](#ide-integration-optional)
+- [Verify](#verify)
+- [Upgrading](#upgrading)
+
 ## Requirements
 
 - **PHP** >= 8.1, < 8.6

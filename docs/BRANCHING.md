@@ -2,6 +2,30 @@
 
 This project follows a simplified Git Flow workflow.
 
+
+## Table of contents
+
+- [Branch Types](#branch-types)
+- [Workflow Diagram](#workflow-diagram)
+- [Creating Branches](#creating-branches)
+  - [New Feature](#new-feature)
+  - [Bug Fix](#bug-fix)
+  - [Hotfix (urgent production fix)](#hotfix-urgent-production-fix)
+  - [Release](#release)
+- [Versioning](#versioning)
+- [Tagging Releases](#tagging-releases)
+- [Branch Protection Rules (GitHub)](#branch-protection-rules-github)
+- [Commit Message Convention](#commit-message-convention)
+  - [Types](#types)
+  - [Examples](#examples)
+- [Best Practices](#best-practices)
+- [Common Scenarios](#common-scenarios)
+  - [Updating Your Branch with Latest Changes](#updating-your-branch-with-latest-changes)
+  - [Renaming a Branch](#renaming-a-branch)
+  - [Undoing Last Commit (Before Push)](#undoing-last-commit-before-push)
+  - [Undoing Last Commit (After Push)](#undoing-last-commit-after-push)
+- [Questions?](#questions)
+
 ## Branch Types
 
 | Branch | Purpose | Base | Merges to |

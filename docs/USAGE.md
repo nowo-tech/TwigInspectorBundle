@@ -2,6 +2,22 @@
 
 This guide explains how to use the inspector overlay and the Web Profiler panel.
 
+
+## Table of contents
+
+- [Quick overview](#quick-overview)
+- [Step-by-step](#step-by-step)
+  - [1. Enable the inspector](#1-enable-the-inspector)
+  - [2. Show the overlay (green icon)](#2-show-the-overlay-green-icon)
+  - [3. Hover to see templates](#3-hover-to-see-templates)
+  - [4. Open template in IDE](#4-open-template-in-ide)
+  - [5. Hide the overlay (yellow icon)](#5-hide-the-overlay-yellow-icon)
+  - [6. Disable the inspector](#6-disable-the-inspector)
+- [Filter](#filter)
+- [Shortcuts](#shortcuts)
+- [Full panel](#full-panel)
+- [Troubleshooting](#troubleshooting)
+
 ## Quick overview
 
 - **Toolbar icon `</>`** — Opens the Twig Inspector dropdown. When the inspector is enabled (checkbox + reload), **clicking the icon** toggles the overlay:

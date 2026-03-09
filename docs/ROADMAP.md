@@ -2,6 +2,15 @@
 
 This document outlines the direction of Twig Inspector Bundle and helps contributors and users understand upcoming priorities.
 
+
+## Table of contents
+
+- [Vision](#vision)
+- [Current focus (1.x)](#current-focus-1x)
+- [Current status of “future ideas”](#current-status-of-future-ideas)
+- [Possible future (2.x / ideas)](#possible-future-2x-ideas)
+- [Community](#community)
+
 ## Vision
 
 Twig Inspector Bundle aims to be the **go-to development tool** for Symfony developers who work with Twig: quickly see which template or block rendered each part of the page and open it in the IDE with one click. We focus on stability, compatibility with current Symfony and Twig versions, and a minimal, non-intrusive setup.
