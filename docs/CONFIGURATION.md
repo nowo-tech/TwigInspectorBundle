@@ -1,5 +1,20 @@
 # Configuration Guide
 
+
+## Table of contents
+
+- [How Configuration Works in Symfony Bundles](#how-configuration-works-in-symfony-bundles)
+  - [1. Automatic YAML Creation](#1-automatic-yaml-creation)
+  - [2. Configuration File Loading](#2-configuration-file-loading)
+  - [3. Configuration Processing](#3-configuration-processing)
+  - [4. If YAML Exists](#4-if-yaml-exists)
+  - [5. If YAML Doesn't Exist](#5-if-yaml-doesnt-exist)
+  - [6. When Uninstalling the Bundle](#6-when-uninstalling-the-bundle)
+- [Routes Configuration](#routes-configuration)
+- [All configuration options (reference)](#all-configuration-options-reference)
+- [Best Practices](#best-practices)
+- [Summary](#summary)
+
 ## How Configuration Works in Symfony Bundles
 
 ### 1. Automatic YAML Creation

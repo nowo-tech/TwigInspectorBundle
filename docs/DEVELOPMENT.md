@@ -1,5 +1,17 @@
 # Development & Testing
 
+
+## Table of contents
+
+- [Using Docker (Recommended)](#using-docker-recommended)
+- [Without Docker](#without-docker)
+- [Testing](#testing)
+  - [Running tests](#running-tests)
+  - [Test structure](#test-structure)
+- [Code quality](#code-quality)
+- [CI/CD](#cicd)
+- [Building assets](#building-assets)
+
 ## Using Docker (Recommended)
 
 ```bash

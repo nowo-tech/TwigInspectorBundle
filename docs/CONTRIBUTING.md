@@ -2,6 +2,21 @@
 
 Thank you for your interest in contributing to Twig Inspector Bundle! This document provides guidelines for contributing to the project.
 
+
+## Table of contents
+
+- [Code of Conduct](#code-of-conduct)
+- [How can I contribute?](#how-can-i-contribute)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Suggesting Enhancements](#suggesting-enhancements)
+  - [Contributing Code](#contributing-code)
+- [Project Structure](#project-structure)
+- [Asset Development](#asset-development)
+- [Demos](#demos)
+- [Branching Policy](#branching-policy)
+- [Questions](#questions)
+- [Acknowledgments](#acknowledgments)
+
 ## Code of Conduct
 
 This project adheres to a code of conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to hectorfranco@nowo.tech.
