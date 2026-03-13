@@ -6,7 +6,7 @@ COMPOSE_FILE := docker-compose.yml
 COMPOSE := docker-compose -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down build shell install test test-coverage cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos composer-sync rector rector-dry phpstan update validate
+.PHONY: help up down build shell install test test-unit test-integration test-coverage cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos composer-sync rector rector-dry phpstan update validate
 
 # Default target
 help:
@@ -21,7 +21,9 @@ help:
 	@echo "  shell         Open shell in container"
 	@echo "  install       Install Composer and pnpm dependencies"
 	@echo "  assets        Build TypeScript and SCSS assets (pnpm install + pnpm run build in container)"
-	@echo "  test          Run PHPUnit tests (starts container if needed)"
+	@echo "  test          Run all PHPUnit tests (unit + integration)"
+	@echo "  test-unit     Run unit tests only (tests/Unit)"
+	@echo "  test-integration Run integration tests only (tests/Integration)"
 	@echo "  test-coverage Run tests with code coverage (starts container if needed)"
 	@echo "  cs-check      Check code style"
 	@echo "  cs-fix        Fix code style"
@@ -86,9 +88,17 @@ ensure-up:
 		$(COMPOSE) exec -T $(SERVICE_PHP) composer install --no-interaction; \
 	fi
 
-# Run tests (no -T so TTY is allocated and PHPUnit can show colors in console)
+# Run all tests (unit + integration)
 test: ensure-up
 	$(COMPOSE) exec $(SERVICE_PHP) composer test
+
+# Run unit tests only (tests/Unit)
+test-unit: ensure-up
+	$(COMPOSE) exec $(SERVICE_PHP) vendor/bin/phpunit --testsuite unit
+
+# Run integration tests only (tests/Integration)
+test-integration: ensure-up
+	$(COMPOSE) exec $(SERVICE_PHP) vendor/bin/phpunit --testsuite integration
 
 # Run tests with coverage (no -T so coverage is shown in console with colors)
 test-coverage: ensure-up
