@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.22] - 2026-03-13](#1022-2026-03-13)
 - [[1.0.21] - 2025-02-19](#1021-2025-02-19)
   - [Fixed](#fixed)
 - [[1.0.20] - 2025-02-18](#1020-2025-02-18)
@@ -74,6 +75,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.22] - 2026-03-13
+
+### Fixed
+- **InstallCommand tests**: Normalize console output in tests so assertions pass when SymfonyStyle wraps lines with block borders (` ! `). Fixes five failing unit tests when running the full suite in environments where the console formats warning/note blocks with line breaks.
+
+### Changed
+- **Tests**: `InstallCommandTest::normalizeDisplay()` now collapses SymfonyStyle block borders and whitespace so assertions on messages like "Please manually add" are robust across console width and formatting. Applied normalized output in `testEnsureRoutesFileHandlesDumpFileException` and `testEnsureRoutesFileHandlesAppendToFileException`.
 
 ## [1.0.21] - 2025-02-19
 
