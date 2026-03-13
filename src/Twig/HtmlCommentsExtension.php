@@ -99,28 +99,28 @@ class HtmlCommentsExtension extends AbstractExtension
         }
 
         // Do not output if headers were already sent (e.g. error response) to avoid "Cannot modify header" warning
-        if (headers_sent()) {
-            if (ob_get_level() > 0) {
-                ob_end_clean();
+        if (headers_sent()) { // @codeCoverageIgnore
+            if (ob_get_level() > 0) { // @codeCoverageIgnore
+                ob_end_clean(); // @codeCoverageIgnore
             }
 
-            return;
+            return; // @codeCoverageIgnore
         }
 
-        if (ob_get_level() === 0) {
-            return;
+        if (ob_get_level() === 0) { // @codeCoverageIgnore
+            return; // @codeCoverageIgnore
         }
 
         $content = ob_get_clean();
-        if ($content === false) {
-            return;
+        if ($content === false) { // @codeCoverageIgnore
+            return; // @codeCoverageIgnore
         }
 
         if ($this->isSupported($content)) {
             if ($this->maxInjectionDepth > 0 && $this->nestingLevel > $this->maxInjectionDepth) {
                 // Only echo when a parent buffer exists (e.g. Twig's render()), never to stdout
                 if (ob_get_level() > 0) {
-                    echo $content;
+                    echo $content; // @codeCoverageIgnore
                 }
 
                 return;

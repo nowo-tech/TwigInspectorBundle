@@ -1,0 +1,8 @@
+# Import bundle routes so OpenTemplateController is reachable in integration tests
+when@dev:
+    nowo_twig_inspector:
+        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
+
+when@test:
+    nowo_twig_inspector:
+        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'

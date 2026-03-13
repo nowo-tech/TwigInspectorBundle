@@ -28,4 +28,5 @@ return RectorConfig::configure()
         __DIR__ . '/demo',
         __DIR__ . '/vendor',
         __DIR__ . '/tests', // Skip tests: some Symfony rules (e.g. RequestStack constructor) don't match Symfony's actual API
+        __DIR__ . '/src/Command/InstallCommand.php', // Skip: help kept in setHelp() for Symfony Console 6.4 (CommandHelpToAttributeRector would break it)
     ]);

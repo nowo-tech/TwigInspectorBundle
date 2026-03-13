@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle\EventSubscriber;
 
 use Closure;
+use Nowo\TwigInspectorBundle\RequestStack\MainOrMasterRequestProvider;
 use Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -37,12 +37,12 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
     /**
      * Constructor.
      *
-     * @param RequestStack $requestStack The request stack (for main/master request and cookies)
+     * @param MainOrMasterRequestProvider $mainOrMasterProvider Provides main/master request (and current)
      * @param string $cookieName Cookie name used to enable the inspector (e.g. twig_inspector_is_active)
      * @param bool $debug When false, no comments are injected (e.g. in production)
      */
     public function __construct(
-        private readonly RequestStack $requestStack,
+        private readonly MainOrMasterRequestProvider $mainOrMasterProvider,
         private readonly string $cookieName,
         private readonly bool $debug = true
     ) {
@@ -76,7 +76,7 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
         $request  = $event->getRequest();
         $response = $event->getResponse();
 
-        $master = $this->getMainOrMasterRequest();
+        $master = $this->mainOrMasterProvider->getMainOrMasterRequest();
         if (!$master instanceof Request) {
             return;
         }
@@ -216,23 +216,6 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
     private function looksLikeHtmlFragment(string $content): bool
     {
         return str_contains($content, '<') && str_contains($content, '>');
-    }
-
-    /**
-     * Returns the main (or master) request from the stack.
-     * Uses getMainRequest() when available (Symfony 6+), otherwise getMasterRequest() (Symfony 5.x).
-     *
-     * @return Request|null The main/master request or null if the stack is empty
-     */
-    private function getMainOrMasterRequest(): ?Request
-    {
-        if (method_exists($this->requestStack, 'getMainRequest')) {
-            return $this->requestStack->getMainRequest();
-        }
-        /** @var callable(): ?Request $getMaster */
-        $getMaster = [$this->requestStack, 'getMasterRequest'];
-
-        return $getMaster();
     }
 
     /**

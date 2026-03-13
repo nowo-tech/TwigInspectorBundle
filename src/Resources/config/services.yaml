@@ -39,15 +39,20 @@ services:
     tags:
       - { name: twig.extension }
 
+  Nowo\TwigInspectorBundle\RequestStack\RequestStackMainOrMasterAdapter:
+    class: Nowo\TwigInspectorBundle\RequestStack\RequestStackMainOrMasterAdapter
+    arguments:
+      - '@request_stack'
+
   Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber:
     class: Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber
     arguments:
-      - '@request_stack'
+      - '@Nowo\TwigInspectorBundle\RequestStack\RequestStackMainOrMasterAdapter'
 
   Nowo\TwigInspectorBundle\EventSubscriber\ControllerCommentSubscriber:
     class: Nowo\TwigInspectorBundle\EventSubscriber\ControllerCommentSubscriber
     arguments:
-      - '@request_stack'
+      - '@Nowo\TwigInspectorBundle\RequestStack\RequestStackMainOrMasterAdapter'
       - '%nowo_twig_inspector.cookie_name%'
       - '%kernel.debug%'
     tags:

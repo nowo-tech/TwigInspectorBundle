@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle\EventSubscriber;
 
 use Closure;
+use Nowo\TwigInspectorBundle\RequestStack\MainOrMasterRequestProvider;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -32,10 +32,10 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
     /**
      * Constructor.
      *
-     * @param RequestStack $requestStack The request stack (for main/master request)
+     * @param MainOrMasterRequestProvider $mainOrMasterProvider Provides main/master request
      */
     public function __construct(
-        private readonly RequestStack $requestStack
+        private readonly MainOrMasterRequestProvider $mainOrMasterProvider
     ) {
     }
 
@@ -60,7 +60,7 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
     public function onController(ControllerEvent $event): void
     {
         $request = $event->getRequest();
-        $master  = $this->getMainOrMasterRequest();
+        $master  = $this->mainOrMasterProvider->getMainOrMasterRequest();
         $master ??= $request;
         $key = spl_object_id($master);
 
@@ -83,29 +83,12 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
     public function onTerminate(TerminateEvent $event): void
     {
         $request = $event->getRequest();
-        $master  = $this->getMainOrMasterRequest();
+        $master  = $this->mainOrMasterProvider->getMainOrMasterRequest();
         if (!$master instanceof Request || $request !== $master) {
             return;
         }
         $key = spl_object_id($request);
         unset($this->controllersByMasterRequest[$key]);
-    }
-
-    /**
-     * Returns the main (or master) request from the stack.
-     * Uses getMainRequest() when available (Symfony 6+), otherwise getMasterRequest() (Symfony 5.x).
-     *
-     * @return Request|null The main or master request, or null if the stack is empty
-     */
-    private function getMainOrMasterRequest(): ?Request
-    {
-        if (method_exists($this->requestStack, 'getMainRequest')) {
-            return $this->requestStack->getMainRequest();
-        }
-        /** @var callable(): ?Request $getMaster */
-        $getMaster = [$this->requestStack, 'getMasterRequest'];
-
-        return $getMaster();
     }
 
     /**

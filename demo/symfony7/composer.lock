@@ -89,13 +89,14 @@
             "dist": {
                 "type": "path",
                 "url": "/var/twig-inspector-bundle",
-                "reference": "3303fadb0ae39cae0186fe17cbff52b374232a82"
+                "reference": "2a892e872efd6e28889970ac68ad044c49ac210a"
             },
             "require": {
                 "php": ">=8.1 <8.6",
                 "symfony/config": "^6.0 || ^7.0 || ^8.0",
                 "symfony/console": "^6.0 || ^7.0 || ^8.0",
                 "symfony/dependency-injection": "^6.0 || ^7.0 || ^8.0",
+                "symfony/error-handler": "^6.0 || ^7.0 || ^8.0",
                 "symfony/filesystem": "^6.0 || ^7.0 || ^8.0",
                 "symfony/http-foundation": "^6.0 || ^7.0 || ^8.0",
                 "symfony/http-kernel": "^6.0 || ^7.0 || ^8.0",
@@ -105,7 +106,11 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-symfony": "^2.0",
                 "phpunit/phpunit": "^10.0",
+                "rector/rector": "^2.0",
                 "symfony/yaml": "^6.0 || ^7.0 || ^8.0"
             },
             "suggest": {
@@ -122,6 +127,11 @@
                     "Nowo\\TwigInspectorBundle\\Tests\\": "tests/"
                 }
             },
+            "archive": {
+                "exclude": [
+                    "/demo"
+                ]
+            },
             "scripts": {
                 "test": [
                     "phpunit"
@@ -135,6 +145,21 @@
                 "cs-fix": [
                     "php-cs-fixer fix"
                 ],
+                "rector": [
+                    "rector process"
+                ],
+                "rector-dry": [
+                    "rector process --dry-run --no-progress-bar"
+                ],
+                "phpstan": [
+                    "phpstan analyse --memory-limit=512M"
+                ],
+                "update": [
+                    "composer update --no-interaction"
+                ],
+                "validate": [
+                    "composer validate --strict"
+                ],
                 "qa": [
                     "@cs-check",
                     "@test"
@@ -146,7 +171,7 @@
             "authors": [
                 {
                     "name": "Héctor Franco Aceituno",
-                    "email": "hectorfranco@nowo.com",
+                    "email": "hectorfranco@nowo.tech",
                     "homepage": "https://github.com/HecFranco",
                     "role": "Developer"
                 },
@@ -3954,16 +3979,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "11.5.53",
+            "version": "11.5.55",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "a997a653a82845f1240d73ee73a8a4e97e4b0607"
+                "reference": "adc7262fccc12de2b30f12a8aa0b33775d814f00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/a997a653a82845f1240d73ee73a8a4e97e4b0607",
-                "reference": "a997a653a82845f1240d73ee73a8a4e97e4b0607",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/adc7262fccc12de2b30f12a8aa0b33775d814f00",
+                "reference": "adc7262fccc12de2b30f12a8aa0b33775d814f00",
                 "shasum": ""
             },
             "require": {
@@ -4036,7 +4061,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.53"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.55"
             },
             "funding": [
                 {
@@ -4060,7 +4085,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-02-10T12:28:25+00:00"
+            "time": "2026-02-18T12:37:06+00:00"
         },
         {
             "name": "sebastian/cli-parser",

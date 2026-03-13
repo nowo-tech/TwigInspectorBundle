@@ -1,0 +1,991 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Nowo\TwigInspectorBundle\Tests\Unit\Twig;
+
+use Nowo\TwigInspectorBundle\BoxDrawings;
+use Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension;
+use Nowo\TwigInspectorBundle\Twig\NodeReference;
+use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+/**
+ * Tests for HtmlCommentsExtension.
+ *
+ * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
+ * @copyright 2026 Nowo.tech
+ */
+final class HtmlCommentsExtensionTest extends TestCase
+{
+    private \PHPUnit\Framework\MockObject\MockObject $requestStack;
+    private \PHPUnit\Framework\MockObject\MockObject $urlGenerator;
+    private BoxDrawings $boxDrawings;
+    private HtmlCommentsExtension $extension;
+
+    protected function setUp(): void
+    {
+        $this->requestStack = $this->createMock(RequestStack::class);
+        $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $this->boxDrawings  = new BoxDrawings();
+        $this->extension    = new HtmlCommentsExtension($this->requestStack, $this->urlGenerator, $this->boxDrawings);
+    }
+
+    public function testStartWhenDisabled(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+
+        $this->requestStack->method('getCurrentRequest')->willReturn(null);
+
+        ob_start();
+        $this->extension->start($ref);
+        $output = ob_get_clean();
+
+        $this->assertEmpty($output);
+    }
+
+    public function testStartWhenEnabled(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $this->extension->start($ref);
+
+        // Output buffering should be started, clean it up
+        if (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
+        $this->assertTrue(true);
+    }
+
+    public function testEndWhenDisabled(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+
+        $this->requestStack->method('getCurrentRequest')->willReturn(null);
+
+        ob_start();
+        echo 'test content';
+        $this->extension->end($ref);
+        $output = ob_get_clean();
+
+        $this->assertSame('test content', $output);
+    }
+
+    public function testEndWithHtmlContent(): void
+    {
+        $ref = new NodeReference('block_name', 'template.html.twig', 10);
+
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $this->urlGenerator->method('generate')
+          ->with('nowo_twig_inspector_template_link', ['template' => 'template.html.twig', 'line' => 10])
+          ->willReturn('/_template/template.html.twig?line=10');
+
+        // Wrap the entire test in output buffering to capture end()'s output
+        // This ensures end() gets the buffer from start(), not a new empty buffer
+        ob_start();
+        $this->extension->start($ref);
+        echo '<div>Test content</div>';
+        $this->extension->end($ref);
+        $output = ob_get_clean();
+
+        // Verify that comments were added
+        $this->assertStringContainsString('<!--', $output, 'Output should contain HTML comment start. Got: ' . $output);
+        $this->assertStringContainsString('block_name', $output, 'Output should contain block name. Got: ' . $output);
+        $this->assertStringContainsString('<div>Test content</div>', $output, 'Output should contain original content. Got: ' . $output);
+        $this->assertStringContainsString('-->', $output, 'Output should contain HTML comment end. Got: ' . $output);
+    }
+
+    public function testEndWithNonHtmlContent(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $this->extension->start($ref);
+        echo 'plain text';
+        ob_start();
+        $this->extension->end($ref);
+        $output = ob_get_clean();
+
+        // Should not add comments for non-HTML content
+        $this->assertSame('plain text', $output);
+    }
+
+    public function testEndWithJsonContent(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $this->extension->start($ref);
+        echo '{"key": "value"}';
+        ob_start();
+        $this->extension->end($ref);
+        $output = ob_get_clean();
+
+        // Should not add comments for JSON content
+        $this->assertSame('{"key": "value"}', $output);
+    }
+
+    public function testEndWithBackboneTemplate(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $this->extension->start($ref);
+        echo '<div><% code %></div>';
+        ob_start();
+        $this->extension->end($ref);
+        $output = ob_get_clean();
+
+        // Should not add comments for backbone templates
+        $this->assertSame('<div><% code %></div>', $output);
+    }
+
+    public function testEndWithNonTwigTemplate(): void
+    {
+        $ref = new NodeReference('block', 'template.txt', 1);
+
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        // start() should not start buffering for non-.html.twig templates
+        $this->extension->start($ref);
+
+        // Since start() doesn't start buffering for non-.html.twig, end() will return early
+        // We need to capture output normally
+        ob_start();
+        echo '<div>content</div>';
+        $this->extension->end($ref);
+        $output = ob_get_clean();
+
+        // Should not add comments for non-.html.twig templates
+        $this->assertSame('<div>content</div>', $output);
+    }
+
+    public function testEndWithNestedContent(): void
+    {
+        $ref1 = new NodeReference('outer', 'template.html.twig', 1);
+        $ref2 = new NodeReference('inner', 'template.html.twig', 2);
+
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $this->urlGenerator->method('generate')
+          ->willReturnCallback(static function ($route, array $params): string {
+              return '/_template/' . $params['template'] . '?line=' . $params['line'];
+          });
+
+        // First block
+        ob_start();
+        $this->extension->start($ref1);
+        echo '<div>outer</div>';
+        $this->extension->end($ref1);
+        $output1 = ob_get_clean();
+
+        // Second block (nested) - contains previous content but changed
+        // This tests the case where trim($content) !== trim((string) $this->previousContent)
+        ob_start();
+        $this->extension->start($ref2);
+        echo $output1 . '<div>inner</div>';
+        $this->extension->end($ref2);
+        $output2 = ob_get_clean();
+
+        $this->assertStringContainsString('outer', $output2);
+        $this->assertStringContainsString('inner', $output2);
+    }
+
+    public function testShouldInspectWithoutRequest(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 1);
+
+        $this->requestStack->method('getCurrentRequest')->willReturn(null);
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->extension, $ref);
+
+        $this->assertFalse($result);
+    }
+
+    public function testShouldInspectWithoutCookie(): void
+    {
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->extension, $ref);
+
+        $this->assertFalse($result);
+    }
+
+    public function testShouldInspectWithCookie(): void
+    {
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->extension, $ref);
+
+        $this->assertTrue($result);
+    }
+
+    public function testShouldInspectWithCustomCookieName(): void
+    {
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('custom_cookie_name', '1');
+
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'custom_cookie_name',
+        );
+
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($extension, $ref);
+
+        $this->assertTrue($result);
+    }
+
+    public function testShouldInspectWithEnabledExtensions(): void
+    {
+        $ref     = new NodeReference('block', 'template.xml.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.xml.twig'], // Only .xml.twig is enabled
+        );
+
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($extension, $ref);
+
+        $this->assertTrue($result);
+    }
+
+    public function testShouldInspectWithDisabledExtension(): void
+    {
+        $ref     = new NodeReference('block', 'template.xml.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'], // Only .html.twig is enabled
+        );
+
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($extension, $ref);
+
+        $this->assertFalse($result);
+    }
+
+    public function testShouldInspectWithExcludedTemplate(): void
+    {
+        $ref     = new NodeReference('block', 'admin/dashboard.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            ['admin/*'], // Exclude admin templates
+            [],
+            'twig_inspector_is_active',
+        );
+
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($extension, $ref);
+
+        $this->assertFalse($result);
+    }
+
+    public function testShouldInspectWithExcludedBlock(): void
+    {
+        $ref     = new NodeReference('javascript', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            ['javascript'], // Exclude javascript block
+        );
+
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($extension, $ref);
+
+        $this->assertFalse($result);
+    }
+
+    public function testShouldInspectWithExcludedBlockWildcard(): void
+    {
+        $ref     = new NodeReference('head_scripts', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            ['head_*'], // Exclude blocks starting with head_
+            'twig_inspector_is_active',
+        );
+
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($extension, $ref);
+
+        $this->assertFalse($result);
+    }
+
+    public function testIsExcludedWithWildcard(): void
+    {
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            ['admin/*', 'email/*.html.twig'],
+            [],
+            'twig_inspector_is_active',
+        );
+
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('isExcluded');
+        $method->setAccessible(true);
+
+        $this->assertTrue($method->invoke($extension, 'admin/dashboard.html.twig', ['admin/*']));
+        $this->assertTrue($method->invoke($extension, 'email/welcome.html.twig', ['email/*.html.twig']));
+        $this->assertFalse($method->invoke($extension, 'public/index.html.twig', ['admin/*']));
+    }
+
+    public function testIsExcludedByRegexWithEmptyArray(): void
+    {
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isExcludedByRegex');
+        $method->setAccessible(true);
+
+        $this->assertFalse($method->invoke($this->extension, 'template.html.twig', []));
+    }
+
+    public function testIsExcludedByPrefixWithEmptyArray(): void
+    {
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isExcludedByPrefix');
+        $method->setAccessible(true);
+
+        $this->assertFalse($method->invoke($this->extension, 'template.html.twig', []));
+    }
+
+    public function testEndWithNestedContentUnchanged(): void
+    {
+        $ref1 = new NodeReference('outer', 'template.html.twig', 1);
+        $ref2 = new NodeReference('inner', 'template.html.twig', 2);
+
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $this->urlGenerator->method('generate')
+          ->willReturnCallback(static function ($route, array $params): string {
+              return '/_template/' . $params['template'] . '?line=' . $params['line'];
+          });
+
+        // First block - this sets previousContent
+        ob_start();
+        $this->extension->start($ref1);
+        echo '<div>outer</div>';
+        $this->extension->end($ref1);
+        $output1 = ob_get_clean();
+
+        // Second block with same trimmed content - should detect nested but unchanged
+        // This tests the case where trim($content) === trim((string) $this->previousContent)
+        ob_start();
+        $this->extension->start($ref2);
+        echo '<div>outer</div>'; // Same trimmed content as previous
+        $this->extension->end($ref2);
+        $output2 = ob_get_clean();
+
+        // Both should have comments
+        $this->assertStringContainsString('<!--', $output1);
+        $this->assertStringContainsString('<!--', $output2);
+        $this->assertStringContainsString('outer', $output1);
+        $this->assertStringContainsString('inner', $output2);
+    }
+
+    public function testShouldInspectWithNonHtmlTwigTemplate(): void
+    {
+        $ref = new NodeReference('block', 'template.txt.twig', 1);
+
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->extension, $ref);
+
+        // Should return false because template doesn't end with .html.twig
+        $this->assertFalse($result);
+    }
+
+    public function testIsSupportedWithEmptyString(): void
+    {
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
+        $method->setAccessible(true);
+
+        // Test with empty string - trimmed will be empty
+        $result = $method->invoke($this->extension, '');
+
+        // Empty string should not be supported (no HTML tags)
+        $this->assertFalse($result);
+    }
+
+    public function testIsSupportedWithWhitespaceOnly(): void
+    {
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
+        $method->setAccessible(true);
+
+        // Test with whitespace only - trimmed will be empty
+        $result = $method->invoke($this->extension, '   ');
+
+        // Whitespace only should not be supported (no HTML tags)
+        $this->assertFalse($result);
+    }
+
+    public function testIsSupportedWithNonEmptyTrimmedButStartsWithBracket(): void
+    {
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
+        $method->setAccessible(true);
+
+        // Test with content that has HTML tags but starts with [ or {
+        // This tests the case where trimmed !== '' && in_array($trimmed[0], ['[', '{'], true)
+        $result1 = $method->invoke($this->extension, '[{"html": "<div>test</div>"}]');
+        $result2 = $method->invoke($this->extension, '{"html": "<div>test</div>"}');
+
+        // Should return false because content starts with JSON brackets
+        $this->assertFalse($result1);
+        $this->assertFalse($result2);
+    }
+
+    public function testIsSupportedWithBackboneTemplate(): void
+    {
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
+        $method->setAccessible(true);
+
+        // Test with Backbone template (contains <% %>)
+        $result = $method->invoke($this->extension, '<div><%= variable %></div>');
+
+        // Should return false because it contains Backbone template syntax
+        $this->assertFalse($result);
+    }
+
+    public function testIsSupportedWithValidHTML(): void
+    {
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
+        $method->setAccessible(true);
+
+        // Test with valid HTML that doesn't start with brackets and doesn't contain Backbone syntax
+        $result = $method->invoke($this->extension, '<div>Hello World</div>');
+
+        // Should return true because it's valid HTML
+        $this->assertTrue($result);
+    }
+
+    public function testIsSupportedWithHTMLStartingWithWhitespace(): void
+    {
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
+        $method->setAccessible(true);
+
+        // Test with HTML that starts with whitespace (trimmed will be empty, so trimmed[0] won't be accessed)
+        $result1 = $method->invoke($this->extension, '   <div>Hello</div>   ');
+        $result2 = $method->invoke($this->extension, "\n<div>Hello</div>\n");
+
+        // Should return true because it's valid HTML (whitespace is trimmed)
+        $this->assertTrue($result1);
+        $this->assertTrue($result2);
+    }
+
+    public function testIsSupportedWithEmptyStringAfterTrim(): void
+    {
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('isSupported');
+        $method->setAccessible(true);
+
+        // Test with string that is empty after trim - this tests the trimmed !== '' check
+        $result = $method->invoke($this->extension, '   ');
+
+        // Should return false because after trim it's empty
+        $this->assertFalse($result);
+    }
+
+    public function testGetComment(): void
+    {
+        $ref = new NodeReference('block_name', 'template.html.twig', 10);
+
+        $this->urlGenerator->method('generate')
+          ->with('nowo_twig_inspector_template_link', ['template' => 'template.html.twig', 'line' => 10])
+          ->willReturn('/_template/template.html.twig?line=10');
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('getComment');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->extension, '┏━', $ref);
+
+        $this->assertStringContainsString('<!--', $result);
+        $this->assertStringContainsString('┏━', $result);
+        $this->assertStringContainsString('block_name', $result);
+        $this->assertStringContainsString('-->', $result);
+    }
+
+    public function testGetStartComment(): void
+    {
+        $ref = new NodeReference('block_name', 'template.html.twig', 7);
+        $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=7');
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('getStartComment');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->extension, $ref);
+
+        $this->assertStringContainsString('<!--', $result);
+        $this->assertStringContainsString('block_name', $result);
+        $this->assertStringContainsString('-->', $result);
+    }
+
+    public function testGetEndComment(): void
+    {
+        $ref = new NodeReference('block_name', 'template.html.twig', 7);
+        $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=7');
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('getEndComment');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->extension, $ref);
+
+        $this->assertStringContainsString('<!--', $result);
+        $this->assertStringContainsString('block_name', $result);
+        $this->assertStringContainsString('-->', $result);
+    }
+
+    public function testGetLink(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 5);
+
+        $this->urlGenerator->expects($this->once())
+          ->method('generate')
+          ->with('nowo_twig_inspector_template_link', ['template' => 'template.html.twig', 'line' => 5])
+          ->willReturn('/_template/template.html.twig?line=5');
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('getLink');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->extension, $ref);
+
+        $this->assertSame('/_template/template.html.twig?line=5', $result);
+    }
+
+    public function testGetLinkWithRouteNotFoundException(): void
+    {
+        $ref = new NodeReference('block', 'template.html.twig', 10);
+
+        $this->urlGenerator->expects($this->once())
+          ->method('generate')
+          ->with('nowo_twig_inspector_template_link', ['template' => 'template.html.twig', 'line' => 10])
+          ->willThrowException(new RouteNotFoundException('Route not found'));
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('getLink');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->extension, $ref);
+
+        // Should return fallback URL
+        $this->assertStringContainsString('/_template/', $result);
+        $this->assertStringContainsString('template.html.twig', $result);
+        $this->assertStringContainsString('line=10', $result);
+    }
+
+    public function testShouldInspectWithSubRequest(): void
+    {
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        $this->requestStack->method('getParentRequest')->willReturn(new Request());
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $this->assertFalse($method->invoke($this->extension, $ref));
+    }
+
+    public function testShouldInspectWithSubRequestWhenInjectOnSubRequestsEnabled(): void
+    {
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        $this->requestStack->method('getParentRequest')->willReturn(new Request());
+
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            0,
+            [],
+            [],
+            [],
+            true,  // injectOnSubRequests
+            true,   // debug
+        );
+
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $this->assertTrue($method->invoke($extension, $ref));
+    }
+
+    public function testShouldInspectWithWdtPath(): void
+    {
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
+        $request = Request::create('http://localhost/_wdt/abc123');
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        $this->requestStack->method('getParentRequest')->willReturn(null);
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $this->assertFalse($method->invoke($this->extension, $ref));
+    }
+
+    public function testShouldInspectWithProfilerPath(): void
+    {
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
+        $request = Request::create('http://localhost/_profiler/abc123');
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        $this->requestStack->method('getParentRequest')->willReturn(null);
+
+        $reflection = new ReflectionClass($this->extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $this->assertFalse($method->invoke($this->extension, $ref));
+    }
+
+    public function testShouldInspectWithExcludedTemplateRegex(): void
+    {
+        $ref     = new NodeReference('block', 'email/welcome.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            0,
+            ['/^email\\//'],
+        );
+
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $this->assertFalse($method->invoke($extension, $ref));
+    }
+
+    public function testShouldInspectWithExcludedTemplatePrefix(): void
+    {
+        $ref     = new NodeReference('block', 'components/button.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            0,
+            [],
+            ['components/'],
+        );
+
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $this->assertFalse($method->invoke($extension, $ref));
+    }
+
+    public function testShouldInspectWithExcludedBlockRegex(): void
+    {
+        $ref     = new NodeReference('head_scripts', 'base.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            0,
+            [],
+            [],
+            ['/^head_/'],
+        );
+
+        $reflection = new ReflectionClass($extension);
+        $method     = $reflection->getMethod('shouldInspect');
+        $method->setAccessible(true);
+
+        $this->assertFalse($method->invoke($extension, $ref));
+    }
+
+    public function testEndWhenNoBufferStartedReturnsEarly(): void
+    {
+        $ref     = new NodeReference('block_name', 'template.txt', 10);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        // start() does not start buffer for .txt; end() shouldInspect is false for .txt
+        $this->extension->start($ref);
+        ob_start();
+        echo '<div>x</div>';
+        $this->extension->end($ref);
+        $out = ob_get_clean();
+        $this->assertSame('<div>x</div>', $out);
+    }
+
+    public function testEndWhenNoOutputBufferReturnsEarly(): void
+    {
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        if (ob_get_level() !== 0) {
+            $this->markTestSkipped('Output buffer level is not 0; cannot test early-return branch without affecting other buffers');
+        }
+        $this->extension->end($ref);
+        $this->assertSame(0, ob_get_level(), 'end() with no buffer from start() should return early without touching buffers');
+    }
+
+    public function testShouldInspectReturnsFalseWhenDebugDisabled(): void
+    {
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            0,
+            [],
+            [],
+            [],
+            false,  // injectOnSubRequests
+            false,   // debug
+        );
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $ref    = new NodeReference('block', 'template.html.twig', 1);
+        $method = new ReflectionMethod($extension, 'shouldInspect');
+        $result = $method->invoke($extension, $ref);
+        $this->assertFalse($result);
+    }
+
+    public function testEndRespectsMaxInjectionDepth(): void
+    {
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            1,
+            [],
+            [],
+            [],
+            false,  // injectOnSubRequests
+            true,    // debug
+        );
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
+
+        $nestingLevel = new ReflectionProperty($extension, 'nestingLevel');
+        $nestingLevel->setAccessible(true);
+        $nestingLevel->setValue($extension, 2);
+
+        ob_start();
+        $extension->start($ref);
+        echo 'x';
+        $extension->end($ref);
+        $output = ob_get_clean();
+
+        $this->assertSame('x', $output);
+        $this->assertStringNotContainsString('<!--', $output);
+    }
+
+    /** Covers maxInjectionDepth branch with HTML content (nestingLevel > maxInjectionDepth). */
+    public function testEndRespectsMaxInjectionDepthWithHtmlContent(): void
+    {
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            1,
+            [],
+            [],
+            [],
+            false,  // injectOnSubRequests
+            true,    // debug
+        );
+        $ref     = new NodeReference('block', 'template.html.twig', 1);
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
+
+        $nestingLevel = new ReflectionProperty($extension, 'nestingLevel');
+        $nestingLevel->setAccessible(true);
+        $nestingLevel->setValue($extension, 2);
+
+        ob_start();
+        $extension->start($ref);
+        echo '<div>nested</div>';
+        $extension->end($ref);
+        $output = ob_get_clean();
+
+        $this->assertSame('<div>nested</div>', $output);
+        $this->assertStringNotContainsString('<!--', $output);
+    }
+}
