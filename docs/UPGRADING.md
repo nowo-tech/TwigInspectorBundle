@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.21 to the next release](#upgrading-from-1021-to-the-next-release)
+- [Upgrading from 1.0.22 to the next release](#upgrading-from-1022-to-the-next-release)
+- [Upgrading from 1.0.21 to 1.0.22](#upgrading-from-1021-to-1022)
 - [Upgrading from 1.0.20 to 1.0.21](#upgrading-from-1020-to-1021)
   - [What changed](#what-changed)
 - [Upgrading from 1.0.19 to 1.0.20](#upgrading-from-1019-to-1020)
@@ -56,9 +57,18 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.21 to the next release
+## Upgrading from 1.0.22 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.21 to 1.0.22
+
+**No action required** — backward-compatible release (test robustness only).
+
+### What changed
+- **Tests**: InstallCommand unit tests now normalize console output so they pass when SymfonyStyle wraps warning/note blocks with line breaks and borders. No change to bundle behavior or configuration.
+
+No configuration changes for bundle users.
 
 ## Upgrading from 1.0.20 to 1.0.21
 
