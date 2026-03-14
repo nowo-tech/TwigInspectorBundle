@@ -12,10 +12,12 @@
     "watch": "vite build --watch",
     "clean": "rm -rf src/Resources/views/assets/dist",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
     "jsdom": "^25.0.0",
     "sass": "^1.77.0",
     "typescript": "^5.3.3",

@@ -114,6 +114,7 @@ Full options and behavior: [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 ### Additional documentation
 
 - [Demo](docs/DEMO.md)
+- [Demo with FrankenPHP (development and production)](docs/DEMO-FRANKENPHP.md)
 - [Development](docs/DEVELOPMENT.md)
 - [Branching](docs/BRANCHING.md)
 
