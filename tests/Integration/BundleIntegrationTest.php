@@ -49,7 +49,11 @@ final class BundleIntegrationTest extends KernelTestCase
         $projectDir = self::$kernel->getProjectDir();
         $command    = new InstallCommand($projectDir);
         $app        = new ConsoleApplication();
-        $app->add($command);
+        if (method_exists($app, 'addCommand')) {
+            $app->addCommand($command);
+        } else {
+            $app->add($command);
+        }
         $app->setAutoExit(false);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--force' => true]);
