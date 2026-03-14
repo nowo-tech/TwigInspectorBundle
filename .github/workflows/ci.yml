@@ -58,7 +58,7 @@ jobs:
 
       - name: Install dependencies with Symfony ${{ matrix.symfony }}
         run: |
-          composer require symfony/config:^${{ matrix.symfony }} symfony/dependency-injection:^${{ matrix.symfony }} symfony/http-kernel:^${{ matrix.symfony }} symfony/http-foundation:^${{ matrix.symfony }} symfony/routing:^${{ matrix.symfony }} symfony/web-profiler-bundle:^${{ matrix.symfony }} --no-interaction --no-update
+          composer require symfony/config:^${{ matrix.symfony }} symfony/console:^${{ matrix.symfony }} symfony/dependency-injection:^${{ matrix.symfony }} symfony/http-kernel:^${{ matrix.symfony }} symfony/http-foundation:^${{ matrix.symfony }} symfony/routing:^${{ matrix.symfony }} symfony/web-profiler-bundle:^${{ matrix.symfony }} --no-interaction --no-update
           composer update symfony/* --with-all-dependencies --no-interaction --prefer-dist --no-progress
 
       - name: Run tests

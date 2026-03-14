@@ -1,7 +1,7 @@
 # Makefile for Symfony 6.4 Demo (Twig Inspector Bundle)
 # Run from this directory: make up, make install, etc.
 
-.PHONY: help up down build install shell logs test test-coverage cache-clear link-bundle update-bundle ensure-up
+.PHONY: help up down build install shell logs test test-coverage test-ts assets-test cache-clear link-bundle update-bundle ensure-up
 
 help:
 	@echo "Symfony 6.4 Demo - Twig Inspector Bundle"
@@ -14,6 +14,8 @@ help:
 	@echo "  make logs           Show container logs"
 	@echo "  make test           Run tests"
 	@echo "  make test-coverage  Run tests with coverage"
+	@echo "  make test-ts        Run TypeScript tests (no-op if demo has no Vitest)"
+	@echo "  make assets-test    Alias of test-ts"
 	@echo "  make cache-clear    Clear Symfony cache"
 	@echo "  make link-bundle    Use bundle from /var/twig-inspector-bundle (see demo/README.md)"
 	@echo "  make update-bundle  Update nowo-tech/twig-inspector-bundle from path repo and clear cache"
@@ -58,6 +60,11 @@ test: ensure-up
 
 test-coverage: ensure-up
 	docker-compose exec php composer test-coverage
+
+# TypeScript tests (no-op in this demo; bundle has TS, root runs test-ts)
+test-ts:
+	@echo "No TypeScript tests in this demo (bundle TS tests run from root)."
+assets-test: test-ts
 
 cache-clear: ensure-up
 	docker-compose exec php php bin/console cache:clear

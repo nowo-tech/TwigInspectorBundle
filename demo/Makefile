@@ -13,9 +13,9 @@ get-version = $(shell echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | s
 # Helper function to get demo version for shell commands
 get-version-shell = $(shell echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/')
 
-.PHONY: help clean test-all test-coverage-all verify-all check-all release-verify
-.PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) restart-$(demo) build-$(demo) install-$(demo) update-bundle-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo) verify-$(demo))
-.PHONY: up down restart build install update-bundle test shell logs test-coverage verify
+.PHONY: help clean test-all test-coverage-all test-ts-all verify-all check-all release-check release-verify
+.PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) restart-$(demo) build-$(demo) install-$(demo) update-bundle-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo) test-ts-$(demo) verify-$(demo))
+.PHONY: up down restart build install update-bundle test shell logs test-coverage test-ts verify
 
 # Default target
 help:
@@ -41,7 +41,9 @@ help:
 	@echo "Testing:"
 	@echo "  test-all           Run tests for all demos"
 	@echo "  test-coverage-all  Run tests with coverage for all demos"
+	@echo "  test-ts-all        Run TypeScript tests for all demos (bundle has TS)"
 	@echo "  verify-all         Verify all demos are running correctly (HTTP 200)"
+	@echo "  release-check      Pre-release: test-coverage-all, test-ts-all, release-verify"
 	@echo ""
 	@echo "Verification:"
 	@echo "  verify-all         Start all demos and verify they respond correctly"
@@ -431,6 +433,22 @@ verify:
 
 # Alias for verify-all
 check-all: verify-all
+
+# Run test-ts in each demo (TwigInspector bundle has TS; demos may have no-op if no Vitest)
+test-ts-symfony6:
+	@$(MAKE) -C symfony6 test-ts 2>/dev/null || true
+test-ts-symfony7:
+	@$(MAKE) -C symfony7 test-ts 2>/dev/null || true
+test-ts-symfony8:
+	@$(MAKE) -C symfony8 test-ts 2>/dev/null || true
+test-ts-all:
+	@echo "Running TypeScript tests for all demos..."
+	@$(foreach demo,$(DEMOS),$(MAKE) test-ts-$(demo);)
+	@echo "✅ test-ts-all done."
+
+# release-check: test-coverage-all, test-ts-all (bundle has TS), then release-verify
+release-check: test-coverage-all test-ts-all release-verify
+	@echo "✅ All demos passed release-check."
 
 # Release verify: for each demo, up → sleep → healthcheck (HTTP 200) → down
 release-verify:
