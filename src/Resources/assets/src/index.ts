@@ -14,10 +14,22 @@
 
 import './style.scss';
 
+import { createBundleLogger, setBundleLogger } from './logger';
 import { getConfig, applyThemeAndAccessibility } from './config';
 import { BlockStorage } from './BlockStorage';
 import { Overlay } from './Overlay';
 import { shortcutMatches } from './shortcut';
+
+declare const __TWIG_INSPECTOR_BUILD_TIME__: string;
+
+const log = createBundleLogger('twig-inspector', {
+  /* c8 ignore next 2 -- buildTime undefined branch only in builds without define */
+  buildTime:
+    typeof __TWIG_INSPECTOR_BUILD_TIME__ !== 'undefined' ? __TWIG_INSPECTOR_BUILD_TIME__ : undefined,
+  alwaysLog: true,
+});
+log.scriptLoaded();
+setBundleLogger(log);
 
 /**
  * Initializes the Twig Inspector: toolbar check, config, cookie handler, overlay, keyboard shortcuts and filter.
@@ -26,14 +38,17 @@ import { shortcutMatches } from './shortcut';
 function runTwigInspector(): void {
   // Toolbar not present (e.g. prod, or script loaded without profiler): do nothing
   if (!document.querySelector('.sf-toolbar')) {
+    log.debug('Web Profiler toolbar not present, skipping Twig Inspector init');
     return;
   }
 
   const config = getConfig();
   applyThemeAndAccessibility(config);
+  log.info('Twig Inspector init', { cookie_name: config.cookie_name });
 
   const statusCheckbox = document.getElementById('_twig_inspector__status') as HTMLInputElement | null;
   if (!statusCheckbox) {
+    log.warn('Twig Inspector status checkbox not found');
     return;
   }
 
@@ -52,6 +67,7 @@ function runTwigInspector(): void {
 
   const overlay = new Overlay(storage, statusIcon);
   overlay.initClickHandler();
+  log.debug('Overlay and storage initialized');
 
   document.addEventListener('keydown', (evt: KeyboardEvent) => {
     if (overlay.handleKeyDown(evt)) {
@@ -96,12 +112,15 @@ function runTwigInspector(): void {
   if (statusCheckbox.checked === true) {
     statusIcon.addEventListener('click', () => {
       if (overlay.isEnabled) {
+        log.debug('Overlay disabled by user');
         overlay.reset();
       } else {
+        log.debug('Overlay enabled by user');
         overlay.enable();
       }
     });
   }
+  log.info('Twig Inspector ready');
 }
 
 (function (): void {

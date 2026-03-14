@@ -42,7 +42,7 @@ help:
 	@echo "  test-down     Stop test container"
 	@echo "  test-shell    Open shell in test container"
 	@echo "  assets-build  Same as assets (pnpm run build in container)"
-	@echo "  test-ts       Run TypeScript (Vitest) tests (pnpm run test in container)"
+	@echo "  test-ts       Run TypeScript (Vitest) tests with coverage (pnpm run test:coverage)"
 	@echo "  assets-test   Alias of test-ts"
 	@echo "  assets-dev    Build assets in development mode"
 	@echo "  assets-watch  Watch assets for changes"
@@ -179,11 +179,11 @@ assets: ensure-up
 # Alias: pnpm build inside container (same as assets; use 'make assets' for install + build)
 assets-build: assets
 
-# Run Vitest tests for TypeScript — runs inside container
+# Run Vitest tests for TypeScript with coverage — runs inside container
 test-ts: ensure-up
-	@echo "Running TypeScript tests (Vitest)..."
+	@echo "Running TypeScript tests (Vitest) with coverage..."
 	$(COMPOSE) exec -T -e CI=true $(SERVICE_PHP) pnpm install
-	$(COMPOSE) exec -T $(SERVICE_PHP) pnpm run test
+	$(COMPOSE) exec -T $(SERVICE_PHP) pnpm run test:coverage
 	@echo "✅ TypeScript tests done!"
 
 # Alias of test-ts (deprecated name; use test-ts)
