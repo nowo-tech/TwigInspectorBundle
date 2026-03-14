@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.22 to the next release](#upgrading-from-1022-to-the-next-release)
+- [Upgrading from 1.0.23 to the next release](#upgrading-from-1023-to-the-next-release)
+- [Upgrading from 1.0.22 to 1.0.23](#upgrading-from-1022-to-1023)
 - [Upgrading from 1.0.21 to 1.0.22](#upgrading-from-1021-to-1022)
 - [Upgrading from 1.0.20 to 1.0.21](#upgrading-from-1020-to-1021)
   - [What changed](#what-changed)
@@ -57,9 +58,20 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.22 to the next release
+## Upgrading from 1.0.23 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.22 to 1.0.23
+
+**No action required** — backward-compatible release (tests and coverage only).
+
+### What changed
+- **TypeScript tests**: New tests for the frontend entry point (`index.test.ts`), BlockStorage (sort and controller range with text node), and Overlay (filter highlights, click handler). Coverage now includes `index.ts` and `types.ts`; thresholds are 100% for lines/statements/functions and 99.5% for branches.
+- **Overlay**: Click handling is in a dedicated `handleBlockClick()` method (internal refactor; no API or behavior change).
+- **Development**: Running `make assets-test` enforces the new coverage thresholds. No impact on bundle users.
+
+No configuration changes for bundle users.
 
 ## Upgrading from 1.0.21 to 1.0.22
 

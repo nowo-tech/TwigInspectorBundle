@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.23] - 2026-03-14](#1023-2026-03-14)
 - [[1.0.22] - 2026-03-13](#1022-2026-03-13)
 - [[1.0.21] - 2025-02-19](#1021-2025-02-19)
   - [Fixed](#fixed)
@@ -75,6 +76,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.23] - 2026-03-14
+
+### Added
+- **TypeScript tests**: Full coverage for the frontend entry point and types.
+  - New `index.test.ts` for the Twig Inspector entry: toolbar presence check, DOM setup (status checkbox, icon, filter, rescan), checkbox and icon click (reload, overlay toggle), filter input, keyboard shortcuts (Ctrl+Shift+T, Ctrl+Shift+R, Escape), and DOMContentLoaded vs readyState paths.
+  - `index.ts` and `types.ts` are no longer excluded from coverage; `types.ts` is exercised via import in tests.
+- **BlockStorage tests**: Sort order when a block has Twig then controller template (`[twig, controller]` → controller first); controller range with a text node before the element (covers `visitElementsInRange` skipping non-elements).
+- **Overlay tests**: `updateFilterHighlights` when some blocks do not match the filter (continue branch); `handleBlockClick` early return when `templateIndex` is not set.
+
+### Changed
+- **Coverage**: Vitest thresholds set to 100% for lines, statements, and functions; 99.5% for branches (one branch in Overlay picker link handler is underreported by v8 in jsdom). Coverage exclusions no longer omit `index.ts` or `types.ts`.
+- **Overlay**: Click handler logic extracted to `handleBlockClick(event)` for testability and coverage. Some branches that v8 does not attribute correctly in event/synthetic-click paths are excluded from branch coverage via c8 ignore comments.
+- **BlockStorage**: c8 ignore comments added for `sortTemplatesForDisplay`, `findControllerCloseComment`, `visitElementsInRange`, and `nextInDocumentOrder` where v8 underreports branches in jsdom.
+- **index.ts**: c8 ignore for the `buildTime` undefined branch (only relevant in builds without the define).
 
 ## [1.0.22] - 2026-03-13
 
