@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.24] - 2026-02-18](#1024-2026-02-18)
 - [[1.0.23] - 2026-03-14](#1023-2026-03-14)
 - [[1.0.22] - 2026-03-13](#1022-2026-03-13)
 - [[1.0.21] - 2025-02-19](#1021-2025-02-19)
@@ -76,6 +77,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.24] - 2026-02-18
+
+### Fixed
+- **CI**: Pin `symfony/console` to the same major version as the Symfony matrix in the workflow (`symfony/console:^${{ matrix.symfony }}`). This avoids pulling Console 7.x when testing PHP 8.4 with Symfony 6.4, which caused a fatal error due to `DebugCommand::configure()` signature mismatch.
+- **Tests**: Integration test `testInstallCommandRunsAndCreatesConfigAndRoutes` now uses `Application::addCommand()` when available (Symfony Console 7.0+), falling back to `Application::add()` for Symfony 6.4, since `add()` was removed in Console 7.0.
 
 ## [1.0.23] - 2026-03-14
 

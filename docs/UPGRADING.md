@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.23 to the next release](#upgrading-from-1023-to-the-next-release)
+- [Upgrading from 1.0.24 to the next release](#upgrading-from-1024-to-the-next-release)
+- [Upgrading from 1.0.23 to 1.0.24](#upgrading-from-1023-to-1024)
 - [Upgrading from 1.0.22 to 1.0.23](#upgrading-from-1022-to-1023)
 - [Upgrading from 1.0.21 to 1.0.22](#upgrading-from-1021-to-1022)
 - [Upgrading from 1.0.20 to 1.0.21](#upgrading-from-1020-to-1021)
@@ -58,9 +59,19 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.23 to the next release
+## Upgrading from 1.0.24 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.23 to 1.0.24
+
+**No action required** — backward-compatible release (CI and test compatibility only).
+
+### What changed
+- **CI**: The GitHub Actions workflow now pins `symfony/console` to the same major version as the rest of the Symfony stack, avoiding compatibility issues when running tests (e.g. PHP 8.4 with Symfony 6.4).
+- **Tests**: The integration test that runs the install command uses `addCommand()` on Symfony Console 7.0+ and `add()` on 6.4, so CI passes on all supported matrix combinations.
+
+No configuration or API changes for bundle users.
 
 ## Upgrading from 1.0.22 to 1.0.23
 
