@@ -73,7 +73,7 @@ services:
     tags:
       -
         name: data_collector
-        template: '@NowoTwigInspector/Collector/template.html.twig'
+        template: '@NowoTwigInspectorBundle/Collector/template.html.twig'
         id: 'twig_inspector'
         # just before symfony twig collector
         priority: 260
