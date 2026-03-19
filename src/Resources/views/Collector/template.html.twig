@@ -64,7 +64,7 @@
 
 {% block menu %}
     <span class="label">
-        <span class="icon">{{ source('@NowoTwigInspector/Icon/twig-inspector.svg') }}</span>
+        <span class="icon">{{ source('@NowoTwigInspectorBundle/Icon/twig-inspector.svg') }}</span>
         <strong>Twig Inspector</strong>
     </span>
 {% endblock %}
@@ -72,7 +72,7 @@
 {% block toolbar %}
   {% set isActive = app.request.cookies.getBoolean('twig_inspector_is_active', false) %}
   {% set icon %}
-    <span class="icon">{{ source('@NowoTwigInspector/Icon/twig-inspector.svg') }}</span>
+    <span class="icon">{{ source('@NowoTwigInspectorBundle/Icon/twig-inspector.svg') }}</span>
     {% if collector.enabled %}
       <span class="sf-toolbar-value">{{ collector.totalTemplates }}</span>
       <span class="sf-toolbar-label">tpl</span>
@@ -100,12 +100,12 @@
     </div>
   {% endset %}
   {% set block_attrs = (block_attrs|default('')) ~ ' title="Click to toggle overlay: green = on, yellow = off"' %}
-  {{ include('@NowoTwigInspector/Collector/toolbar_item.html.twig') }}
+  {{ include('@NowoTwigInspectorBundle/Collector/toolbar_item.html.twig') }}
   <script>
     window.__twig_inspector_config = {{ collector.config|json_encode|raw }};
   </script>
   <script>
-    {{ include('@NowoTwigInspector/assets/dist/index.min.js') }}
+    {{ include('@NowoTwigInspectorBundle/assets/dist/index.min.js') }}
   </script>
 {% endblock %}
 

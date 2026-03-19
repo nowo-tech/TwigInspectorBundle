@@ -16,6 +16,7 @@ This guide explains how to use the inspector overlay and the Web Profiler panel.
 - [Filter](#filter)
 - [Shortcuts](#shortcuts)
 - [Full panel](#full-panel)
+- [Overriding bundle templates](#overriding-bundle-templates)
 - [Troubleshooting](#troubleshooting)
 
 ## Quick overview
@@ -93,6 +94,33 @@ Click **“View full panel →”** in the dropdown (or open the Twig Inspector 
 - **Configuration example** — Copy-paste config snippets.
 
 When the inspector is enabled, the HTML source also includes **controller comments**: one after `<body>` for the main controller, and start/end comments around each fragment’s output, so you can see which controller rendered which part of the page (same idea as template/block comments).
+
+## Overriding bundle templates
+
+The bundle registers its Twig views so that `@NowoTwigInspectorBundle/...` works, and adds its path **after** the application paths. Your overrides in **`templates/bundles/NowoTwigInspectorBundle/`** are therefore checked first: you can override any bundle template by placing a file there with the **same relative path** as inside the bundle.
+
+**Override path:** the directory name under `templates/bundles/` must match the bundle name returned by `Bundle::getName()`. For this bundle the class is `NowoTwigInspectorBundle`, so the name is **`NowoTwigInspectorBundle`**. Use that folder name for overrides.
+
+**Example:** to override the Web Profiler panel template, create in your project:
+
+```
+templates/
+  bundles/
+    NowoTwigInspectorBundle/
+      Collector/
+        template.html.twig
+```
+
+Copy the original from `vendor/nowo-tech/twig-inspector-bundle/src/Resources/views/Collector/template.html.twig` and adjust as needed.
+
+**Templates you can override:**
+
+| Path (relative to bundle `Resources/views/`) | Purpose |
+|---------------------------------------------|---------|
+| `Collector/template.html.twig` | Web Profiler panel (full panel in the profiler). |
+| `Collector/toolbar_item.html.twig` | Toolbar dropdown fragment (icon, enable checkbox, filter, shortcuts). |
+
+After adding or changing overrides, clear the Twig cache if needed: `php bin/console cache:clear`.
 
 ## Troubleshooting
 
