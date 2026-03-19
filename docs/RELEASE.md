@@ -5,10 +5,12 @@ Use this checklist when cutting a new version. The workflow [.github/workflows/r
 ## Before tagging
 
 1. **CHANGELOG.md**
+   - Include all changes since the previous tag (e.g. `git log vX.Y.Z..HEAD`, `git diff vX.Y.Z..HEAD --stat`).
    - Move [Unreleased] entries to a new version section `## [X.Y.Z] - YYYY-MM-DD`.
    - Leave an empty `## [Unreleased]` at the top.
 
 2. **UPGRADING.md**
+   - Document the same changes since the previous tag for users upgrading from X.Y.(Z-1) to X.Y.Z.
    - Rename "Upgrading from X.Y.(Z-1) to the next release" to "Upgrading from X.Y.(Z-1) to X.Y.Z".
    - Optionally add a short "Upgrading from X.Y.Z to the next release" placeholder for the next cycle.
 
@@ -27,11 +29,11 @@ git tag -a vX.Y.Z -m "Release vX.Y.Z"
 git push origin vX.Y.Z
 ```
 
-Example for v1.0.17:
+Example for v1.0.25:
 
 ```bash
-git tag -a v1.0.17 -m "Release v1.0.17"
-git push origin v1.0.17
+git tag -a v1.0.25 -m "Release v1.0.25"
+git push origin v1.0.25
 ```
 
 After the push, GitHub Actions will create the release and attach the changelog entry (from `docs/CHANGELOG.md`) to the release body. Packagist will pick up the new tag automatically.
