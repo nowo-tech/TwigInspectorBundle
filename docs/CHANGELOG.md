@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.25] - 2026-02-18](#1025-2026-02-18)
+  - [Added](#added)
+  - [Changed](#changed)
 - [[1.0.24] - 2026-02-18](#1024-2026-02-18)
 - [[1.0.23] - 2026-03-14](#1023-2026-03-14)
 - [[1.0.22] - 2026-03-13](#1022-2026-03-13)
@@ -77,6 +80,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.25] - 2026-02-18
+
+### Added
+- **Compiler pass**: `TwigPathsPass` registers the bundle's Twig views path with the native Twig loader so that application overrides in `templates/bundles/NowoTwigInspectorBundle/` are consulted first.
+- **Documentation**: New [docs/USAGE.md](USAGE.md) — "Using the Twig Inspector" (overview, step-by-step, filter, shortcuts, full panel, overriding bundle templates, troubleshooting).
+- **Tests**: Unit tests for `TwigPathsPass` (loader resolution and path registration).
+
+### Changed
+- Dependencies and demo app Composer locks updated; PHP CS Fixer applied.
+- Bundle template and service wiring minor updates.
 
 ## [1.0.24] - 2026-02-18
 

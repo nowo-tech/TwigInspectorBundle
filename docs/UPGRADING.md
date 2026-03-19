@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.24 to the next release](#upgrading-from-1024-to-the-next-release)
+- [Upgrading from 1.0.25 to the next release](#upgrading-from-1025-to-the-next-release)
+- [Upgrading from 1.0.24 to 1.0.25](#upgrading-from-1024-to-1025)
 - [Upgrading from 1.0.23 to 1.0.24](#upgrading-from-1023-to-1024)
 - [Upgrading from 1.0.22 to 1.0.23](#upgrading-from-1022-to-1023)
 - [Upgrading from 1.0.21 to 1.0.22](#upgrading-from-1021-to-1022)
@@ -59,9 +60,20 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.24 to the next release
+## Upgrading from 1.0.25 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.24 to 1.0.25
+
+**No action required** — backward-compatible release.
+
+### What changed
+- **Twig overrides**: A new compiler pass (`TwigPathsPass`) registers the bundle's views path with the native Twig loader. If you override bundle templates in `templates/bundles/NowoTwigInspectorBundle/`, they are now correctly consulted first (same behavior as other Symfony bundles).
+- **Documentation**: New [USAGE.md](USAGE.md) with step-by-step usage, filter, shortcuts, full panel, overriding templates, and troubleshooting.
+- **Dependencies**: Composer and demo app locks updated; code style (PHP CS Fixer) applied.
+
+No configuration changes for bundle users.
 
 ## Upgrading from 1.0.23 to 1.0.24
 
