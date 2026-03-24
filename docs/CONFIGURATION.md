@@ -118,6 +118,10 @@ The bundle requires routes to be imported in `config/routes.yaml` for the templa
 when@dev:
     nowo_twig_inspector:
         resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
+
+when@test:
+    nowo_twig_inspector:
+        resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
 ```
 
 **Important**: 

@@ -134,7 +134,7 @@ See [docs/INSTALLATION.md](docs/INSTALLATION.md#requirements) and [docs/UPGRADIN
 
 ## Demo
 
-Three demos (Symfony 6.4, 7.0, 8.0) are in `demo/symfony6`, `demo/symfony7`, `demo/symfony8`. Each uses **FrankenPHP** with **Caddy** (worker mode) serving HTTP on port 80 (see each demo’s `Caddyfile` and `docker-compose.yml`). Quick start and run instructions: [docs/DEMO.md](docs/DEMO.md).
+Three demos (Symfony 6.4, 7.0, 8.0) are in `demo/symfony6`, `demo/symfony7`, `demo/symfony8`. Each runs **FrankenPHP** (Caddy + PHP): the app listens on **:80 inside the container**, and `docker-compose` maps that to the host port **`PORT`** (default **8001**), e.g. `http://localhost:8001`. Production-style configs use FrankenPHP **worker** mode; dev uses `Caddyfile.dev` without workers (see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md)). Quick start: [docs/DEMO.md](docs/DEMO.md).
 
 ## Development
 
