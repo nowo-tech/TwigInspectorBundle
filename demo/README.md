@@ -15,7 +15,7 @@ This directory contains three demo projects, one for each supported Symfony vers
   - Profiler accessible at `/_profiler`
   - WDT (Web Debug Toolbar) at `/_wdt`
 - Visual demonstration of template inspection
-- **Docker stack: FrankenPHP + Caddy** — Demos run with [FrankenPHP](https://frankenphp.dev/) and [Caddy](https://caddyserver.com/) as the web server. **HTTPS** is available where configured (Caddy’s internal CA for local dev); see each demo’s `Caddyfile` and `docker-compose.yml` for ports and HTTP/HTTPS URLs.
+- **Docker stack: FrankenPHP + Caddy** — Demos run with [FrankenPHP](https://frankenphp.dev/) and [Caddy](https://caddyserver.com/). By default the **Caddyfiles only expose HTTP** (`:80` in the container → host `PORT`, usually **8001**). See `docker/frankenphp/Caddyfile`, `Caddyfile.dev`, and `docker-compose.yml` in each demo.
 - Independent Docker containers for each demo
 
 ## Requirements
@@ -237,48 +237,37 @@ Each demo includes:
 
 - **DemoController**: A simple controller with a demo page
 - **Template**: A Twig template with multiple blocks and includes
-- **Docker Setup**: Complete Docker configuration with PHP-FPM and Nginx
-- **Dockerfile**: Custom PHP-FPM image with Composer pre-installed
+- **Docker setup**: **FrankenPHP** image (`dunglas/frankenphp`), `docker/frankenphp/Caddyfile` (worker in prod-style runs) and `Caddyfile.dev` (no worker in dev), entrypoint that selects the dev Caddyfile when `APP_ENV=dev`, and `docker-compose.yml` mapping host `PORT` → container **:80**
+- **Dockerfile**: FrankenPHP-based image with Composer; not PHP-FPM + Nginx
 - **Web Profiler**: Pre-configured Symfony Web Profiler for development
   - Enabled in `dev` and `test` environments
   - Accessible at `/_profiler` route
   - Toolbar visible at the bottom of pages
-- **Twig Inspector Configuration**: Example configuration file showing all available options
+- **Twig Inspector configuration**: Example file with common options
   - Located at `config/packages/nowo_twig_inspector.yaml`
-  - Demonstrates exclusion patterns, metrics, and performance options
+  - For the full option list see [docs/CONFIGURATION.md](../docs/CONFIGURATION.md) (overlay theme, shortcuts, regex exclusions, etc.)
 
 ## Demo Structure
 
 ```
 demo/
-├── symfony6/               # Symfony 6.4 demo (Port 8001 by default)
-│   ├── docker-compose.yml  # Independent docker-compose for this demo
-│   ├── Dockerfile          # PHP-FPM image with Composer
-│   ├── nginx.conf          # Nginx configuration
-│   ├── composer.json       # Dependencies including Web Profiler
-│   ├── .env.example        # Template for .env file (copy to .env and configure)
-│   ├── config/packages/nowo_twig_inspector.yaml  # Bundle configuration example
+├── symfony6/               # Symfony 6.4 demo (host PORT default 8001)
+│   ├── docker-compose.yml  # Publishes PORT:80, mounts bundle at /var/twig-inspector-bundle
+│   ├── Dockerfile          # FrankenPHP (Caddy + PHP)
+│   ├── docker/frankenphp/  # Caddyfile, Caddyfile.dev
+│   ├── Makefile            # up, install, ensure-up, test, …
+│   ├── composer.json       # Path repo to ../../
+│   ├── .env.example
+│   ├── config/packages/nowo_twig_inspector.yaml
 │   └── ...
-├── symfony7/               # Symfony 7.0 demo (Port 8001 by default)
-│   ├── docker-compose.yml  # Independent docker-compose for this demo
-│   ├── Dockerfile          # PHP-FPM image with Composer
-│   ├── nginx.conf          # Nginx configuration
-│   ├── composer.json       # Dependencies including Web Profiler
-│   ├── .env.example        # Template for .env file (copy to .env and configure)
-│   ├── config/packages/nowo_twig_inspector.yaml  # Bundle configuration example
+├── symfony7/               # Symfony 7.0 demo (same layout)
 │   └── ...
-├── symfony8/               # Symfony 8.0 demo (Port 8001 by default)
-│   ├── docker-compose.yml  # Independent docker-compose for this demo
-│   ├── Dockerfile          # PHP-FPM image with Composer
-│   ├── nginx.conf          # Nginx configuration
-│   ├── composer.json       # Dependencies including Web Profiler
-│   ├── .env.example        # Template for .env file (copy to .env and configure)
-│   ├── config/packages/nowo_twig_inspector.yaml  # Bundle configuration example
+├── symfony8/               # Symfony 8.0 demo (same layout)
 │   └── ...
-└── Makefile                # Helper commands for all demos
+└── Makefile                # Helper commands for all demos (up-symfony6, …)
 ```
 
-Each demo is completely independent with its own `docker-compose.yml` and `nginx.conf`.
+Each demo is independent: own `docker-compose.yml`, Dockerfile, and FrankenPHP/Caddy config. See [docs/DEMO-FRANKENPHP.md](../docs/DEMO-FRANKENPHP.md) for dev vs prod behaviour.
 
 **Note**: Before starting a demo, copy `.env.example` to `.env` in the demo directory:
 ```bash
@@ -343,7 +332,7 @@ This command creates:
 
 #### Example Configuration
 
-Each demo includes an **example** configuration file at `config/packages/nowo_twig_inspector.yaml` that demonstrates all available configuration options. This file is provided as a reference - you can delete it or modify it as needed.
+Each demo includes an **example** configuration file at `config/packages/nowo_twig_inspector.yaml` with the most common options. The full reference (including `overlay_theme`, `keyboard_shortcut`, regex exclusions, etc.) is in [docs/CONFIGURATION.md](../docs/CONFIGURATION.md).
 
 The example configuration shows:
 

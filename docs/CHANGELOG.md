@@ -81,6 +81,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Documentation**: Aligned README, `demo/README.md`, `docs/DEMO.md`, `docs/CONTRIBUTING.md`, `docs/CONFIGURATION.md`, `docs/DEVELOPMENT.md`, and demo `.env.example` files with the FrankenPHP-based demos (host `PORT` → container `:80`, HTTP-only default Caddyfiles; removed obsolete PHP-FPM/Nginx wording). Manual routes snippet in CONFIGURATION now includes `when@test`. Test count and test directory layout updated in DEVELOPMENT.
+
 ## [1.0.25] - 2026-02-18
 
 ### Added

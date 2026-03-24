@@ -224,7 +224,7 @@ The build compiles TypeScript (`src/Resources/assets/src/*.ts`) to JavaScript. O
 
 ## Demos
 
-The project includes three independent demos to test the bundle with different Symfony versions. Each demo runs with **FrankenPHP** and **Caddy**; **HTTPS** is available where configured (see each demo’s `Caddyfile` and `docker-compose.yml`).
+The project includes three independent demos to test the bundle with different Symfony versions. Each demo runs with **FrankenPHP** and **Caddy**. The default **Caddyfiles serve HTTP only** (container `:80` → host `PORT`, default `8001`). See [docs/DEMO.md](DEMO.md) and [docs/DEMO-FRANKENPHP.md](DEMO-FRANKENPHP.md).
 
 - `demo/symfony6/` - Symfony 6.4
 - `demo/symfony7/` - Symfony 7.0

@@ -42,7 +42,7 @@ composer qa
 
 ## Testing
 
-The bundle has **150+ tests** and targets **90%+ code coverage**. CI runs tests on **multiple PHP and Symfony versions** (PHP 8.1–8.5 × Symfony 6.4, 7.0, 8.0; see exclusions in `.github/workflows/ci.yml`), plus code style and asset build. All tests are in `tests/`. Code and tests must be compatible with every matrix combination.
+The bundle has **200+** PHPUnit test methods and targets **90%+ code coverage**. CI runs tests on **multiple PHP and Symfony versions** (PHP 8.1–8.5 × Symfony 6.4, 7.0, 8.0; see exclusions in `.github/workflows/ci.yml`), plus code style and asset build. All tests are in `tests/`. Code and tests must be compatible with every matrix combination.
 
 **Current coverage**: 90%+ (validated in CI). Remaining uncovered code is mostly edge cases (e.g. `file_get_contents` failure when file is unreadable) that are hard to test without system-level stubs; the code handles them correctly.
 
@@ -61,12 +61,9 @@ open coverage/index.html
 
 ### Test structure
 
-- `tests/NowoTwigInspectorBundleTest.php` - Bundle class tests
-- `tests/DependencyInjection/` - Extension tests
-- `tests/Controller/` - Controller tests
-- `tests/DataCollector/` - Data collector tests
-- `tests/Twig/` - Twig extension tests
-- `tests/BoxDrawingsTest.php` - Box drawings utility tests
+- `tests/Unit/` — PHPUnit unit tests (bundle class, `DependencyInjection/` including `Configuration`, `Controller/`, `DataCollector/`, `Twig/`, `Command/`, `EventSubscriber/`, etc.)
+- `tests/Integration/` — Integration tests (e.g. kernel boot, bundle wiring)
+- `tests/Fixtures/` — Kernel and config fixtures for tests
 
 ## Code quality
 
