@@ -1,6 +1,6 @@
 # Twig Inspector Bundle
 
-[![CI](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/twig-inspector-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/twig-inspector-bundle.svg)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-6%20%7C%207%20%7C%208-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/twig-inspector-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/TwigInspectorBundle) [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](#tests-and-coverage)
+[![CI](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/twig-inspector-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/twig-inspector-bundle.svg)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-6%20%7C%207%20%7C%208-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/twig-inspector-bundle.svg?style=social&label=Star)](https://github.com/nowo-tech/TwigInspectorBundle) [![Coverage](https://img.shields.io/badge/Coverage-99.69%25-brightgreen)](#tests-and-coverage)
 
 > ⭐ **Found this useful?** [Install from Packagist](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) · Give it a **star** on [GitHub](https://github.com/nowo-tech/TwigInspectorBundle) so more developers can find it.
 
@@ -143,8 +143,8 @@ Run tests and QA with Docker: `make up && make install && make test` (or `make t
 ## Tests and coverage
 
 - Tests: PHPUnit (PHP), Vitest (TS/JS)
-- PHP: 100%
-- TS/JS: 100%
+- PHP: 99,69%
+- TS/JS: 99,58%
 
 ## License
 
