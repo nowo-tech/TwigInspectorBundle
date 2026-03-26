@@ -1,5 +1,13 @@
 # Security Policy
 
+## Table of contents
+
+- [Security considerations for integrators](#security-considerations-for-integrators)
+- [Bundle security measures](#bundle-security-measures)
+- [Supported Versions](#supported-versions)
+- [Reporting a Vulnerability](#reporting-a-vulnerability)
+- [Release security checklist (12.4.1)](#release-security-checklist-1241)
+
 ## Security considerations for integrators
 
 - **Development tool only**: Twig Inspector is intended for development and debugging. Do not enable it in production; it injects HTML comments and exposes template paths.

@@ -1,23 +1,20 @@
-###> symfony/framework-bundle ###
+# Local environment and secrets (never commit local overrides or secret keys)
 .env
 .env.dev
 .env.local
-.env.dev
 .env.local.php
 .env.*.local
 config/secrets/prod/prod.decrypt.private.php
-public/bundles/
-var/
+
+# Dependencies and generated runtime files
 vendor/
-###< symfony/framework-bundle ###
+var/
+public/bundles/
 
-
-###> symfony/asset-mapper ###
+# Frontend generated assets (asset-mapper / local build cache)
 /public/assets/
 /assets/vendor/
-###< symfony/asset-mapper ###
 
-###> phpunit/phpunit ###
+# PHPUnit local artifacts
 /phpunit.xml
 /.phpunit.cache/
-###< phpunit/phpunit ###
