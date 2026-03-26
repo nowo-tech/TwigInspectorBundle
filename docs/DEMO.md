@@ -2,11 +2,11 @@
 
 The bundle includes three demo projects, one for each supported Symfony version. Each demo has its own `docker-compose.yml` and can be run independently:
 
-- **Symfony 6.4 Demo**: `demo/symfony6/` (Port 8001 by default, configurable via PORT env variable)
-- **Symfony 7.0 Demo**: `demo/symfony7/` (Port 8001 by default, configurable via PORT env variable)
-- **Symfony 8.0 Demo**: `demo/symfony8/` (Port 8001 by default, configurable via PORT env variable)
+- **Symfony 6.4 Demo**: `demo/symfony6/` (Port 8001 by default, configurable via `PORT`)
+- **Symfony 7.0 Demo**: `demo/symfony7/` (Port 8002 by default, configurable via `PORT`)
+- **Symfony 8.0 Demo**: `demo/symfony8/` (Port 8003 by default, configurable via `PORT`)
 
-**Docker stack:** Demos use **FrankenPHP** with **Caddy** as the web server. The bundled **Caddyfiles serve HTTP only** (`:80` in the container, published to the host as `PORT`, default **8001**). TLS/HTTPS is **not** enabled in the default demo configs; you can extend Caddy if you need HTTPS locally.
+**Docker stack:** Demos use **FrankenPHP** with **Caddy** as the web server. The bundled **Caddyfiles serve HTTP only** (`:80` in the container, published to the host as `PORT`: 8001/8002/8003 by demo). TLS/HTTPS is **not** enabled in the default demo configs; you can extend Caddy if you need HTTPS locally.
 
 ## Quick Start with Docker
 
@@ -23,13 +23,13 @@ docker-compose exec php composer install
 cd demo/symfony7
 docker-compose up -d
 docker-compose exec php composer install
-# Access at: http://localhost:8001 (default port)
+# Access at: http://localhost:8002 (default port)
 
 # Symfony 8.0 Demo
 cd demo/symfony8
 docker-compose up -d
 docker-compose exec php composer install
-# Access at: http://localhost:8001 (default port)
+# Access at: http://localhost:8003 (default port)
 ```
 
 Or use the Makefile helper commands from the `demo/` directory:
