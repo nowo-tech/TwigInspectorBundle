@@ -16,7 +16,7 @@ build:
       ini:
         memory_limit: -1
     node:
-      version: 20
+      version: 16
 
   cache:
     directories:
