@@ -6,7 +6,7 @@ COMPOSE_FILE := docker-compose.yml
 COMPOSE := docker-compose -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down build shell install test test-unit test-integration test-coverage cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos composer-sync rector rector-dry phpstan update validate
+.PHONY: help up down build shell install test test-unit test-integration test-coverage coverage-php-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos composer-sync rector rector-dry phpstan update validate
 
 # Default target
 help:
@@ -102,7 +102,8 @@ test-integration: ensure-up
 
 # Run tests with coverage (no -T so coverage is shown in console with colors)
 test-coverage: ensure-up
-	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage
+	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage | tee coverage-php.txt
+	./scripts/php-coverage-percent.sh coverage-php.txt
 
 # Start container (same as up; alias for test workflow)
 test-up:

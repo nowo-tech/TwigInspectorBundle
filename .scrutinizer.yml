@@ -1,0 +1,31 @@
+checks:
+  php:
+    code_rating: true
+    duplication: true
+
+filter:
+  excluded_paths:
+    - "demo/*"
+    - "tests/*"
+    - "vendor/*"
+
+build:
+  environment:
+    php:
+      version: 8.2
+      ini:
+        memory_limit: -1
+
+  cache:
+    directories:
+      - vendor/
+
+  tests:
+    before:
+      - composer validate --strict
+      - composer install --no-interaction --prefer-dist --optimize-autoloader
+    override:
+      - command: "vendor/bin/phpunit --coverage-clover=coverage.xml"
+        coverage:
+          file: "coverage.xml"
+          format: "clover"
