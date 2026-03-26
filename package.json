@@ -1,6 +1,6 @@
 {
   "name": "@nowo-tech/twig-inspector-bundle",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "description": "Assets build configuration for Twig Inspector Bundle",
   "private": true,
   "packageManager": "pnpm@10.29.2",

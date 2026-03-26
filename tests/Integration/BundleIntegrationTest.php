@@ -82,7 +82,7 @@ final class BundleIntegrationTest extends KernelTestCase
         $this->assertIsCallable($controller);
     }
 
-    public function testRequestToOpenTemplateRouteReturnsRedirectOrNotFound(): void
+    public function testRequestToOpenTemplateRouteReturnsRedirect(): void
     {
         self::bootKernel();
         $kernel  = self::$kernel;
@@ -90,9 +90,6 @@ final class BundleIntegrationTest extends KernelTestCase
 
         $response = $kernel->handle($request, HttpKernelInterface::MAIN_REQUEST, true);
 
-        $this->assertTrue(
-            $response->isRedirection() || $response->getStatusCode() === 404,
-            'Open template route should redirect to IDE or return 404 for invalid template. Got: ' . $response->getStatusCode(),
-        );
+        $this->assertTrue($response->isRedirection(), 'Open template route should redirect to IDE.');
     }
 }

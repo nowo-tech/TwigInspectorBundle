@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.26] - 2026-03-26](#1026-2026-03-26)
+  - [Fixed](#fixed)
+  - [Changed](#changed)
 - [[1.0.25] - 2026-02-18](#1025-2026-02-18)
   - [Added](#added)
   - [Changed](#changed)
@@ -81,8 +84,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.26] - 2026-03-26
+
+### Fixed
+- **Integration tests**: `BundleIntegrationTest` now hits a real fixture template (`tests/Fixtures/app/templates/base.html.twig`) for the open-template route. This removes the noisy `[error] ... Template "base.html.twig" not found` log while preserving route behavior coverage.
+
 ### Changed
-- **Documentation**: Aligned README, `demo/README.md`, `docs/DEMO.md`, `docs/CONTRIBUTING.md`, `docs/CONFIGURATION.md`, `docs/DEVELOPMENT.md`, and demo `.env.example` files with the FrankenPHP-based demos (host `PORT` → container `:80`, HTTP-only default Caddyfiles; removed obsolete PHP-FPM/Nginx wording). Manual routes snippet in CONFIGURATION now includes `when@test`. Test count and test directory layout updated in DEVELOPMENT.
+- **Documentation**: Aligned README, `demo/README.md`, `docs/DEMO.md`, `docs/CONTRIBUTING.md`, `docs/CONFIGURATION.md`, `docs/DEVELOPMENT.md`, and demo `.env.example` files with the FrankenPHP-based demos (host `PORT` -> container `:80`, HTTP-only default Caddyfiles; removed obsolete PHP-FPM/Nginx wording). Manual routes snippet in CONFIGURATION now includes `when@test`. Test count and test directory layout updated in DEVELOPMENT.
+- **CLI output / coverage UX**: PHPUnit scripts now run with `--colors=always` in `composer.json` so colors are preserved in test output even when piped through `tee`. Added `scripts/php-coverage-percent.sh` to print the final global lines coverage with thresholds: `<50` red, `50-85` orange, `>85` green.
 
 ## [1.0.25] - 2026-02-18
 
