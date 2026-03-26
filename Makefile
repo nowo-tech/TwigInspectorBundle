@@ -103,7 +103,7 @@ test-integration: ensure-up
 # Run tests with coverage (no -T so coverage is shown in console with colors)
 test-coverage: ensure-up
 	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage | tee coverage-php.txt
-	./scripts/php-coverage-percent.sh coverage-php.txt
+	./.scripts/php-coverage-percent.sh coverage-php.txt
 
 # Start container (same as up; alias for test workflow)
 test-up:
