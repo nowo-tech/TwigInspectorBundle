@@ -7,7 +7,7 @@ set -eu
 #   - "test-coverage": "phpunit ... --coverage-text ... --coverage-clover coverage.xml ..."
 # - Makefile target `test-coverage` must run:
 #   composer test-coverage | tee coverage-php.txt
-#   ./scripts/php-coverage-percent.sh coverage-php.txt
+#   ./.scripts/php-coverage-percent.sh coverage-php.txt
 # - .gitignore must include /coverage-php.txt
 
 RAW_FILE="${1:-coverage-php.txt}"

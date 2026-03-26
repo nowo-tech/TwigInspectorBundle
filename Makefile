@@ -6,7 +6,7 @@ COMPOSE_FILE := docker-compose.yml
 COMPOSE := docker-compose -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down build shell install test test-unit test-integration test-coverage coverage-php-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos composer-sync rector rector-dry phpstan update validate
+.PHONY: help up down build shell install test test-unit test-integration test-coverage coverage-php-percent coverage-ts-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos composer-sync rector rector-dry phpstan update validate
 
 # Default target
 help:
@@ -103,7 +103,7 @@ test-integration: ensure-up
 # Run tests with coverage (no -T so coverage is shown in console with colors)
 test-coverage: ensure-up
 	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage | tee coverage-php.txt
-	./.scripts/php-coverage-percent.sh coverage-php.txt
+	sh ./.scripts/php-coverage-percent.sh coverage-php.txt
 
 # Start container (same as up; alias for test workflow)
 test-up:
@@ -184,7 +184,8 @@ assets-build: assets
 test-ts: ensure-up
 	@echo "Running TypeScript tests (Vitest) with coverage..."
 	$(COMPOSE) exec -T -e CI=true $(SERVICE_PHP) pnpm install
-	$(COMPOSE) exec -T $(SERVICE_PHP) pnpm run test:coverage
+	$(COMPOSE) exec -T $(SERVICE_PHP) pnpm run test:coverage | tee coverage-ts.txt
+	sh ./.scripts/ts-coverage-percent.sh coverage-ts.txt
 	@echo "✅ TypeScript tests done!"
 
 # Alias of test-ts (deprecated name; use test-ts)
