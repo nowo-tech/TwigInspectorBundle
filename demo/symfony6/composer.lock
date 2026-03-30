@@ -89,7 +89,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/twig-inspector-bundle",
-                "reference": "6b7d093f1b404b4d353662d05f7adc56d85a69a8"
+                "reference": "8bcfbdb0e876fd725b0bd4c2d7c1b8011e9328ad"
             },
             "require": {
                 "php": ">=8.1 <8.6",
@@ -137,10 +137,10 @@
             },
             "scripts": {
                 "test": [
-                    "phpunit"
+                    "phpunit --colors=always"
                 ],
                 "test-coverage": [
-                    "phpunit --coverage-html coverage --coverage-clover coverage.xml --coverage-text"
+                    "phpunit --colors=always --coverage-html coverage --coverage-clover coverage.xml --coverage-text"
                 ],
                 "cs-check": [
                     "php-cs-fixer fix --dry-run --diff"
