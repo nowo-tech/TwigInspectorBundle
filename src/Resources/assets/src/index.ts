@@ -16,8 +16,8 @@ import './style.scss';
 
 import { createBundleLogger, setBundleLogger } from './logger';
 import { getConfig, applyThemeAndAccessibility } from './config';
-import { BlockStorage } from './BlockStorage';
-import { Overlay } from './Overlay';
+import { BlockStorage } from './block-storage';
+import { Overlay } from './overlay';
 import { shortcutMatches } from './shortcut';
 
 declare const __TWIG_INSPECTOR_BUILD_TIME__: string;

@@ -73,6 +73,45 @@ function formatArgs(args: unknown[]): unknown[] {
   );
 }
 
+type ConsoleLevel = 'debug' | 'info' | 'warn' | 'error';
+
+function logScriptLoaded(prefix: string, buildTime: string | undefined): void {
+  if (buildTime !== undefined && buildTime !== '') {
+    console.log(
+      `%c${EMOJI.script} ${prefix} script loaded, build time: %c${buildTime}`,
+      STYLES.script,
+      'color:#059669',
+    );
+    return;
+  }
+  console.log(`%c${EMOJI.script} ${prefix} script loaded`, STYLES.script);
+}
+
+function emitLevelLog(level: ConsoleLevel, prefix: string, args: unknown[]): void {
+  const emoji = EMOJI[level];
+  const style = STYLES[level];
+  const label = `%c${emoji} ${prefix}`;
+  const logFn = console[level] as (...fnArgs: unknown[]) => void;
+  if (args.length > 0) {
+    logFn(label, style, ...formatArgs(args));
+    return;
+  }
+  logFn(label, style);
+}
+
+function makeLevelMethod(
+  logAlways: boolean,
+  prefix: string,
+  level: ConsoleLevel,
+): (...args: unknown[]) => void {
+  return (...args: unknown[]): void => {
+    if (!logAlways) {
+      return;
+    }
+    emitLevelLog(level, prefix, args);
+  };
+}
+
 function noop(): void {}
 
 let instance: BundleLogger | null = null;
@@ -122,55 +161,16 @@ export function createBundleLogger(name: string, options: BundleLoggerOptions = 
 
   return {
     scriptLoaded(): void {
-      if (buildTime !== undefined && buildTime !== '') {
-        console.log(
-          `%c${EMOJI.script} ${prefix} script loaded, build time: %c${buildTime}`,
-          STYLES.script,
-          'color:#059669',
-        );
-      } else {
-        console.log(`%c${EMOJI.script} ${prefix} script loaded`, STYLES.script);
-      }
+      logScriptLoaded(prefix, buildTime);
     },
 
     setDebug(_enabled: boolean): void {
       /* no-op when alwaysLog; kept for API compatibility */
     },
 
-    debug(...args: unknown[]): void {
-      if (!logAlways) return;
-      if (args.length > 0) {
-        console.debug(`%c${EMOJI.debug} ${prefix}`, STYLES.debug, ...formatArgs(args));
-      } else {
-        console.debug(`%c${EMOJI.debug} ${prefix}`, STYLES.debug);
-      }
-    },
-
-    info(...args: unknown[]): void {
-      if (!logAlways) return;
-      if (args.length > 0) {
-        console.info(`%c${EMOJI.info} ${prefix}`, STYLES.info, ...formatArgs(args));
-      } else {
-        console.info(`%c${EMOJI.info} ${prefix}`, STYLES.info);
-      }
-    },
-
-    warn(...args: unknown[]): void {
-      if (!logAlways) return;
-      if (args.length > 0) {
-        console.warn(`%c${EMOJI.warn} ${prefix}`, STYLES.warn, ...formatArgs(args));
-      } else {
-        console.warn(`%c${EMOJI.warn} ${prefix}`, STYLES.warn);
-      }
-    },
-
-    error(...args: unknown[]): void {
-      if (!logAlways) return;
-      if (args.length > 0) {
-        console.error(`%c${EMOJI.error} ${prefix}`, STYLES.error, ...formatArgs(args));
-      } else {
-        console.error(`%c${EMOJI.error} ${prefix}`, STYLES.error);
-      }
-    },
+    debug: makeLevelMethod(logAlways, prefix, 'debug'),
+    info: makeLevelMethod(logAlways, prefix, 'info'),
+    warn: makeLevelMethod(logAlways, prefix, 'warn'),
+    error: makeLevelMethod(logAlways, prefix, 'error'),
   };
 }

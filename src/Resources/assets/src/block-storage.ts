@@ -9,6 +9,8 @@ import type { Block, Template } from './types';
 import { BlockClass, TemplateClass } from './models';
 import { getLogger } from './logger';
 
+/** global: NodeFilter */
+
 /** Regex for controller opening comment: ┏ controller: FQCN::method [main|fragment] (template: path)? (same start as Twig blocks). */
 const CONTROLLER_OPEN =
   /^\s*┏\s*controller:\s+(.+?)\s+\[(main|fragment)\](?:\s+template:\s+(\S+))?\s*$/u;
