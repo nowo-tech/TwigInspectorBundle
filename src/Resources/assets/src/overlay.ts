@@ -36,6 +36,13 @@ export class Overlay {
     private storage: BlockStorage,
     private statusIcon: HTMLElement
   ) {
+    this.mountOverlayNodes();
+    window.addEventListener('scroll', this.onScrollResize, { passive: true });
+    window.addEventListener('resize', this.onScrollResize);
+  }
+
+  /** Creates highlight, tooltip, and filter layers and appends them to `document.body`. */
+  private mountOverlayNodes(): void {
     this.block = document.createElement('div');
     this.block.id = '_twig_inspector__overlay__block';
     document.body.appendChild(this.block);
@@ -47,9 +54,6 @@ export class Overlay {
     this.filterHighlightLayer = document.createElement('div');
     this.filterHighlightLayer.id = '_twig_inspector__filter_highlights';
     document.body.appendChild(this.filterHighlightLayer);
-
-    window.addEventListener('scroll', this.onScrollResize, { passive: true });
-    window.addEventListener('resize', this.onScrollResize);
   }
 
   private onScrollResize = (): void => {
@@ -133,15 +137,13 @@ export class Overlay {
   show(layoutItem: Block): void {
     const element = layoutItem.element;
     const rect = element.getBoundingClientRect();
-    const width = element.offsetWidth;
-    const height = element.offsetHeight;
-    const left = rect.left;
-    const top = rect.top + window.scrollY;
+    const topDocument = rect.top + window.scrollY;
 
-    this.applyHighlightLayout(width, height, left, top);
+    this.applyHighlightLayout(element.offsetWidth, element.offsetHeight, rect.left, topDocument);
     this.block.dataset.templateIndex = layoutItem.index.toString();
     this.info.innerHTML = layoutItem.toString();
-    this.positionInfoTooltip(top, height, left);
+    this.placeTooltipVertically(topDocument, element.offsetHeight);
+    this.placeTooltipHorizontally(rect.left);
 
     this.block.classList.add('_twig_inspector__visible');
     this.info.classList.add('_twig_inspector__visible');
@@ -159,15 +161,19 @@ export class Overlay {
     this.block.style.top = top + 'px';
   }
 
-  /** Places the tooltip below the block when there is room, otherwise above. */
-  private positionInfoTooltip(elementTop: number, elementHeight: number, elementLeft: number): void {
+  /** Places the tooltip below the block when there is room, otherwise above (document coordinates). */
+  private placeTooltipVertically(elementTop: number, elementHeight: number): void {
     const viewportBottom = window.innerHeight + window.scrollY;
-    if (elementTop + elementHeight + 50 < viewportBottom) {
+    const fitsBelow = elementTop + elementHeight + 50 < viewportBottom;
+    if (fitsBelow) {
       this.info.style.top = elementTop + elementHeight + 2 + 'px';
     } else {
       this.info.style.top = elementTop - this.info.offsetHeight - 2 + 'px';
     }
+  }
 
+  /** Keeps the tooltip inside the viewport horizontally. */
+  private placeTooltipHorizontally(elementLeft: number): void {
     if (elementLeft + this.info.offsetWidth < window.innerWidth) {
       this.info.style.left = elementLeft + 'px';
       this.info.style.right = 'auto';
@@ -213,9 +219,13 @@ export class Overlay {
 
     this.storage.collectData();
     this.updateFilterHighlights();
+    this.setToolbarIconEnabled();
+    getLogger().info('Overlay enabled');
+  }
+
+  private setToolbarIconEnabled(): void {
     this.statusIcon.classList.add('sf-toolbar-status-green');
     this.statusIcon.classList.remove('sf-toolbar-status-yellow');
-    getLogger().info('Overlay enabled');
   }
 
   /**
@@ -228,12 +238,20 @@ export class Overlay {
     this.info.classList.remove('_twig_inspector__visible');
     this.block.classList.remove('_twig_inspector__visible');
     this.block.classList.remove('_twig_inspector__overlay__block_static');
-    this.block.innerHTML = '';
-    this.filterHighlightLayer.innerHTML = '';
-    this.statusIcon.classList.remove('sf-toolbar-status-green');
-    this.statusIcon.classList.add('sf-toolbar-status-yellow');
+    this.clearBlockAndFilterLayers();
+    this.setToolbarIconDisabled();
     this.isEnabled = false;
     getLogger().debug('Overlay reset');
+  }
+
+  private clearBlockAndFilterLayers(): void {
+    this.block.innerHTML = '';
+    this.filterHighlightLayer.innerHTML = '';
+  }
+
+  private setToolbarIconDisabled(): void {
+    this.statusIcon.classList.remove('sf-toolbar-status-green');
+    this.statusIcon.classList.add('sf-toolbar-status-yellow');
   }
 
   /**
@@ -296,13 +314,12 @@ export class Overlay {
       return;
     }
 
-    const templateIndex = this.block.dataset.templateIndex;
-    if (!templateIndex) {
+    const templates = this.templatesFromOverlayDataset();
+    if (templates === null) {
       /* c8 ignore next 2 -- early return; v8 underreports when reached via event */
       return;
     }
 
-    const templates = this.storage.getTemplates(parseInt(templateIndex, 10));
     if (templates.length === 1) {
       this.navigateSingleTemplate(templates[0].link, event);
     } else {
@@ -311,6 +328,15 @@ export class Overlay {
 
     this.freeze();
     event.stopPropagation();
+  }
+
+  /** Resolves templates for the current overlay block from `data-template-index`, or null if missing. */
+  private templatesFromOverlayDataset(): Template[] | null {
+    const templateIndex = this.block.dataset.templateIndex;
+    if (!templateIndex) {
+      return null;
+    }
+    return this.storage.getTemplates(parseInt(templateIndex, 10));
   }
 
   private navigateSingleTemplate(link: string, event: MouseEvent): void {
@@ -322,11 +348,15 @@ export class Overlay {
   }
 
   private openMultiTemplatePicker(templates: Template[], event: MouseEvent): void {
+    this.appendPickerEntries(templates);
+    this.positionPickerNearPointer(event);
+  }
+
+  private appendPickerEntries(templates: Template[]): void {
     for (let i = 0; i < templates.length; i++) {
       this.block.appendChild(this.createPickerEntry(templates[i]));
-      this.block.classList.add('_twig_inspector__overlay__block_static');
     }
-    this.positionPickerNearPointer(event);
+    this.block.classList.add('_twig_inspector__overlay__block_static');
   }
 
   private createPickerEntry(template: Template): HTMLDivElement {
