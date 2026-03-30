@@ -6,15 +6,18 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
-- [[1.0.27] - 2026-03-30](#1027-2026-03-30)
-  - [Added](#added)
+- [[1.0.28] - 2026-03-31](#1028-2026-03-31)
   - [Changed](#changed)
+  - [Added](#added)
+- [[1.0.27] - 2026-03-30](#1027-2026-03-30)
+  - [Added](#added-1)
+  - [Changed](#changed-1)
 - [[1.0.26] - 2026-03-26](#1026-2026-03-26)
   - [Fixed](#fixed)
-  - [Changed](#changed-1)
+  - [Changed](#changed-2)
 - [[1.0.25] - 2026-02-18](#1025-2026-02-18)
-  - [Added](#added)
-  - [Changed](#changed)
+  - [Added](#added-2)
+  - [Changed](#changed-3)
 - [[1.0.24] - 2026-02-18](#1024-2026-02-18)
 - [[1.0.23] - 2026-03-14](#1023-2026-03-14)
 - [[1.0.22] - 2026-03-13](#1022-2026-03-13)
@@ -87,6 +90,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.28] - 2026-03-31
+
+### Changed
+
+- **Frontend (TypeScript)**: Renamed asset sources to **kebab-case** file names and updated imports: `block-storage.ts`, `overlay.ts`, `filter-match.ts`, and matching `*.test.ts` (see Nowo bundle spec `REQ-ASSETS-003`).
+- **`logger.ts`**: Refactored `createBundleLogger` into smaller helpers (`logScriptLoaded`, `emitLevelLog`, `makeLevelMethod`) to reduce duplication and cyclomatic complexity.
+- **`overlay.ts`**: Extracted private methods for filter highlight boxes, highlight/tooltip layout, mouse-move handling, and multi-template picker clicks; use `document.createElement('div')` for consistent `HTMLDivElement` typing.
+
+### Added
+
+- **`block-storage.ts`**: JSDoc `/** global: NodeFilter */` for static analysis (DOM global used by `createNodeIterator`).
+
 ## [1.0.27] - 2026-03-30
 
 ### Added
@@ -108,7 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **Documentation**: Aligned README, `demo/README.md`, `docs/DEMO.md`, `docs/CONTRIBUTING.md`, `docs/CONFIGURATION.md`, `docs/DEVELOPMENT.md`, and demo `.env.example` files with the FrankenPHP-based demos (host `PORT` -> container `:80`, HTTP-only default Caddyfiles; removed obsolete PHP-FPM/Nginx wording). Manual routes snippet in CONFIGURATION now includes `when@test`. Test count and test directory layout updated in DEVELOPMENT.
-- **CLI output / coverage UX**: PHPUnit scripts now run with `--colors=always` in `composer.json` so colors are preserved in test output even when piped through `tee`. Added `scripts/php-coverage-percent.sh` to print the final global lines coverage with thresholds: `<50` red, `50-85` orange, `>85` green.
+- **CLI output / coverage UX**: PHPUnit scripts now run with `--colors=always` in `composer.json` so colors are preserved in test output even when piped through `tee`. Added `.scripts/php-coverage-percent.sh` to print the final global lines coverage with thresholds: `<50` red, `50-85` orange, `>85` green.
 
 ## [1.0.25] - 2026-02-18
 
