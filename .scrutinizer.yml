@@ -8,6 +8,7 @@ filter:
     - "demo/*"
     - "tests/*"
     - "vendor/*"
+    - "node_modules/*"
 
 build:
   environment:
@@ -36,3 +37,5 @@ build:
         coverage:
           file: coverage.xml
           format: clover
+      # Frontend (Vitest). Reference: REQ-CI-002 in BUNDLES_FULL_SPECS_DETAILS.md
+      - command: pnpm install --frozen-lockfile && pnpm run test
