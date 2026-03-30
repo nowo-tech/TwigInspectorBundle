@@ -30,8 +30,7 @@ up:
 	@docker-compose exec -T -e COMPOSER_MEMORY_LIMIT=-1 php composer install --no-interaction
 	@PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | tr -d '\r'); \
 	[ -z "$$PORT" ] && PORT=$$(grep "^PORT=" .env.example 2>/dev/null | cut -d= -f2 | tr -d '\r'); \
-	echo "Demo started at: http://localhost:$$PORT" 
-
+	echo "Demo started at: http://localhost:$$PORT"
 down:
 	docker-compose down
 

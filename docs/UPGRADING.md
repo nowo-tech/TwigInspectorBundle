@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.26 to the next release](#upgrading-from-1026-to-the-next-release)
+- [Upgrading from 1.0.27 to the next release](#upgrading-from-1027-to-the-next-release)
+- [Upgrading from 1.0.26 to 1.0.27](#upgrading-from-1026-to-1027)
 - [Upgrading from 1.0.25 to 1.0.26](#upgrading-from-1025-to-1026)
 - [Upgrading from 1.0.24 to 1.0.25](#upgrading-from-1024-to-1025)
 - [Upgrading from 1.0.23 to 1.0.24](#upgrading-from-1023-to-1024)
@@ -61,9 +62,20 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.26 to the next release
+## Upgrading from 1.0.27 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.26 to 1.0.27
+
+**No action required** — backward-compatible release for bundle users.
+
+### What changed
+
+- **Repository automation**: Added `CODEOWNERS`, pull request template, and `sync-releases.yml` (GitHub Releases backfill for `v*` tags). No impact on runtime behavior.
+- **Developer workflow**: PHP/TS coverage summary scripts live under `.scripts/`; `make test-coverage` and `make test-ts` call those paths. Root `.gitignore` lists `coverage-php.txt` and `coverage-ts.txt`.
+- **Scrutinizer**: Node 16 in `.scrutinizer.yml` so external CI can install frontend dependencies with a current lockfile.
+- **Demos**: Minor `.gitignore`, `.env.example`, `Makefile`, and lockfile updates for Symfony 6/7/8 demos; `docs/DEMO.md` refreshed.
 
 ## Upgrading from 1.0.25 to 1.0.26
 

@@ -6,9 +6,12 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.27] - 2026-03-30](#1027-2026-03-30)
+  - [Added](#added)
+  - [Changed](#changed)
 - [[1.0.26] - 2026-03-26](#1026-2026-03-26)
   - [Fixed](#fixed)
-  - [Changed](#changed)
+  - [Changed](#changed-1)
 - [[1.0.25] - 2026-02-18](#1025-2026-02-18)
   - [Added](#added)
   - [Changed](#changed)
@@ -83,6 +86,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.27] - 2026-03-30
+
+### Added
+
+- **GitHub**: `.github/CODEOWNERS`, `.github/PULL_REQUEST_TEMPLATE.md`, and `.github/workflows/sync-releases.yml` (sync missing or changelog-incomplete GitHub Releases for historical `v*` tags).
+- **Tooling**: `.scripts/ts-coverage-percent.sh`; `make test-ts` pipes Vitest coverage to `coverage-ts.txt` and prints a global TS summary (min of Statements/Branches/Functions/Lines) with the same color bands as the PHP helper.
+
+### Changed
+
+- **Coverage scripts**: PHP lines helper lives at `.scripts/php-coverage-percent.sh`; `Makefile` targets `test-coverage` / `test-ts` invoke these paths. Root `.gitignore` lists `coverage-ts.txt` / `coverage-php.txt` explicitly.
+- **Scrutinizer CI**: `.scrutinizer.yml` sets `node.version: 16` so `npm install` works with modern `package-lock.json` (avoids `Invalid dependency type requested: alias` on legacy Node 10; Node 20 binaries fail on workers without `GLIBC_2.28`).
+- **Demos**: Symfony 6/7/8 demo `.gitignore` layout, `.env.example`, `Makefile`, and `composer.lock` refreshed; `docs/DEMO.md` aligned with current demo behavior.
+- **Docs / tests**: `docs/SECURITY.md` table of contents and related polish; integration fixture `tests/Fixtures/app/config/reference.php` updated. `README.md` tests/coverage wording kept aligned with CI.
 
 ## [1.0.26] - 2026-03-26
 
