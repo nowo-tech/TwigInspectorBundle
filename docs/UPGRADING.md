@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.27 to the next release](#upgrading-from-1027-to-the-next-release)
+- [Upgrading from 1.0.28 to the next release](#upgrading-from-1028-to-the-next-release)
+- [Upgrading from 1.0.27 to 1.0.28](#upgrading-from-1027-to-1028)
 - [Upgrading from 1.0.26 to 1.0.27](#upgrading-from-1026-to-1027)
 - [Upgrading from 1.0.25 to 1.0.26](#upgrading-from-1025-to-1026)
 - [Upgrading from 1.0.24 to 1.0.25](#upgrading-from-1024-to-1025)
@@ -62,9 +63,18 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.27 to the next release
+## Upgrading from 1.0.28 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.27 to 1.0.28
+
+**No action required** — backward-compatible release for bundle users (internal refactors and contributor-facing file naming only).
+
+### What changed
+
+- **TypeScript file names**: Frontend sources under `src/Resources/assets/src` now use **kebab-case** basenames (e.g. `block-storage.ts`, `overlay.ts`, `filter-match.ts`). Imports in the repo are updated; consuming apps do not import these paths directly.
+- **`logger.ts` / `overlay.ts`**: Internal refactor only (same public behavior).
 
 ## Upgrading from 1.0.26 to 1.0.27
 
@@ -84,7 +94,7 @@ _Placeholder for the next release._
 ### What changed
 - **Test/log noise reduction**: Integration fixtures now include `templates/base.html.twig`, and the open-template integration test uses that real template. This avoids the previous noisy `Template "base.html.twig" not found` log line during coverage runs.
 - **Colored CLI output**: `composer test` and `composer test-coverage` now force PHPUnit colors (`--colors=always`) so colored output remains visible even when piped (e.g. with `tee`).
-- **Coverage summary helper**: Added `scripts/php-coverage-percent.sh` used by `make test-coverage` to print a final global PHP lines coverage summary with color bands (`<50` red, `50-85` orange, `>85` green).
+- **Coverage summary helper**: Added `.scripts/php-coverage-percent.sh` used by `make test-coverage` to print a final global PHP lines coverage summary with color bands (`<50` red, `50-85` orange, `>85` green).
 - **Docs**: Updated setup and demo documentation for the FrankenPHP-based demo stack and refreshed related examples.
 
 No configuration changes for bundle users.
