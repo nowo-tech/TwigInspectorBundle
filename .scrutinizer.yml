@@ -19,7 +19,8 @@ build:
         # PHPUnit needs a coverage driver: Xdebug 3 must run in coverage mode, or use PCOV (see GitHub CI).
         'xdebug.mode': coverage
     node:
-      version: 16
+      # pnpm@10.x requires Node >= 18.12 and the bundle uses Node 20 types/DOM/tooling.
+      version: 20
 
   cache:
     directories:
@@ -29,6 +30,10 @@ build:
     before:
       - composer validate --strict
       - composer install --no-interaction --prefer-dist --optimize-autoloader
+      # Frontend CI uses pnpm (see package.json "packageManager").
+      # Ensure the expected pnpm version exists on the worker.
+      - corepack enable
+      - corepack prepare pnpm@10.29.2 --activate
     override:
       # Same as local / GitHub `composer test-coverage`; clover must exist for Scrutinizer.
       - command: composer test-coverage
