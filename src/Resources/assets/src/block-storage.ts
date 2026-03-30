@@ -17,6 +17,36 @@ const CONTROLLER_OPEN =
 /** Regex for controller closing comment (fragment only): ┗ /controller */
 const CONTROLLER_CLOSE = /^\s*┗\s*\/controller\s*$/u;
 
+/** Opening Twig block comment: ┏ … [path] #id — captures template id, display name, link path. */
+const TWIG_BLOCK_OPEN =
+  /^(\s+[\u250F\u256D\u2554\u250E]([^\s]?)+\s)([^\s]+)(\s\[)([^\]]+)(\]\s#)(\w+)/;
+
+interface TwigBlockOpenParsed {
+  templateId: string;
+  templateName: string;
+  templateLink: string;
+}
+
+/**
+ * Parses a Twig Inspector opening block comment; returns null if the text does not match.
+ */
+function parseTwigBlockOpenComment(nodeValue: string | null): TwigBlockOpenParsed | null {
+  const match = nodeValue?.match(TWIG_BLOCK_OPEN);
+  if (!match || match[3] === undefined || match[5] === undefined || match[7] === undefined) {
+    return null;
+  }
+  const templateId = match[7];
+  const templateName = match[3] + ' [' + match[5].replace(/\/_template\//g, '') + ']';
+  const templateLink = match[5];
+  return { templateId, templateName, templateLink };
+}
+
+function buildTwigBlockCloseRegexp(templateId: string): RegExp {
+  return new RegExp(
+    '^(\\s+[\\u2517\\u2570\\u255A\\u2516])([^#]+)(#' + templateId + ')$'
+  );
+}
+
 /**
  * Storage that maps DOM elements to the Twig templates (and controller renders) that produced them.
  * Populated by scanning HTML comments injected by the Twig extension and ControllerCommentSubscriber.
@@ -42,36 +72,18 @@ export class BlockStorage {
 
     let curNode: Node | null;
     while ((curNode = startComments.nextNode())) {
-      const match = curNode.nodeValue?.match(
-        /^(\s+[\u250F\u256D\u2554\u250E]([^\s]?)+\s)([^\s]+)(\s\[)([^\]]+)(\]\s#)(\w+)/
-      );
-
-      if (null === match || match[3] === undefined || match[5] === undefined || match[7] === undefined) {
+      const parsed = parseTwigBlockOpenComment(curNode.nodeValue);
+      if (parsed === null) {
         continue;
       }
-
-      const templateId = match[7];
-      const templateName = match[3] + ' [' + match[5].replace(/\/_template\//g, '') + ']';
-      const templateLink = match[5];
-      let element: Node | null = curNode.nextSibling;
-      const regexp = new RegExp(
-        '^(\\s+[\\u2517\\u2570\\u255A\\u2516])([^#]+)(#' + templateId + ')$',
-        'g'
+      const closeRegexp = buildTwigBlockCloseRegexp(parsed.templateId);
+      this.collectTwigBlockElementsFromSiblings(
+        curNode.nextSibling,
+        closeRegexp,
+        sfToolbar,
+        parsed.templateName,
+        parsed.templateLink
       );
-
-      while (!(!element || (element.nodeType === 8 && element.nodeValue?.match(regexp)))) {
-        if (
-          element.nodeType === 1 &&
-          !['SCRIPT', 'STYLE'].includes((element as HTMLElement).tagName) &&
-          !sfToolbar.contains(element as HTMLElement) &&
-          window.getComputedStyle(element as HTMLElement).display !== 'none'
-        ) {
-          const layoutItem = this.findOrCreate(element as HTMLElement);
-          const template = new TemplateClass(templateName, templateLink);
-          this.addTemplate(layoutItem.index, template);
-        }
-        element = element.nextSibling;
-      }
     }
 
     this.collectControllerRanges(sfToolbar);
@@ -80,6 +92,44 @@ export class BlockStorage {
       blocks: this.elements.length,
       templatesCount: this.templatesToElements.length,
     });
+  }
+
+  /**
+   * True if the element should get overlay highlights (not script/style, not in toolbar, visible).
+   */
+  private isIncludedInOverlay(element: HTMLElement, sfToolbar: HTMLElement): boolean {
+    return (
+      !['SCRIPT', 'STYLE'].includes(element.tagName) &&
+      !sfToolbar.contains(element) &&
+      window.getComputedStyle(element).display !== 'none'
+    );
+  }
+
+  /**
+   * True when this comment node is the Twig block closing marker for the given regexp.
+   */
+  private isTwigBlockCloseComment(node: Node, closeRegexp: RegExp): boolean {
+    return node.nodeType === 8 && closeRegexp.test(node.nodeValue ?? '');
+  }
+
+  /**
+   * Walks forward siblings from the node after the opening comment until the Twig block close comment; registers templates on visible elements.
+   */
+  private collectTwigBlockElementsFromSiblings(
+    startSibling: Node | null,
+    closeRegexp: RegExp,
+    sfToolbar: HTMLElement,
+    templateName: string,
+    templateLink: string
+  ): void {
+    let element: Node | null = startSibling;
+    while (element && !this.isTwigBlockCloseComment(element, closeRegexp)) {
+      if (element.nodeType === 1 && this.isIncludedInOverlay(element as HTMLElement, sfToolbar)) {
+        const layoutItem = this.findOrCreate(element as HTMLElement);
+        this.addTemplate(layoutItem.index, new TemplateClass(templateName, templateLink));
+      }
+      element = element.nextSibling;
+    }
   }
 
   /**
@@ -137,11 +187,7 @@ export class BlockStorage {
         end = this.findControllerCloseComment(node);
       }
       this.visitElementsInRange(start, end, (el: HTMLElement) => {
-        if (
-          !['SCRIPT', 'STYLE'].includes(el.tagName) &&
-          !sfToolbar.contains(el) &&
-          window.getComputedStyle(el).display !== 'none'
-        ) {
+        if (this.isIncludedInOverlay(el, sfToolbar)) {
           const block = this.findOrCreate(el);
           this.addTemplate(block.index, new TemplateClass(controllerName, controllerLink));
         }
