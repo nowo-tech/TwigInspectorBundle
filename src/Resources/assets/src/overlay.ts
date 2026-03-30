@@ -3,9 +3,9 @@
  * Hides when hovering over the Symfony toolbar.
  */
 
-import type { Block } from './types';
-import { BlockStorage } from './BlockStorage';
-import { blockMatchesFilter } from './filterMatch';
+import type { Block, Template } from './types';
+import { BlockStorage } from './block-storage';
+import { blockMatchesFilter } from './filter-match';
 import { getLogger } from './logger';
 
 /**
@@ -36,15 +36,15 @@ export class Overlay {
     private storage: BlockStorage,
     private statusIcon: HTMLElement
   ) {
-    this.block = document.createElement('DIV');
+    this.block = document.createElement('div');
     this.block.id = '_twig_inspector__overlay__block';
     document.body.appendChild(this.block);
 
-    this.info = document.createElement('DIV');
+    this.info = document.createElement('div');
     this.info.id = '_twig_inspector__overlay__info';
     document.body.appendChild(this.info);
 
-    this.filterHighlightLayer = document.createElement('DIV');
+    this.filterHighlightLayer = document.createElement('div');
     this.filterHighlightLayer.id = '_twig_inspector__filter_highlights';
     document.body.appendChild(this.filterHighlightLayer);
 
@@ -86,18 +86,19 @@ export class Overlay {
     for (let i = 0; i < blocks.length; i++) {
       const layoutItem = blocks[i];
       if (!this.matchesFilter(layoutItem)) continue;
-      const el = layoutItem.element;
-      const rect = el.getBoundingClientRect();
-      const top = rect.top + window.scrollY;
-      const left = rect.left + window.scrollX;
-      const box = document.createElement('DIV');
-      box.className = '_twig_inspector__filter_highlight';
-      box.style.top = top + 'px';
-      box.style.left = left + 'px';
-      box.style.width = rect.width + 'px';
-      box.style.height = rect.height + 'px';
-      this.filterHighlightLayer.appendChild(box);
+      this.filterHighlightLayer.appendChild(this.createFilterHighlightBox(layoutItem.element));
     }
+  }
+
+  private createFilterHighlightBox(el: HTMLElement): HTMLDivElement {
+    const rect = el.getBoundingClientRect();
+    const box = document.createElement('div');
+    box.className = '_twig_inspector__filter_highlight';
+    box.style.top = rect.top + window.scrollY + 'px';
+    box.style.left = rect.left + window.scrollX + 'px';
+    box.style.width = rect.width + 'px';
+    box.style.height = rect.height + 'px';
+    return box;
   }
 
   /**
@@ -131,37 +132,49 @@ export class Overlay {
    */
   show(layoutItem: Block): void {
     const element = layoutItem.element;
-
+    const rect = element.getBoundingClientRect();
     const width = element.offsetWidth;
     const height = element.offsetHeight;
-    const left = element.getBoundingClientRect().left;
-    const top = element.getBoundingClientRect().top + window.scrollY;
+    const left = rect.left;
+    const top = rect.top + window.scrollY;
 
+    this.applyHighlightLayout(width, height, left, top);
+    this.block.dataset.templateIndex = layoutItem.index.toString();
+    this.info.innerHTML = layoutItem.toString();
+    this.positionInfoTooltip(top, height, left);
+
+    this.block.classList.add('_twig_inspector__visible');
+    this.info.classList.add('_twig_inspector__visible');
+  }
+
+  private applyHighlightLayout(
+    width: number,
+    height: number,
+    left: number,
+    top: number,
+  ): void {
     this.block.style.width = width + 'px';
     this.block.style.height = height + 'px';
     this.block.style.left = left + 'px';
     this.block.style.top = top + 'px';
+  }
 
-    this.block.dataset.templateIndex = layoutItem.index.toString();
-
-    this.info.innerHTML = layoutItem.toString();
-
-    if (top + height + 50 < window.innerHeight + window.scrollY) {
-      this.info.style.top = top + height + 2 + 'px';
+  /** Places the tooltip below the block when there is room, otherwise above. */
+  private positionInfoTooltip(elementTop: number, elementHeight: number, elementLeft: number): void {
+    const viewportBottom = window.innerHeight + window.scrollY;
+    if (elementTop + elementHeight + 50 < viewportBottom) {
+      this.info.style.top = elementTop + elementHeight + 2 + 'px';
     } else {
-      this.info.style.top = top - this.info.offsetHeight - 2 + 'px';
+      this.info.style.top = elementTop - this.info.offsetHeight - 2 + 'px';
     }
 
-    if (left + this.info.offsetWidth < window.innerWidth) {
-      this.info.style.left = left + 'px';
+    if (elementLeft + this.info.offsetWidth < window.innerWidth) {
+      this.info.style.left = elementLeft + 'px';
       this.info.style.right = 'auto';
     } else {
       this.info.style.left = 'auto';
       this.info.style.right = '0';
     }
-
-    this.block.classList.add('_twig_inspector__visible');
-    this.info.classList.add('_twig_inspector__visible');
   }
 
   /**
@@ -238,20 +251,31 @@ export class Overlay {
         this.hide();
         return;
       }
-      const layoutItem = this.storage.find(element);
-
-      if (null !== layoutItem && this.matchesFilter(layoutItem)) {
-        if (this.lastFocusedElement === element) {
-          return;
-        }
-        this.lastFocusedElement = element;
-        return this.show(layoutItem);
+      if (this.tryShowBlockUnderCursor(element)) {
+        return;
       }
     }
 
     this.lastFocusedElement = null;
     this.hide();
   };
+
+  /**
+   * If the element maps to a filtered block, updates focus and shows the overlay.
+   * @returns True when the event chain should stop (toolbar pass or block handled).
+   */
+  private tryShowBlockUnderCursor(element: HTMLElement): boolean {
+    const layoutItem = this.storage.find(element);
+    if (layoutItem === null || !this.matchesFilter(layoutItem)) {
+      return false;
+    }
+    if (this.lastFocusedElement === element) {
+      return true;
+    }
+    this.lastFocusedElement = element;
+    this.show(layoutItem);
+    return true;
+  }
 
   /**
    * Binds click on the overlay: single template navigates to link; multiple show a static picker.
@@ -280,39 +304,52 @@ export class Overlay {
 
     const templates = this.storage.getTemplates(parseInt(templateIndex, 10));
     if (templates.length === 1) {
-      const link = templates[0].link;
-      if (link && link !== '#') {
-        this.reset();
-        window.location.href = link;
-      }
-      event.stopPropagation();
+      this.navigateSingleTemplate(templates[0].link, event);
     } else {
-      for (let i = 0; i < templates.length; i++) {
-        const template = templates[i];
-
-        const link = document.createElement('div');
-        link.dataset.href = template.link;
-        link.innerText = template.name;
-        link.addEventListener('click', (event: MouseEvent) => {
-          const href = (event.currentTarget as HTMLElement).dataset.href || '';
-          this.reset();
-          /* c8 ignore start -- v8 underreports branches when reached via synthetic click */
-          if (href && href !== '#') {
-            window.location.href = href;
-          }
-          /* c8 ignore stop */
-          event.stopPropagation();
-        });
-        this.block.appendChild(link);
-        this.block.classList.add('_twig_inspector__overlay__block_static');
-      }
-      this.block.style.left = event.clientX - 20 + 'px';
-      this.block.style.right = 'auto';
-      this.block.style.top = event.clientY + window.scrollY - 20 + 'px';
+      this.openMultiTemplatePicker(templates, event);
     }
 
     this.freeze();
     event.stopPropagation();
+  }
+
+  private navigateSingleTemplate(link: string, event: MouseEvent): void {
+    if (link && link !== '#') {
+      this.reset();
+      window.location.href = link;
+    }
+    event.stopPropagation();
+  }
+
+  private openMultiTemplatePicker(templates: Template[], event: MouseEvent): void {
+    for (let i = 0; i < templates.length; i++) {
+      this.block.appendChild(this.createPickerEntry(templates[i]));
+      this.block.classList.add('_twig_inspector__overlay__block_static');
+    }
+    this.positionPickerNearPointer(event);
+  }
+
+  private createPickerEntry(template: Template): HTMLDivElement {
+    const row = document.createElement('div');
+    row.dataset.href = template.link;
+    row.innerText = template.name;
+    row.addEventListener('click', (ev: MouseEvent) => {
+      const href = (ev.currentTarget as HTMLElement).dataset.href || '';
+      this.reset();
+      /* c8 ignore start -- v8 underreports branches when reached via synthetic click */
+      if (href && href !== '#') {
+        window.location.href = href;
+      }
+      /* c8 ignore stop */
+      ev.stopPropagation();
+    });
+    return row;
+  }
+
+  private positionPickerNearPointer(event: MouseEvent): void {
+    this.block.style.left = event.clientX - 20 + 'px';
+    this.block.style.right = 'auto';
+    this.block.style.top = event.clientY + window.scrollY - 20 + 'px';
   }
 
   /**

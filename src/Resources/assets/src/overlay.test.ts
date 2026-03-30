@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { BlockStorage } from './BlockStorage';
+import { BlockStorage } from './block-storage';
 import { createBundleLogger, setBundleLogger } from './logger';
 import { BlockClass, TemplateClass } from './models';
-import { Overlay } from './Overlay';
+import { Overlay } from './overlay';
 
 describe('Overlay', () => {
   let storage: BlockStorage;

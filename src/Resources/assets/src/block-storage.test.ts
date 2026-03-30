@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { BlockStorage } from './BlockStorage';
+import { BlockStorage } from './block-storage';
 import { TemplateClass } from './models';
 
 describe('BlockStorage', () => {

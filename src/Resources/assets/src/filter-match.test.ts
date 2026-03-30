@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { blockMatchesFilter } from './filterMatch';
+import { blockMatchesFilter } from './filter-match';
 import { BlockClass, TemplateClass } from './models';
 
 function blockWithTemplates(templates: Array<{ name: string; link: string }>): BlockClass {
