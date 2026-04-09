@@ -92,6 +92,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (CI)
+
+- **GitHub Release workflow**: Pin `softprops/action-gh-release` to `v2.3.4`, set `generate_release_notes: false` (body already includes `docs/CHANGELOG.md`), add `concurrency` per tag. **Sync Missing Releases** no longer triggers on `push` of `v*` tags, avoiding a race with the release job that caused `already_exists` / finalize failures.
+
 ## [1.0.29] - 2026-04-09
 
 ### Changed

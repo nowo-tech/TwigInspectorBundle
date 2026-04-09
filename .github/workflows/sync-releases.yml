@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 2 * * *'
-  push:
-    tags:
-      - 'v*'
+  # No usar push: tags aquí: compite con release.yml al publicar un tag (misma condición de carrera
+  # que softprops#705). Los releases nuevos los crea release.yml; este workflow solo rellena huecos
+  # (cron / manual). Ver docs/RELEASE.md.
 
 jobs:
   sync-releases:
