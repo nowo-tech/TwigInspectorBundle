@@ -18,9 +18,10 @@ build:
         memory_limit: -1
         # PHPUnit needs a coverage driver: Xdebug 3 must run in coverage mode, or use PCOV (see GitHub CI).
         'xdebug.mode': coverage
+    # Scrutinizer workers use an older glibc: official Node 18+ / 20 Linux x64 builds need GLIBC_2.28
+    # and fail at runtime ("version `GLIBC_2.28` not found"). Frontend tests run on GitHub Actions instead.
     node:
-      # pnpm@10.x requires Node >= 18.12 and the bundle uses Node 20 types/DOM/tooling.
-      version: 20
+      version: 16
 
   cache:
     directories:
@@ -30,17 +31,12 @@ build:
     before:
       - composer validate --strict
       - composer install --no-interaction --prefer-dist --optimize-autoloader
-      # Frontend CI uses pnpm (see package.json "packageManager").
-      # Ensure the expected pnpm version exists on the worker.
-      - corepack enable
-      - corepack prepare pnpm@10.29.2 --activate
     override:
       # Same as local / GitHub `composer test-coverage`; clover must exist for Scrutinizer.
+      # Vitest/pnpm are not run here: see node comment above (GLIBC vs Node 18+). Use `.github/workflows/ci.yml`.
       - command: composer test-coverage
         environment:
           XDEBUG_MODE: coverage
         coverage:
           file: coverage.xml
           format: clover
-      # Frontend (Vitest). Reference: REQ-CI-002 in BUNDLES_FULL_SPECS_DETAILS.md
-      - command: pnpm install --frozen-lockfile && pnpm run test
