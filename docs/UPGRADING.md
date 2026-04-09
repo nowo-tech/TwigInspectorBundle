@@ -75,7 +75,7 @@ _Placeholder for the next release._
 ### What changed
 
 - **BlockStorage / Overlay**: Internal TypeScript changes for Twig block comment parsing and overlay behavior; the built asset `index.min.js` is updated. No configuration or public API changes for Symfony apps.
-- **Scrutinizer**: Node 20, pinned pnpm via Corepack, frontend test run in external CI — relevant only for contributors/maintainers.
+- **Scrutinizer**: External CI for PHP coverage; Vitest/pnpm run on **GitHub Actions** (Scrutinizer workers use an older glibc and cannot run current Node 18+ / 20 binaries). See `docs/CHANGELOG.md` [Unreleased] if you maintain `.scrutinizer.yml`.
 
 ## Upgrading from 1.0.27 to 1.0.28
 
