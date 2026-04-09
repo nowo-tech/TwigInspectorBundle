@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.28 to the next release](#upgrading-from-1028-to-the-next-release)
+- [Upgrading from 1.0.29 to the next release](#upgrading-from-1029-to-the-next-release)
+- [Upgrading from 1.0.28 to 1.0.29](#upgrading-from-1028-to-1029)
 - [Upgrading from 1.0.27 to 1.0.28](#upgrading-from-1027-to-1028)
 - [Upgrading from 1.0.26 to 1.0.27](#upgrading-from-1026-to-1027)
 - [Upgrading from 1.0.25 to 1.0.26](#upgrading-from-1025-to-1026)
@@ -63,9 +64,18 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.28 to the next release
+## Upgrading from 1.0.29 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.28 to 1.0.29
+
+**No action required** — backward-compatible release for bundle users (frontend parsing/overlay refactor and Scrutinizer CI only).
+
+### What changed
+
+- **BlockStorage / Overlay**: Internal TypeScript changes for Twig block comment parsing and overlay behavior; the built asset `index.min.js` is updated. No configuration or public API changes for Symfony apps.
+- **Scrutinizer**: Node 20, pinned pnpm via Corepack, frontend test run in external CI — relevant only for contributors/maintainers.
 
 ## Upgrading from 1.0.27 to 1.0.28
 

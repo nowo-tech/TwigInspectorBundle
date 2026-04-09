@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.29] - 2026-04-09](#1029-2026-04-09)
+  - [Changed](#changed)
 - [[1.0.28] - 2026-03-31](#1028-2026-03-31)
   - [Changed](#changed)
   - [Added](#added)
@@ -89,6 +91,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.29] - 2026-04-09
+
+### Changed
+
+- **BlockStorage (`block-storage.ts`)**: Clearer parsing of Twig Inspector HTML block comments via `parseTwigBlockOpenComment` and `buildTwigBlockCloseRegexp`; sibling walk for block ranges moved to `collectTwigBlockElementsFromSiblings`; helpers `isIncludedInOverlay` and `isTwigBlockCloseComment` for overlay eligibility and closing markers. Rebuilt `index.min.js`.
+- **Overlay (`overlay.ts`)**: Internal refactor of tooltip positioning and pointer handling (same user-facing behavior).
+
+### Changed (tooling)
+
+- **Scrutinizer CI** (`.scrutinizer.yml`): Node **20** (required for pnpm 10.x); `corepack enable` and `corepack prepare` for the pinned pnpm from `package.json`; `node_modules` excluded from analysis; build runs `pnpm install --frozen-lockfile` and `pnpm run test` alongside PHPUnit coverage (clover for Scrutinizer).
 
 ## [1.0.28] - 2026-03-31
 
