@@ -89,7 +89,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/twig-inspector-bundle",
-                "reference": "fe938f8e17c317a83de00e354eb72a94fc4aaba7"
+                "reference": "12c0ef434860fd130fdc9f42e8bb0222f3127fd3"
             },
             "require": {
                 "php": ">=8.1 <8.6",
