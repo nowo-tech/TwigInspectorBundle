@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*'  # Se dispara cuando se sube un tag que empieza con 'v'
 
+# Evita ejecuciones duplicadas del mismo tag (re-runs / colas).
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
     name: Create GitHub Release
@@ -78,14 +83,17 @@ jobs:
           { echo "content<<${DELIM}"; printf '%s' "$BODY"; echo ""; echo "${DELIM}"; } >> $GITHUB_OUTPUT
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        # Pin: evita regresiones; v2.3.4+ incluye manejo de 422 already_exists (softprops#616).
+        uses: softprops/action-gh-release@v2.3.4
         with:
           tag_name: ${{ steps.tag.outputs.TAG_NAME }}
           name: Release ${{ steps.tag.outputs.TAG_NAME }}
           body: ${{ steps.body.outputs.content }}
           draft: false
           prerelease: ${{ contains(steps.tag.outputs.TAG_NAME, '-alpha') || contains(steps.tag.outputs.TAG_NAME, '-beta') || contains(steps.tag.outputs.TAG_NAME, '-rc') }}
-          generate_release_notes: true  # GitHub generará notas automáticas basadas en los commits
+          # El cuerpo ya incluye el changelog desde docs/CHANGELOG.md; combinar con notas
+          # auto-generadas dispara un paso "finalize" extra que puede chocar con la API (already_exists).
+          generate_release_notes: false
 
 # Maintainer: Héctor Franco Aceituno (@HecFranco)
 # Organization: nowo-tech (https://github.com/nowo-tech)
