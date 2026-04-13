@@ -35,7 +35,7 @@ jobs:
 
       - name: Check existing releases
         id: check-releases
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const { data: releases } = await github.rest.repos.listReleases({
@@ -59,7 +59,7 @@ jobs:
 
       - name: Find missing and outdated releases
         id: missing
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           TAGS: ${{ steps.tags.outputs.TAGS }}
           EXISTING_RELEASES: ${{ steps.check-releases.outputs.tags }}
@@ -89,7 +89,7 @@ jobs:
 
       - name: Create or update releases
         if: steps.missing.outputs.found_missing == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           ALL_TAGS: ${{ steps.missing.outputs.all_tags }}
           MISSING_TAGS: ${{ steps.missing.outputs.missing_tags }}
@@ -172,7 +172,7 @@ jobs:
 
       - name: Summary
         if: always()
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           FOUND_MISSING: ${{ steps.missing.outputs.found_missing }}
           MISSING_TAGS: ${{ steps.missing.outputs.missing_tags }}
