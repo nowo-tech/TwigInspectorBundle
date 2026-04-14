@@ -5,8 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.29 to the next release](#upgrading-from-1029-to-the-next-release)
-- [Upgrading from 1.0.28 to 1.0.29](#upgrading-from-1028-to-1029)
+- [Upgrading from 1.0.30 to the next release](#upgrading-from-1030-to-the-next-release)
+- [Upgrading from 1.0.29 to 1.0.30](#upgrading-from-1029-to-1030)
 - [Upgrading from 1.0.27 to 1.0.28](#upgrading-from-1027-to-1028)
 - [Upgrading from 1.0.26 to 1.0.27](#upgrading-from-1026-to-1027)
 - [Upgrading from 1.0.25 to 1.0.26](#upgrading-from-1025-to-1026)
@@ -64,18 +64,20 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.29 to the next release
+## Upgrading from 1.0.30 to the next release
 
 _Placeholder for the next release._
 
-## Upgrading from 1.0.28 to 1.0.29
+## Upgrading from 1.0.29 to 1.0.30
 
-**No action required** — backward-compatible release for bundle users (frontend parsing/overlay refactor and Scrutinizer CI only).
+**No action required** — backward-compatible release for bundle users (tooling/demo reliability and CI workflow fixes).
 
 ### What changed
 
-- **BlockStorage / Overlay**: Internal TypeScript changes for Twig block comment parsing and overlay behavior; the built asset `index.min.js` is updated. No configuration or public API changes for Symfony apps.
-- **Scrutinizer**: External CI for PHP coverage; Vitest/pnpm run on **GitHub Actions** (Scrutinizer workers use an older glibc and cannot run current Node 18+ / 20 binaries). See `docs/CHANGELOG.md` [Unreleased] if you maintain `.scrutinizer.yml`.
+- **Demo Docker Compose**: Added explicit DNS resolvers in Symfony 6/7/8 demo `docker-compose.yml` files to avoid intermittent `repo.packagist.org` resolution failures in Docker/WSL environments.
+- **Release workflows**: GitHub release flow is now race-safe (`release.yml` concurrency + pinned `action-gh-release` + no generated notes in that step; `sync-releases.yml` no longer runs on tag push).
+- **Scrutinizer**: Kept compatible with worker limitations (Node 16, PHP coverage only there). Frontend Vitest/pnpm remains on GitHub Actions.
+- **Dependencies**: Symfony polyfills updated in lockfiles; no runtime or configuration changes required for bundle consumers.
 
 ## Upgrading from 1.0.27 to 1.0.28
 
