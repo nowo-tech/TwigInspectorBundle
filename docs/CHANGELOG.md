@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.30] - 2026-04-14](#1030-2026-04-14)
+  - [Changed](#changed)
+  - [Fixed](#fixed)
 - [[1.0.29] - 2026-04-09](#1029-2026-04-09)
   - [Changed](#changed)
 - [[1.0.28] - 2026-03-31](#1028-2026-03-31)
@@ -92,10 +95,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed (CI)
+## [1.0.30] - 2026-04-14
 
-- **GitHub Release workflow**: Pin `softprops/action-gh-release` to `v2.3.4`, set `generate_release_notes: false` (body already includes `docs/CHANGELOG.md`), add `concurrency` per tag. **Sync Missing Releases** no longer triggers on `push` of `v*` tags, avoiding a race with the release job that caused `already_exists` / finalize failures.
-- **Scrutinizer**: Official Node 18+ / 20 Linux binaries require **GLIBC_2.28**; Scrutinizer workers fail at runtime (`version 'GLIBC_2.28' not found`). **Vitest / pnpm are not run on Scrutinizer**; only PHPUnit coverage (clover) runs there. TypeScript tests remain on **GitHub Actions** (`.github/workflows/ci.yml`). `node.version` stays at **16** for any tooling that still expects a Node toolchain on the worker.
+### Changed
+
+- **Demo Docker Compose (Symfony 6/7/8)**: Added explicit `dns` resolvers (`8.8.8.8`, `8.8.4.4`) in demo `docker-compose.yml` files to mitigate Docker/WSL DNS failures resolving `repo.packagist.org` during Composer operations.
+- **Dependencies**: Updated Symfony polyfills in root and demo lockfiles to latest compatible patch versions.
+- **Symfony 8 demo config**: Removed unnecessary `declare(strict_types=1);` from `demo/symfony8/config/reference.php`.
+
+### Fixed
+
+- **GitHub release automation**: `release.yml` now uses per-tag concurrency, pins `softprops/action-gh-release` to `v2.3.4`, and disables generated notes to avoid release finalization races.
+- **Release sync workflow**: `sync-releases.yml` no longer triggers on tag push, preventing race conditions with the release workflow.
+- **Scrutinizer compatibility**: `.scrutinizer.yml` stays on Node 16 and runs only PHP coverage in Scrutinizer workers (frontend Vitest/pnpm remains in GitHub Actions) due to `GLIBC_2.28` limitations on Scrutinizer infrastructure.
 
 ## [1.0.29] - 2026-04-09
 
