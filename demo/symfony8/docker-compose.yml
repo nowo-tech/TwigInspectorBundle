@@ -21,6 +21,10 @@ services:
       - APP_ENV=dev
       - APP_DEBUG=1
       - APP_SECRET=${APP_SECRET:-demo-secret}
+    # Si `composer` falla con "Could not resolve host: repo.packagist.org" (curl 6), suele ser DNS en Docker/WSL.
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     networks:
       - twig-inspector-demo-network
 
