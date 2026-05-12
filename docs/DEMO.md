@@ -47,6 +47,29 @@ make up-symfony8
 make install-symfony8
 ```
 
+## Troubleshooting
+
+### Composer: `Could not resolve host: repo.packagist.org` (curl error 6)
+
+The demo `docker-compose.yml` sets explicit DNS servers on the PHP service so Composer can resolve Packagist inside the container (common on **Docker Desktop** / **WSL2** when the embedded resolver fails).
+
+1. **Recreate the container** so Docker applies the `dns:` block (editing compose alone does not update a running container):
+   ```bash
+   cd demo/symfony7   # or symfony6 / symfony8
+   docker compose down
+   docker compose up -d --force-recreate
+   ```
+2. **Check resolution from inside the container**:
+   ```bash
+   docker compose exec php getent hosts repo.packagist.org
+   ```
+   If this fails, your network or VPN may block public DNS; replace the `dns:` entries with your corporate resolvers, or use a `docker-compose.override.yml` (local only, not committed).
+3. **Confirm the compose in use** includes `dns:` (for example: `docker compose config | grep -A5 dns`).
+
+### Port already allocated (`Bind for 0.0.0.0:800x failed`)
+
+Another stack is using the host port. Set `PORT` in `.env` (see each demo’s `.env.example`) or stop the other container, then `docker compose down` and `docker compose up -d` again.
+
 Each demo includes:
 
 - Independent `docker-compose.yml` for easy setup
