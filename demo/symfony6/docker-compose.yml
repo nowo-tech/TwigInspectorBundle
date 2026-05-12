@@ -22,7 +22,9 @@ services:
       - APP_DEBUG=1
       - APP_SECRET=${APP_SECRET:-demo-secret}
     # Mitigate Docker/WSL DNS failures resolving repo.packagist.org (composer curl error 6).
+    # Recreate containers after changing this: docker compose down && docker compose up -d --force-recreate
     dns:
+      - 1.1.1.1
       - 8.8.8.8
       - 8.8.4.4
     networks:

@@ -7,7 +7,7 @@ services:
     container_name: twig-inspector-symfony7-php
     working_dir: /app
     ports:
-      - "${PORT:-8001}:80"
+      - "${PORT:-8002}:80"
     volumes:
       - .:/app
       # Mount bundle root so the path repo symlink works and template/code changes are visible
@@ -22,7 +22,9 @@ services:
       - APP_DEBUG=1
       - APP_SECRET=${APP_SECRET:-demo-secret}
     # Mitigate Docker/WSL DNS failures resolving repo.packagist.org (composer curl error 6).
+    # Recreate containers after changing this: docker compose down && docker compose up -d --force-recreate
     dns:
+      - 1.1.1.1
       - 8.8.8.8
       - 8.8.4.4
     networks:
