@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.31] - 2026-05-12](#1031-2026-05-12)
+  - [Changed](#changed)
 - [[1.0.30] - 2026-04-14](#1030-2026-04-14)
   - [Changed](#changed)
   - [Fixed](#fixed)
@@ -94,6 +96,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.31] - 2026-05-12
+
+### Changed
+
+- **Demo Docker Compose (Symfony 6/7/8)**: Extended `dns` resolvers (`1.1.1.1`, `8.8.8.8`, `8.8.4.4`) and documented that containers must be **recreated** after compose changes for DNS to apply. Default host ports when `PORT` is unset: Symfony 7 → **8002**, Symfony 8 → **8003** (Symfony 6 remains **8001**), aligned with each demo’s `.env.example`.
+- **`docs/DEMO.md`**: Added **Troubleshooting** for Packagist DNS resolution (`repo.packagist.org` / curl error 6) and host port conflicts.
+- **Demos Symfony 7 & 8**: Refreshed `composer.lock`; **Symfony 8 demo** `config/reference.php` updated for current Symfony defaults.
 
 ## [1.0.30] - 2026-04-14
 

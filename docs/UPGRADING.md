@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.30 to the next release](#upgrading-from-1030-to-the-next-release)
+- [Upgrading from 1.0.31 to the next release](#upgrading-from-1031-to-the-next-release)
+- [Upgrading from 1.0.30 to 1.0.31](#upgrading-from-1030-to-1031)
 - [Upgrading from 1.0.29 to 1.0.30](#upgrading-from-1029-to-1030)
 - [Upgrading from 1.0.27 to 1.0.28](#upgrading-from-1027-to-1028)
 - [Upgrading from 1.0.26 to 1.0.27](#upgrading-from-1026-to-1027)
@@ -64,9 +65,18 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.30 to the next release
+## Upgrading from 1.0.31 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.30 to 1.0.31
+
+**No action required** for bundle consumers — demo and documentation improvements only.
+
+### What changed
+
+- **Demos (Docker)**: Stronger DNS defaults for Composer inside containers; if you use the demos, **recreate** containers after pulling (`docker compose down && docker compose up -d --force-recreate`). Default published ports without `.env`: Symfony 7 uses host **8002**, Symfony 8 uses **8003** (see each demo’s `.env.example`).
+- **Documentation**: `docs/DEMO.md` troubleshooting for DNS and port binding issues.
 
 ## Upgrading from 1.0.29 to 1.0.30
 
