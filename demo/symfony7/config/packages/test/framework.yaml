@@ -1,2 +1,4 @@
 framework:
     test: true
+    profiler:
+        enabled: false

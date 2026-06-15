@@ -191,7 +191,7 @@ twig-inspector-bundle/
 │   ├── Resources/          # Resources (templates, assets)
 │   └── Twig/               # Twig extensions and nodes
 ├── tests/                  # Tests
-├── demo/                   # Demo projects (Symfony 6.4, 7.0, 8.0)
+├── demo/                   # Demo projects (Symfony 7.0, 8.0)
 ├── .github/                # GitHub configuration
 └── docs/                   # Additional documentation
 ```
@@ -224,9 +224,8 @@ The build compiles TypeScript (`src/Resources/assets/src/*.ts`) to JavaScript. O
 
 ## Demos
 
-The project includes three independent demos to test the bundle with different Symfony versions. Each demo runs with **FrankenPHP** and **Caddy**. The default **Caddyfiles serve HTTP only** (container `:80` → host `PORT`, default `8001`). See [docs/DEMO.md](DEMO.md) and [docs/DEMO-FRANKENPHP.md](DEMO-FRANKENPHP.md).
+The project includes two independent demos to test the bundle with different Symfony versions. Each demo runs with **FrankenPHP** and **Caddy**. The default **Caddyfiles serve HTTP only** (container `:80` → host `PORT`, defaults **8002** / **8003**). See [docs/DEMO.md](DEMO.md) and [docs/DEMO-FRANKENPHP.md](DEMO-FRANKENPHP.md).
 
-- `demo/symfony6/` - Symfony 6.4
 - `demo/symfony7/` - Symfony 7.0
 - `demo/symfony8/` - Symfony 8.0
 
@@ -234,13 +233,13 @@ To run a demo:
 
 ```bash
 # Install dependencies
-make install-symfony6  # or install-symfony7, install-symfony8
+make install-symfony7  # or install-symfony8
 
 # Start containers
-cd demo/symfony6 && docker-compose up -d
+cd demo/symfony7 && docker-compose up -d
 
 # Access the demo
-# http://localhost:8001
+# http://localhost:8002
 ```
 
 ## Branching Policy

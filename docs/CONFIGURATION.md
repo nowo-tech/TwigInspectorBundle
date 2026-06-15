@@ -156,6 +156,21 @@ when@test:
 4. **Version control**: Commit your config file to track customizations
 5. **Document changes**: Add comments explaining why you changed defaults
 
+## Troubleshooting
+
+### `Unrecognized option "inject_on_sub_requests"` (or other keys) under `nowo_twig_inspector`
+
+Your `config/packages/nowo_twig_inspector.yaml` was generated from a **newer** bundle than the one Composer installed (for example you copied config from this repo’s demos or from current docs, but `composer.lock` still pins an older release).
+
+- **Preferred**: Upgrade the bundle so the installed version matches your YAML, for example:
+  ```bash
+  composer require nowo-tech/twig-inspector-bundle:^1.0.12
+  ```
+  (`inject_on_sub_requests` exists since **1.0.12**; use the latest `^1.0.x` you support for PHP/Symfony.)
+- **Temporary**: Remove from YAML any keys the error lists as “unrecognized” until you upgrade.
+
+After changing `composer.json`, run `composer update nowo-tech/twig-inspector-bundle` and retry `assets:install` / `composer run-script post-install-cmd` as needed.
+
 ## Summary
 
 | Scenario | YAML Created? | YAML Used? | YAML Deleted on Uninstall? |

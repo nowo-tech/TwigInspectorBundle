@@ -17,7 +17,6 @@ use Twig\Error\SyntaxError;
 use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
 use Twig\Loader\LoaderInterface;
-use Twig\TemplateWrapper;
 
 use function in_array;
 use function is_string;
@@ -81,7 +80,6 @@ class OpenTemplateController
         }
 
         try {
-            /** @var TemplateWrapper $templateWrapper */
             $templateWrapper = $this->twig->load($template);
             $file            = $templateWrapper->getSourceContext()->getPath();
 

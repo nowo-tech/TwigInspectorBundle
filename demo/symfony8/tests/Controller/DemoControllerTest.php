@@ -49,7 +49,7 @@ final class DemoControllerTest extends WebTestCase
         $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('p', 'Symfony 8.0');
+        $this->assertSelectorTextContains('h2 + p', 'showcase the Twig Inspector Bundle functionality with Symfony 8.0');
     }
 
     /**
@@ -74,7 +74,6 @@ final class DemoControllerTest extends WebTestCase
         $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('.info-box');
-        $this->assertSelectorTextContains('.info-box', 'Instructions');
+        $this->assertSelectorTextContains('h4', 'Instructions');
     }
 }

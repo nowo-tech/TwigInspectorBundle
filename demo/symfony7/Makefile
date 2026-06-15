@@ -78,3 +78,8 @@ update-bundle: ensure-up
 	docker-compose exec php composer update nowo-tech/twig-inspector-bundle --no-interaction
 	docker-compose exec php php bin/console cache:clear
 	@echo "Bundle updated. Reload the page in the browser."
+
+
+# REQ-MAKE-008: update-deps (REQ-MAKE-008)
+BUNDLE_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../..)
+include $(BUNDLE_ROOT)/../.scripts/Makefile.demo-update-deps.mk

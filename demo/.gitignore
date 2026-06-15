@@ -1,12 +1,4 @@
 # Symfony demo projects
-symfony6/vendor/
-symfony6/var/
-symfony6/.env.local
-symfony6/.env.local.php
-symfony6/.env.*.local
-symfony6/config/secrets/
-symfony6/.phpunit.cache/
-
 symfony7/vendor/
 symfony7/var/
 symfony7/.env.local
@@ -14,6 +6,8 @@ symfony7/.env.local.php
 symfony7/.env.*.local
 symfony7/config/secrets/
 symfony7/.phpunit.cache/
+symfony7/coverage/
+symfony7/coverage.xml
 
 symfony8/vendor/
 symfony8/var/
@@ -22,3 +16,5 @@ symfony8/.env.local.php
 symfony8/.env.*.local
 symfony8/config/secrets/
 symfony8/.phpunit.cache/
+symfony8/coverage/
+symfony8/coverage.xml

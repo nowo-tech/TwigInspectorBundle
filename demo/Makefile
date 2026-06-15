@@ -2,10 +2,10 @@
 # Each demo has its own docker-compose.yml and can be run independently
 
 # Define available demos
-DEMOS := symfony6 symfony7 symfony8
+DEMOS := symfony7 symfony8
 
-# Helper function to get port from .env file (defaults to 8001)
-get-port = $(shell grep -E '^PORT=' $(1)/.env 2>/dev/null | cut -d '=' -f2 || echo "8001")
+# Helper function to get port from .env or .env.example (defaults to 8001)
+get-port = $(shell grep -E '^PORT=' $(1)/.env 2>/dev/null | cut -d '=' -f2 || grep -E '^PORT=' $(1)/.env.example 2>/dev/null | cut -d '=' -f2 || echo "8001")
 
 # Helper function to get demo version name
 get-version = $(shell echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/')
@@ -25,7 +25,14 @@ help:
 	@echo ""
 	@for demo in $(DEMOS); do \
 		version=$$(echo $$demo | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
-		echo "$$version Demo (Port 8001):"; \
+		if [ -f $$demo/.env ]; then \
+			port=$$(grep -E '^PORT=' $$demo/.env 2>/dev/null | cut -d '=' -f2 | head -1); \
+		fi; \
+		if [ -z "$$port" ] && [ -f $$demo/.env.example ]; then \
+			port=$$(grep -E '^PORT=' $$demo/.env.example 2>/dev/null | cut -d '=' -f2 | head -1); \
+		fi; \
+		[ -z "$$port" ] && port=8001; \
+		echo "$$version Demo (Port $$port):"; \
 		echo "  up-$$demo        Start $$version demo containers"; \
 		echo "  down-$$demo      Stop $$version demo containers"; \
 		echo "  restart-$$demo   Restart $$version demo containers"; \
@@ -47,17 +54,17 @@ help:
 	@echo ""
 	@echo "Verification:"
 	@echo "  verify-all         Start all demos and verify they respond correctly"
-	@echo "  verify <demo>      Start a specific demo and verify it responds (e.g., make verify DEMO=symfony6)"
+	@echo "  verify <demo>      Start a specific demo and verify it responds (e.g., make verify DEMO=symfony7)"
 	@echo ""
 	@echo "Generic commands (use with DEMO=<name>):"
-	@echo "  up <demo>         Start a specific demo (e.g., make up DEMO=symfony6)"
-	@echo "  down <demo>        Stop a specific demo (e.g., make down DEMO=symfony6)"
-	@echo "  restart <demo>     Restart containers (e.g., make restart DEMO=symfony6)"
-	@echo "  build <demo>       Rebuild image no cache (e.g., make build DEMO=symfony6)"
-	@echo "  install <demo>     Install dependencies (e.g., make install DEMO=symfony6)"
-	@echo "  update-bundle <demo>  Update bundle from path repo (e.g., make update-bundle DEMO=symfony6)"
-	@echo "  test <demo>        Run tests (e.g., make test DEMO=symfony6)"
-	@echo "  test-coverage <demo>  Run tests with coverage (e.g., make test-coverage DEMO=symfony6)"
+	@echo "  up <demo>         Start a specific demo (e.g., make up DEMO=symfony7)"
+	@echo "  down <demo>        Stop a specific demo (e.g., make down DEMO=symfony7)"
+	@echo "  restart <demo>     Restart containers (e.g., make restart DEMO=symfony7)"
+	@echo "  build <demo>       Rebuild image no cache (e.g., make build DEMO=symfony7)"
+	@echo "  install <demo>     Install dependencies (e.g., make install DEMO=symfony7)"
+	@echo "  update-bundle <demo>  Update bundle from path repo (e.g., make update-bundle DEMO=symfony7)"
+	@echo "  test <demo>        Run tests (e.g., make test DEMO=symfony7)"
+	@echo "  test-coverage <demo>  Run tests with coverage (e.g., make test-coverage DEMO=symfony7)"
 	@echo "  shell <demo>       Open shell in a specific demo container"
 	@echo "  logs <demo>        Show logs of a specific demo"
 	@echo ""
@@ -85,7 +92,9 @@ up-$(1):
 	echo "🚀 Starting $$$$VERSION demo..."; \
 	cd $(1) && \
 	if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || true; fi && \
-	PORT=$$$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
+	PORT=$$$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1); \
+	[ -z "$$$$PORT" ] && PORT=$$$$(grep "^PORT=" .env.example 2>/dev/null | cut -d= -f2 | head -1); \
+	[ -z "$$$$PORT" ] && PORT=8001; \
 	echo "🔍 Checking port $$$$PORT..."; \
 	CONTAINER=$$$$(docker ps --format "{{.Names}}" --filter "publish=$$$$PORT" 2>/dev/null | head -1); \
 	if [ -n "$$$$CONTAINER" ]; then \
@@ -148,7 +157,9 @@ install-$(1):
 	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
 	echo "📦 Installing $$VERSION dependencies..."; \
 	cd $(1) && docker-compose exec php composer install || \
-		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
+		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1); \
+		[ -z "$$PORT" ] && PORT=$$(grep "^PORT=" .env.example 2>/dev/null | cut -d= -f2 | head -1); \
+		[ -z "$$PORT" ] && PORT=8001; \
 		CONTAINER=$$(docker ps --format "{{.Names}}" --filter "publish=$$PORT" 2>/dev/null | head -1); \
 		if [ -n "$$CONTAINER" ]; then \
 			docker stop $$CONTAINER 2>/dev/null || true; \
@@ -182,7 +193,9 @@ test-$(1):
 	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
 	echo "🧪 Running $$VERSION tests..."; \
 	cd $(1) && docker-compose exec php composer test || \
-		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
+		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1); \
+		[ -z "$$PORT" ] && PORT=$$(grep "^PORT=" .env.example 2>/dev/null | cut -d= -f2 | head -1); \
+		[ -z "$$PORT" ] && PORT=8001; \
 		CONTAINER=$$(docker ps --format "{{.Names}}" --filter "publish=$$PORT" 2>/dev/null | head -1); \
 		if [ -n "$$CONTAINER" ]; then \
 			docker stop $$CONTAINER 2>/dev/null || true; \
@@ -197,7 +210,9 @@ test-coverage-$(1):
 	@VERSION=$$(echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/'); \
 	echo "🧪 Running $$VERSION tests with coverage..."; \
 	cd $(1) && docker-compose exec php composer test-coverage || \
-		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
+		(PORT=$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1); \
+		[ -z "$$PORT" ] && PORT=$$(grep "^PORT=" .env.example 2>/dev/null | cut -d= -f2 | head -1); \
+		[ -z "$$PORT" ] && PORT=8001; \
 		CONTAINER=$$(docker ps --format "{{.Names}}" --filter "publish=$$PORT" 2>/dev/null | head -1); \
 		if [ -n "$$CONTAINER" ]; then \
 			docker stop $$CONTAINER 2>/dev/null || true; \
@@ -326,7 +341,9 @@ verify-$(1):
 	echo "🔍 Verifying $$$$VERSION demo..."; \
 	cd $(1) && \
 	if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || true; fi && \
-	PORT=$$$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1 || echo 8001); \
+	PORT=$$$$(grep "^PORT=" .env 2>/dev/null | cut -d= -f2 | head -1); \
+	[ -z "$$$$PORT" ] && PORT=$$$$(grep "^PORT=" .env.example 2>/dev/null | cut -d= -f2 | head -1); \
+	[ -z "$$$$PORT" ] && PORT=8001; \
 	echo "🔍 Checking port $$$$PORT..."; \
 	CONTAINER=$$$$(docker ps --format "{{.Names}}" --filter "publish=$$$$PORT" 2>/dev/null | head -1); \
 	if [ -n "$$$$CONTAINER" ]; then \
@@ -435,8 +452,6 @@ verify:
 check-all: verify-all
 
 # Run test-ts in each demo (TwigInspector bundle has TS; demos may have no-op if no Vitest)
-test-ts-symfony6:
-	@$(MAKE) -C symfony6 test-ts 2>/dev/null || true
 test-ts-symfony7:
 	@$(MAKE) -C symfony7 test-ts 2>/dev/null || true
 test-ts-symfony8:
@@ -454,6 +469,7 @@ release-check: test-coverage-all test-ts-all release-verify
 release-verify:
 	@for demo in $(DEMOS); do \
 		port=$$(grep '^PORT=' $$demo/.env 2>/dev/null | cut -d= -f2 | tr -d '\r'); \
+		[ -z "$$port" ] && port=$$(grep '^PORT=' $$demo/.env.example 2>/dev/null | cut -d= -f2 | tr -d '\r'); \
 		[ -z "$$port" ] && port=8001; \
 		echo "🔍 Release verify: $$demo (port $$port)..."; \
 		$(MAKE) up-$$demo; \
@@ -470,3 +486,8 @@ clean:
 	@echo "🧹 Cleaning vendor and cache from all demos..."
 	@$(foreach demo,$(DEMOS),rm -rf $(demo)/vendor $(demo)/var $(demo)/.phpunit.cache;)
 	@echo "✅ Cleaned!"
+
+
+# REQ-MAKE-008: update-deps-all (REQ-MAKE-008)
+BUNDLE_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
+include $(BUNDLE_ROOT)/../.scripts/Makefile.demo-aggregate-update-deps.mk
