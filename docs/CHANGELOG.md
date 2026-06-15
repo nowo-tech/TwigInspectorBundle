@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.32] - 2026-06-15](#1032-2026-06-15)
+  - [Removed](#removed)
+  - [Added](#added)
+  - [Changed](#changed)
 - [[1.0.31] - 2026-05-12](#1031-2026-05-12)
   - [Changed](#changed)
 - [[1.0.30] - 2026-04-14](#1030-2026-04-14)
@@ -96,6 +100,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.32] - 2026-06-15
+
+### Removed
+
+- **Symfony 6.4 demo**: Removed `demo/symfony6/` from the repository. The bundle still supports Symfony 6.x; only the standalone demo app was dropped. Remaining demos: Symfony 7 (`demo/symfony7`, port **8002**) and Symfony 8 (`demo/symfony8`, port **8003**).
+
+### Added
+
+- **CodeRabbit**: Added `.coderabbit.yaml` and `.github/workflows/coderabbit.yml` for automated PR reviews.
+- **Documentation**: Added `docs/SPEC-DRIVEN-DEVELOPMENT.md` (product spec and `REQ-*` traceability). Linked from `docs/ENGRAM.md`.
+- **Configuration docs**: Added troubleshooting for unrecognized `nowo_twig_inspector` YAML keys when config is newer than the installed bundle version (`docs/CONFIGURATION.md`).
+
+### Changed
+
+- **CI**: Extended the test matrix to Symfony **7.4** and **8.1** (PHP 8.1–8.5; exclusions unchanged for incompatible pairs).
+- **Demos (Symfony 7 & 8)**:
+  - Docker images install **`intl`** and **`pcov`** PHP extensions.
+  - `composer test` / `composer test-coverage` run with `APP_ENV=test` so Docker’s `APP_ENV=dev` does not break PHPUnit.
+  - Test env: `TRUSTED_PROXIES` in `phpunit.xml.dist` and `.env.test`; Web Profiler toolbar disabled in test (Symfony 7 aligned with Symfony 8).
+  - Demo functional tests use more specific DOM selectors (fragment `info-box` no longer breaks assertions).
+  - `demo/Makefile` resolves `PORT` from `.env.example` when missing in `.env`.
+- **Root Makefile**: Includes shared `update-deps` target from `../.scripts/Makefile.update-deps.mk`.
+- **Code quality**: Removed redundant `@var` PHPDoc and unused import in `OpenTemplateController` (Rector).
+- **Documentation**: Updated `README.md`, `docs/DEMO.md`, `docs/DEMO-FRANKENPHP.md`, `docs/CONTRIBUTING.md`, and `demo/README.md` for two demos and default ports 8002/8003.
 
 ## [1.0.31] - 2026-05-12
 

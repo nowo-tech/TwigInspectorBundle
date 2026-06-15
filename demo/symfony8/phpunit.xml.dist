@@ -17,6 +17,7 @@
         <env name="APP_ENV" value="test"/>
         <env name="APP_SECRET" value="test_secret_do_not_use_in_prod"/>
         <env name="APP_SHARE_DIR" value="var/share"/>
+        <env name="TRUSTED_PROXIES" value="127.0.0.1"/>
         <!-- ###- symfony/framework-bundle ### -->
 
         <!-- ###+ symfony/routing ### -->

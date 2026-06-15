@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.31 to the next release](#upgrading-from-1031-to-the-next-release)
+- [Upgrading from 1.0.32 to the next release](#upgrading-from-1032-to-the-next-release)
+- [Upgrading from 1.0.31 to 1.0.32](#upgrading-from-1031-to-1032)
 - [Upgrading from 1.0.30 to 1.0.31](#upgrading-from-1030-to-1031)
 - [Upgrading from 1.0.29 to 1.0.30](#upgrading-from-1029-to-1030)
 - [Upgrading from 1.0.27 to 1.0.28](#upgrading-from-1027-to-1028)
@@ -65,9 +66,20 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.31 to the next release
+## Upgrading from 1.0.32 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.31 to 1.0.32
+
+**No action required** for bundle consumers — demo, documentation, CI, and contributor tooling changes only.
+
+### What changed
+
+- **Symfony 6.4 demo removed**: If you used `demo/symfony6/`, switch to `demo/symfony7/` (port **8002**) or `demo/symfony8/` (port **8003**). Bundle runtime compatibility with Symfony 6 is unchanged.
+- **Demo Docker images**: Rebuild demo containers to pick up `intl` and `pcov` (`make -C demo build DEMO=symfony7` or `symfony8`, then restart). Demo tests and `make test-coverage-all` expect the new images.
+- **Demo ports**: Symfony 7 and 8 default to **8002** and **8003** respectively (see each demo’s `.env.example`). Align local `.env` if you still have `PORT=8001` from an old copy.
+- **CI / contributors**: Matrix now includes Symfony 7.4 and 8.1; CodeRabbit config added for PR reviews.
 
 ## Upgrading from 1.0.30 to 1.0.31
 

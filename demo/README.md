@@ -1,21 +1,21 @@
 # Twig Inspector Bundle - Demo
 
-This directory contains three demo projects, one for each supported Symfony version (6.4, 7.0, and 8.0), demonstrating the usage of the Twig Inspector Bundle.
+This directory contains two demo projects for Symfony 7.0 and 8.0, demonstrating the usage of the Twig Inspector Bundle.
 
 **Bundle source:** Each demo uses the bundle from the **parent repository** (path repository in `composer.json`), not from Packagist. When you run `composer install` or `composer update` inside a demo, `nowo-tech/twig-inspector-bundle` is resolved from the bundle root (`../../`), so you always test against the current code in the repo.
 
-**Makefiles:** The `demo/` directory has a central [Makefile](Makefile) (e.g. `make up-symfony8`). Each demo also has its **own Makefile** inside `demo/symfony6/`, `demo/symfony7/`, and `demo/symfony8/`, so you can run `make up`, `make install`, `make link-bundle`, etc. from inside any demo folder.
+**Makefiles:** The `demo/` directory has a central [Makefile](Makefile) (e.g. `make up-symfony8`). Each demo also has its **own Makefile** inside `demo/symfony7/` and `demo/symfony8/`, so you can run `make up`, `make install`, `make link-bundle`, etc. from inside any demo folder.
 
 ## Features
 
-- Three separate demo projects for Symfony 6.4, 7.0, and 8.0
+- Two separate demo projects for Symfony 7.0 and 8.0
 - Simple demo pages with multiple Twig blocks
 - **Symfony Web Profiler integration** — Fully configured and enabled
   - Toolbar at the bottom of pages
   - Profiler accessible at `/_profiler`
   - WDT (Web Debug Toolbar) at `/_wdt`
 - Visual demonstration of template inspection
-- **Docker stack: FrankenPHP + Caddy** — Demos run with [FrankenPHP](https://frankenphp.dev/) and [Caddy](https://caddyserver.com/). By default the **Caddyfiles only expose HTTP** (`:80` in the container → host `PORT`, usually **8001**). See `docker/frankenphp/Caddyfile`, `Caddyfile.dev`, and `docker-compose.yml` in each demo.
+- **Docker stack: FrankenPHP + Caddy** — Demos run with [FrankenPHP](https://frankenphp.dev/) and [Caddy](https://caddyserver.com/). By default the **Caddyfiles only expose HTTP** (`:80` in the container → host `PORT`: **8002** for Symfony 7, **8003** for Symfony 8). See `docker/frankenphp/Caddyfile`, `Caddyfile.dev`, and `docker-compose.yml` in each demo.
 - Independent Docker containers for each demo
 
 ## Requirements
@@ -29,40 +29,10 @@ Each demo has its own `docker-compose.yml` and can be run independently. You can
 
 **Important**: Before starting a demo, copy `.env.example` to `.env`:
 ```bash
-cd demo/symfony6
+cd demo/symfony7   # or demo/symfony8
 cp .env.example .env
 # Optionally generate a new APP_SECRET: openssl rand -hex 32
-# The .env.example includes: APP_ENV=dev, APP_SECRET (placeholder), APP_DEBUG=1, PORT=8001
-# Note: Symfony 7.0 and 8.0 also include DEFAULT_URI for routing configuration
-```
-
-### Symfony 6.4 Demo
-
-```bash
-# Navigate to the demo directory
-cd demo/symfony6
-
-# Copy .env.example to .env if not already done
-cp .env.example .env
-
-# Start containers
-docker-compose up -d
-
-# Install dependencies
-docker-compose exec php composer install
-
-# Access at: http://localhost:8001 (port configured in .env file)
-```
-
-Or using the Makefile from the `demo/` directory:
-
-```bash
-cd demo
-make up-symfony6
-make install-symfony6
-
-# Or verify that the demo is running correctly
-make verify DEMO=symfony6
+# The .env.example includes: APP_ENV=dev, APP_SECRET (placeholder), APP_DEBUG=1, PORT (8002 or 8003)
 ```
 
 ### Symfony 7.0 Demo
@@ -80,7 +50,7 @@ docker-compose up -d
 # Install dependencies
 docker-compose exec php composer install
 
-# Access at: http://localhost:8001 (port configured in .env file, default: 8001)
+# Access at: http://localhost:8002 (port configured in .env file, default: 8002)
 ```
 
 Or using the Makefile:
@@ -109,7 +79,7 @@ docker-compose up -d
 # Install dependencies
 docker-compose exec php composer install
 
-# Access at: http://localhost:8001 (port configured in .env file, default: 8001)
+# Access at: http://localhost:8003 (port configured in .env file, default: 8003)
 ```
 
 Or using the Makefile:
@@ -167,35 +137,18 @@ After that, changes in the bundle (e.g. collector menu, toolbar link, templates)
 Stop a specific demo:
 
 ```bash
-# Stop Symfony 6.4 demo
-cd demo/symfony6
+# Stop Symfony 7.0 demo
+cd demo/symfony7
 docker-compose down
 
 # Or using Makefile
 cd demo
-make down-symfony6
+make down-symfony7
 ```
 
-Similar commands for Symfony 7.0 (`make down-symfony7`) and Symfony 8.0 (`make down-symfony8`).
+Similar commands for Symfony 8.0 (`make down-symfony8`).
 
 ## Local Development (without Docker)
-
-### Symfony 6.4 Demo
-
-1. **Navigate to the demo directory:**
-   ```bash
-   cd demo/symfony6
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   composer install
-   ```
-
-3. **Start the Symfony server:**
-   ```bash
-   symfony server:start
-   ```
 
 ### Symfony 7.0 Demo
 
@@ -251,7 +204,7 @@ Each demo includes:
 
 ```
 demo/
-├── symfony6/               # Symfony 6.4 demo (host PORT default 8001)
+├── symfony7/               # Symfony 7.0 demo (host PORT default 8002)
 │   ├── docker-compose.yml  # Publishes PORT:80, mounts bundle at /var/twig-inspector-bundle
 │   ├── Dockerfile          # FrankenPHP (Caddy + PHP)
 │   ├── docker/frankenphp/  # Caddyfile, Caddyfile.dev
@@ -260,26 +213,24 @@ demo/
 │   ├── .env.example
 │   ├── config/packages/nowo_twig_inspector.yaml
 │   └── ...
-├── symfony7/               # Symfony 7.0 demo (same layout)
+├── symfony8/               # Symfony 8.0 demo (host PORT default 8003)
 │   └── ...
-├── symfony8/               # Symfony 8.0 demo (same layout)
-│   └── ...
-└── Makefile                # Helper commands for all demos (up-symfony6, …)
+└── Makefile                # Helper commands for all demos (up-symfony7, …)
 ```
 
 Each demo is independent: own `docker-compose.yml`, Dockerfile, and FrankenPHP/Caddy config. See [docs/DEMO-FRANKENPHP.md](../docs/DEMO-FRANKENPHP.md) for dev vs prod behaviour.
 
 **Note**: Before starting a demo, copy `.env.example` to `.env` in the demo directory:
 ```bash
-cd demo/symfony6
+cd demo/symfony7   # or demo/symfony8
 cp .env.example .env
 # Edit .env and set your APP_SECRET (or generate one with: openssl rand -hex 32)
 # The .env.example file includes standard Symfony variables:
 # - APP_ENV=dev
 # - APP_SECRET=change_this_secret_key_to_a_random_value (replace with your secret)
 # - APP_DEBUG=1
-# - PORT=8001 (change if needed for multiple demos)
-# - DEFAULT_URI=http://localhost (required for Symfony 7.0 and 8.0 routing configuration)
+# - PORT=8002 or 8003 (per demo; change if needed)
+# - DEFAULT_URI=http://localhost:8002 or :8003 (routing configuration)
 ```
 
 ## How It Works
@@ -377,10 +328,6 @@ Each demo includes its own test suite to verify that the Twig Inspector Bundle w
 ### Run Tests
 
 ```bash
-# Run tests for Symfony 6.4 demo
-cd demo/symfony6
-vendor/bin/phpunit
-
 # Run tests for Symfony 7.0 demo
 cd demo/symfony7
 vendor/bin/phpunit
@@ -396,7 +343,6 @@ Or using the Makefile from the `demo/` directory:
 cd demo
 
 # Run tests for a specific demo
-make test-symfony6
 make test-symfony7
 make test-symfony8
 
@@ -410,12 +356,11 @@ Each demo includes code coverage configuration. To generate coverage reports:
 
 ```bash
 # Run tests with coverage for a specific demo
-cd demo/symfony6
+cd demo/symfony7
 docker-compose exec php composer test-coverage
 
 # Or using the Makefile
 cd demo
-make test-coverage-symfony6
 make test-coverage-symfony7
 make test-coverage-symfony8
 
@@ -424,8 +369,8 @@ make test-coverage-all
 ```
 
 Coverage reports are generated in:
-- HTML: `demo/symfony6/coverage/index.html` (and similar for other demos)
-- Clover XML: `demo/symfony6/coverage.xml` (and similar for other demos)
+- HTML: `demo/symfony7/coverage/index.html` (and similar for symfony8)
+- Clover XML: `demo/symfony7/coverage.xml` (and similar for symfony8)
 
 ### Test Structure
 
@@ -446,11 +391,11 @@ cd demo
 make verify-all
 
 # Or verify a specific demo
-make verify DEMO=symfony6
+make verify DEMO=symfony7
 ```
 
 The `verify-all` command will:
-1. Start each demo sequentially (symfony6, symfony7, symfony8)
+1. Start each demo sequentially (symfony7, symfony8)
 2. Check that each demo responds with HTTP 200
 3. Show a summary with successful/failed demos
 4. Display access URLs for successfully verified demos
@@ -460,18 +405,18 @@ The `verify-all` command will:
 🚀 Starting and verifying all demos...
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📦 Processing Symfony 6.4 demo (symfony6)
+📦 Processing Symfony 7.0 demo (symfony7)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔍 Verifying Symfony 6.4 demo...
-✅ Symfony 6.4 demo is running and responding at http://localhost:8001 (HTTP 200)
-✅ Symfony 6.4 demo verified successfully
+🔍 Verifying Symfony 7.0 demo...
+✅ Symfony 7.0 demo is running and responding at http://localhost:8002 (HTTP 200)
+✅ Symfony 7.0 demo verified successfully
 
-[... similar for other demos ...]
+[... similar for symfony8 ...]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 Verification Summary
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Successful: 3/3
+✅ Successful: 2/2
 ✅ All demos verified successfully!
 ```
 
@@ -479,36 +424,13 @@ The `verify-all` command will:
 
 ### Ports already in use
 
-All demos use port **8001** by default. If this port is already in use, you can customize it in two ways:
-
-**Option 1: Using environment variable (Recommended)**
-
-Create a `.env` file in the demo directory:
+Demos use ports **8002** (Symfony 7) and **8003** (Symfony 8) by default. If a port is already in use, customize it in `.env`:
 
 ```bash
-# demo/symfony6/.env (or symfony7, symfony8)
-PORT=8001  # Default port for all demos
-# Change to a different port if you need to run multiple demos simultaneously
-PORT=8002  # Example: if you want to run a second demo
+# demo/symfony7/.env or demo/symfony8/.env
+PORT=8002  # Symfony 7 default
+PORT=8003  # Symfony 8 default
 ```
-
-Then restart the containers:
-
-```bash
-docker-compose down
-docker-compose up -d
-```
-
-**Option 2: Directly in docker-compose.yml**
-
-Edit the `docker-compose.yml` file:
-
-```yaml
-ports:
-  - "8083:80"  # Change to any available port
-```
-
-**Note**: All demos use port **8001** by default. If you need to run multiple demos simultaneously, you can change the PORT variable in each demo's `.env` file to use different ports (e.g., 8001, 8002, 8003).
 
 The Makefile automatically checks if a port is in use and stops any containers using it before starting a new demo.
 
