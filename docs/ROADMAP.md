@@ -57,7 +57,7 @@ A major version would only be considered if we introduce breaking changes (e.g. 
 
 ## Community
 
-- **Issues & PRs**: [GitHub Issues](https://github.com/nowo-tech/twig-inspector-bundle/issues) and [Pull Requests](https://github.com/nowo-tech/twig-inspector-bundle/pulls) are welcome.
+- **Issues & PRs**: [GitHub Issues](https://github.com/nowo-tech/TwigInspectorBundle/issues) and [Pull Requests](https://github.com/nowo-tech/TwigInspectorBundle/pulls) are welcome.
 - **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for code style, tests, and branch policy.
 - **Security**: See [SECURITY.md](SECURITY.md) for how to report vulnerabilities.
 

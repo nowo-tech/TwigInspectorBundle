@@ -447,5 +447,5 @@ This bundle follows [Semantic Versioning](https://semver.org/), so:
 If you encounter issues during upgrade:
 1. Check the [CHANGELOG.md](CHANGELOG.md) for detailed changes
 2. Review the [CONFIGURATION.md](CONFIGURATION.md) for configuration options
-3. Open an issue on [GitHub](https://github.com/nowo-tech/twig-inspector-bundle/issues)
+3. Open an issue on [GitHub](https://github.com/nowo-tech/TwigInspectorBundle/issues)
 
