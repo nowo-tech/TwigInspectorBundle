@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.33] - 2026-06-30](#1033-2026-06-30)
+  - [Changed](#changed)
 - [[1.0.32] - 2026-06-15](#1032-2026-06-15)
   - [Removed](#removed)
   - [Added](#added)
@@ -100,6 +102,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.33] - 2026-06-30
+
+### Changed
+
+- **Repository URLs**: GitHub links now use `TwigInspectorBundle` (matching the renamed repository). Updated in `composer.json` metadata, documentation, demo footers, and support links. The Packagist package name `nowo-tech/twig-inspector-bundle` is unchanged.
+- **CI**: Bumped `softprops/action-gh-release` to **v3.0.0** and `actions/github-script` to **v9** in release and sync workflows.
+- **Dependencies**: Symfony patch updates in root and demo lockfiles (`composer.lock` for Symfony 7 and 8 demos).
+- **Symfony 8 demo**: Regenerated `config/reference.php` with `declare(strict_types=1);` (Symfony defaults).
 
 ## [1.0.32] - 2026-06-15
 
