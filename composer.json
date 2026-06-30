@@ -26,12 +26,12 @@
         "block-inspector",
         "symfony-flex"
     ],
-    "homepage": "https://github.com/nowo-tech/twig-inspector-bundle",
+    "homepage": "https://github.com/nowo-tech/TwigInspectorBundle",
     "support": {
-        "issues": "https://github.com/nowo-tech/twig-inspector-bundle/issues",
-        "source": "https://github.com/nowo-tech/twig-inspector-bundle",
-        "docs": "https://github.com/nowo-tech/twig-inspector-bundle/tree/main/docs",
-        "changelog": "https://github.com/nowo-tech/twig-inspector-bundle/blob/main/docs/CHANGELOG.md"
+        "issues": "https://github.com/nowo-tech/TwigInspectorBundle/issues",
+        "source": "https://github.com/nowo-tech/TwigInspectorBundle",
+        "docs": "https://github.com/nowo-tech/TwigInspectorBundle/tree/main/docs",
+        "changelog": "https://github.com/nowo-tech/TwigInspectorBundle/blob/main/docs/CHANGELOG.md"
     },
     "authors": [
         {
