@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.32 to the next release](#upgrading-from-1032-to-the-next-release)
+- [Upgrading from 1.0.33 to the next release](#upgrading-from-1033-to-the-next-release)
+- [Upgrading from 1.0.32 to 1.0.33](#upgrading-from-1032-to-1033)
 - [Upgrading from 1.0.31 to 1.0.32](#upgrading-from-1031-to-1032)
 - [Upgrading from 1.0.30 to 1.0.31](#upgrading-from-1030-to-1031)
 - [Upgrading from 1.0.29 to 1.0.30](#upgrading-from-1029-to-1030)
@@ -66,9 +67,19 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.32 to the next release
+## Upgrading from 1.0.33 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.32 to 1.0.33
+
+**No action required** for bundle consumers — metadata, CI, and lockfile updates only.
+
+### What changed
+
+- **GitHub repository URL**: Documentation and `composer.json` support links now point to `https://github.com/nowo-tech/TwigInspectorBundle`. If you bookmarked or linked to the old `twig-inspector-bundle` path, update those URLs. Installing via `composer require nowo-tech/twig-inspector-bundle` is unchanged.
+- **CI / contributors**: Release workflow uses `action-gh-release` v3.0.0; sync workflow uses `github-script` v9.
+- **Dependencies**: Symfony patch updates in lockfiles only; no runtime or configuration changes for bundle users.
 
 ## Upgrading from 1.0.31 to 1.0.32
 
