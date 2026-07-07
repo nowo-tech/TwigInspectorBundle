@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.33 to the next release](#upgrading-from-1033-to-the-next-release)
+- [Upgrading from 1.0.34 to the next release](#upgrading-from-1034-to-the-next-release)
+- [Upgrading from 1.0.33 to 1.0.34](#upgrading-from-1033-to-1034)
 - [Upgrading from 1.0.32 to 1.0.33](#upgrading-from-1032-to-1033)
 - [Upgrading from 1.0.31 to 1.0.32](#upgrading-from-1031-to-1032)
 - [Upgrading from 1.0.30 to 1.0.31](#upgrading-from-1030-to-1031)
@@ -67,9 +68,19 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.33 to the next release
+## Upgrading from 1.0.34 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.33 to 1.0.34
+
+**No action required** for bundle consumers — documentation, contributor tooling, CI, and lockfile updates only.
+
+### What changed
+
+- **GitHub Spec Kit**: Baseline spec and 100% code inventory under `specs/001-baseline/`; `.specify/` scaffolding and Cursor Agent skills for maintainers. See [`docs/SPEC-KIT.md`](SPEC-KIT.md) and [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](SPEC-DRIVEN-DEVELOPMENT.md). No runtime or configuration changes for applications using the bundle.
+- **CI / contributors**: Codecov action bumped to v7; demo Makefiles define `SERVICE_PHP` and `COMPOSE` for `update-deps`.
+- **Dependencies**: Twig 3.28.0 in root lockfile; Symfony 7 demo lockfile refreshed. No API or config changes for bundle users.
 
 ## Upgrading from 1.0.32 to 1.0.33
 

@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.34] - 2026-07-07](#1034-2026-07-07)
+  - [Added](#added)
+  - [Changed](#changed)
 - [[1.0.33] - 2026-06-30](#1033-2026-06-30)
   - [Changed](#changed)
 - [[1.0.32] - 2026-06-15](#1032-2026-06-15)
@@ -102,6 +105,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.34] - 2026-07-07
+
+### Added
+
+- **GitHub Spec Kit baseline**: `specs/001-baseline/` with full product spec (`specs/001-baseline/spec.md`) and **100% code inventory** (`specs/001-baseline/code-inventory.md`) mapping every production file under `src/` to `FR-*` requirement IDs.
+- **Spec Kit scaffolding**: `.specify/` (constitution, templates, scripts) and Cursor Agent skills (`.cursor/skills/speckit-*`).
+- **Documentation**: `docs/SPEC-KIT.md` — operator manual for installing, initializing, and using GitHub Spec Kit in this repository.
+
+### Changed
+
+- **Spec-driven development**: `docs/SPEC-DRIVEN-DEVELOPMENT.md` now describes three layers (Spec Kit baseline, product behavior, `REQ-*` anchors) and a maintainer workflow step to keep specs in sync with `src/`.
+- **README**: Link to `docs/SPEC-KIT.md` in the Documentation section.
+- **CI**: Bumped `codecov/codecov-action` from **v5** to **v7**.
+- **Demos (Symfony 7 & 8)**: Makefile `update-deps` target — explicit `SERVICE_PHP` and `COMPOSE` variables for the shared demo update script.
+- **Dependencies**: Twig **3.28.0** in root lockfile; Symfony 7 demo lockfile refreshed.
+- **Config reference**: Updated generated `reference.php` in the Symfony 7 demo (Psalm `_instanceof` type) and integration test fixture (`declare(strict_types=1);`).
 
 ## [1.0.33] - 2026-06-30
 
