@@ -120,8 +120,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **README**: Link to `docs/SPEC-KIT.md` in the Documentation section.
 - **CI**: Bumped `codecov/codecov-action` from **v5** to **v7**.
 - **Demos (Symfony 7 & 8)**: Makefile `update-deps` target — explicit `SERVICE_PHP` and `COMPOSE` variables for the shared demo update script.
-- **Dependencies**: Twig **3.28.0** in root lockfile; Symfony 7 demo lockfile refreshed.
-- **Config reference**: Updated generated `reference.php` in the Symfony 7 demo (Psalm `_instanceof` type) and integration test fixture (`declare(strict_types=1);`).
+- **Dependencies**: Twig **3.28.0** in root lockfile; Symfony 7 and 8 demo lockfiles refreshed.
+- **Config reference**: Updated generated `reference.php` in Symfony 7 and 8 demos (Psalm `_instanceof` type) and integration test fixture (`declare(strict_types=1);`).
 
 ## [1.0.33] - 2026-06-30
 

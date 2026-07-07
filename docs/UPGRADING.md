@@ -80,7 +80,7 @@ _Placeholder for the next release._
 
 - **GitHub Spec Kit**: Baseline spec and 100% code inventory under `specs/001-baseline/`; `.specify/` scaffolding and Cursor Agent skills for maintainers. See [`docs/SPEC-KIT.md`](SPEC-KIT.md) and [`docs/SPEC-DRIVEN-DEVELOPMENT.md`](SPEC-DRIVEN-DEVELOPMENT.md). No runtime or configuration changes for applications using the bundle.
 - **CI / contributors**: Codecov action bumped to v7; demo Makefiles define `SERVICE_PHP` and `COMPOSE` for `update-deps`.
-- **Dependencies**: Twig 3.28.0 in root lockfile; Symfony 7 demo lockfile refreshed. No API or config changes for bundle users.
+- **Dependencies**: Twig 3.28.0 in root lockfile; Symfony 7 and 8 demo lockfiles refreshed. No API or config changes for bundle users.
 
 ## Upgrading from 1.0.32 to 1.0.33
 
