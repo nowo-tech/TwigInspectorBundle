@@ -110,6 +110,7 @@ Full options and behavior: [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 - [Security](docs/SECURITY.md)
 - [Engram](docs/ENGRAM.md)
 - [Spec-driven development](docs/SPEC-DRIVEN-DEVELOPMENT.md)
+- [GitHub Spec Kit](docs/SPEC-KIT.md)
 - [Roadmap](docs/ROADMAP.md)
 
 ### Additional documentation
