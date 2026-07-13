@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.35] - 2026-07-13](#1035-2026-07-13)
+  - [Changed](#changed)
 - [[1.0.34] - 2026-07-07](#1034-2026-07-07)
   - [Added](#added)
   - [Changed](#changed)
@@ -105,6 +107,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.35] - 2026-07-13
+
+### Changed
+
+- **Spec Kit baseline**: Added package summary to `specs/001-baseline/spec.md` and audit command note in `code-inventory.md` (37 production files under `src/`).
+- **Spec-driven development**: User stories in `docs/SPEC-DRIVEN-DEVELOPMENT.md` aligned with baseline scenarios (overlay, IDE open, profiler metrics, install command, configuration tuning).
+- **Gitignore**: Ignore `.cursor/sandbox.json` (machine-specific Cursor sandbox; `REQ-IDE-005`).
+- **Dependencies**: php-cs-fixer **3.95.13** and Rector **2.5.6** in root lockfile; demo lockfiles sync path-bundle reference to current release commit.
 
 ## [1.0.34] - 2026-07-07
 

@@ -89,3 +89,5 @@ This file proves that **every production source artifact** under `src/` is refer
 | **Total production sources** | **37** | **37** |
 
 Build artifacts are documented as outputs of listed sources; they are not counted as separate authoring units.
+
+Audit: `find src -type f ! -path '*/assets/dist/*' ! -name '*.test.ts' | wc -l` → **37** (includes legacy `Resources/public/assets/src/*`; excludes Vite `dist/` outputs listed above).

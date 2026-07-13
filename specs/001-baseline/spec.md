@@ -10,6 +10,15 @@
 
 ---
 
+## Summary
+
+**Package**: `nowo-tech/twig-inspector-bundle`  
+**Configuration root**: `nowo_twig_inspector`
+
+Symfony **dev-only** bundle: injects Twig HTML comments, Web Profiler metrics, browser overlay, and click-to-open-in-IDE workflow. Production source count follows [`SPEC-KIT.md`](../../docs/SPEC-KIT.md): **37** hand-authored units under `src/` (legacy public JS/CSS counted; Vite `dist/` outputs documented separately).
+
+---
+
 ## User Scenarios & Testing
 
 ### User Story 1 — Enable inspector from Web Profiler (Priority: P1)

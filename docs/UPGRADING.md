@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.34 to the next release](#upgrading-from-1034-to-the-next-release)
+- [Upgrading from 1.0.35 to the next release](#upgrading-from-1035-to-the-next-release)
+- [Upgrading from 1.0.34 to 1.0.35](#upgrading-from-1034-to-1035)
 - [Upgrading from 1.0.33 to 1.0.34](#upgrading-from-1033-to-1034)
 - [Upgrading from 1.0.32 to 1.0.33](#upgrading-from-1032-to-1033)
 - [Upgrading from 1.0.31 to 1.0.32](#upgrading-from-1031-to-1032)
@@ -68,9 +69,18 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.34 to the next release
+## Upgrading from 1.0.35 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.34 to 1.0.35
+
+**No action required** for bundle consumers — documentation, contributor tooling, and lockfile updates only.
+
+### What changed
+
+- **Spec Kit / docs**: Baseline spec summary and inventory audit note; user stories in `docs/SPEC-DRIVEN-DEVELOPMENT.md` now mirror the product scenarios in `specs/001-baseline/spec.md`. No runtime or configuration changes.
+- **Contributors**: `.cursor/sandbox.json` is gitignored (local Cursor sandbox). Dev lockfile bumps (php-cs-fixer, Rector); demo path-bundle references refreshed.
 
 ## Upgrading from 1.0.33 to 1.0.34
 

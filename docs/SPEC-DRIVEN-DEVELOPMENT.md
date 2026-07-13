@@ -16,11 +16,11 @@ The sections below state **behavior**; this subsection states **intent** in back
 
 | ID | Story |
 | --- | --- |
-| US-01 | **As a** Symfony integrator, **I want** to install and enable this package **so that** I can rely on documented services, configuration, and extension points. |
-| US-02 | **As an** integrator, **I want** stable configuration keys and defaults **so that** upgrades remain predictable (see [`CONFIGURATION.md`](CONFIGURATION.md)). |
-| US-03 | **As an** integrator, **I want** clear usage guidance **so that** I can integrate features without reverse-engineering internals (see [`USAGE.md`](USAGE.md)). |
-| US-04 | **As a** maintainer, **I want** behavior changes covered by automated tests **so that** regressions are caught in CI. |
-| US-05 | **As a** contributor, **I want** `REQ-*` anchors on scripted flows **so that** PRs and issues cite the same identifiers as this document. |
+| US-01 | **As a** Symfony developer, **I want** to enable the inspector from Web Profiler **so that** I see which Twig template rendered each DOM node. |
+| US-02 | **As a** developer, **I want** click-to-open in my IDE **so that** I jump to the template line without searching the tree. |
+| US-03 | **As a** developer, **I want** profiler metrics for templates, blocks, and controllers **so that** I analyze render cost per request. |
+| US-04 | **As an** integrator without Flex, **I want** `nowo:twig-inspector:install` **so that** config and routes publish reliably. |
+| US-05 | **As an** integrator, **I want** exclusions, overlay theme, and keyboard shortcuts **so that** I tune the debug UX to my project. |
 
 **Out of scope for these stories:** guarantees outside the stated public API and outside dependency limits (PHP, Symfony, third-party libraries).
 
