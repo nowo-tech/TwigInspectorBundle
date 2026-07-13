@@ -80,7 +80,7 @@ _Placeholder for the next release._
 ### What changed
 
 - **Spec Kit / docs**: Baseline spec summary and inventory audit note; user stories in `docs/SPEC-DRIVEN-DEVELOPMENT.md` now mirror the product scenarios in `specs/001-baseline/spec.md`. No runtime or configuration changes.
-- **Contributors**: `.cursor/sandbox.json` is gitignored (local Cursor sandbox). Dev lockfile bumps (php-cs-fixer, Rector); demo path-bundle references refreshed.
+- **Contributors**: `.cursor/sandbox.json` is gitignored (local Cursor sandbox). CI: `actions/cache` v6. Dev lockfile bumps (php-cs-fixer, Rector); demo path-bundle references refreshed.
 
 ## Upgrading from 1.0.33 to 1.0.34
 

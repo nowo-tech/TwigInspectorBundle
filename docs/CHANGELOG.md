@@ -115,6 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Spec Kit baseline**: Added package summary to `specs/001-baseline/spec.md` and audit command note in `code-inventory.md` (37 production files under `src/`).
 - **Spec-driven development**: User stories in `docs/SPEC-DRIVEN-DEVELOPMENT.md` aligned with baseline scenarios (overlay, IDE open, profiler metrics, install command, configuration tuning).
 - **Gitignore**: Ignore `.cursor/sandbox.json` (machine-specific Cursor sandbox; `REQ-IDE-005`).
+- **CI**: Bumped `actions/cache` from **v5** to **v6**.
 - **Dependencies**: php-cs-fixer **3.95.13** and Rector **2.5.6** in root lockfile; demo lockfiles sync path-bundle reference to current release commit.
 
 ## [1.0.34] - 2026-07-07
