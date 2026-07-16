@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.36] - 2026-07-16](#1036-2026-07-16)
+  - [Added](#added)
+  - [Changed](#changed)
 - [[1.0.35] - 2026-07-13](#1035-2026-07-13)
   - [Changed](#changed)
 - [[1.0.34] - 2026-07-07](#1034-2026-07-07)
@@ -107,6 +110,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.36] - 2026-07-16
+
+### Added
+
+- **REQ-GIT-001 (git hygiene)**: Scripts `.scripts/check-no-cursor-coauthor.sh` and `.scripts/strip-cursor-coauthor-from-history.sh`; `.githooks/commit-msg` strips accidental Cursor co-author trailers; Cursor rule `.cursor/rules/01-git-commits.mdc`.
+- **CI**: New `git-hygiene` job in `.github/workflows/ci.yml` (full-history checkout) that fails if Cursor co-author trailers appear in git history.
+- **Documentation**: `docs/GITHUB_CI.md` — operator manual for REQ-GIT-001; `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1).
+- **Makefile**: Targets `check-no-cursor-coauthor` and `strip-cursor-coauthor-from-history`; `setup-hooks` installs `commit-msg`; `release-check` runs the hygiene check first.
+
+### Changed
+
+- **README / CONTRIBUTING / RELEASE**: Links and contributor steps for GitHub CI requirements and hook setup.
+- **Dependencies**: php-cs-fixer **3.95.15** and Rector **2.5.7** in root lockfile.
 
 ## [1.0.35] - 2026-07-13
 

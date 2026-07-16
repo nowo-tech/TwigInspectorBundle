@@ -41,3 +41,5 @@ After the push, GitHub Actions will create the release and attach the changelog 
 For branching and versioning policy, see [BRANCHING.md](BRANCHING.md).
 
 **Sync workflow** ([`sync-releases.yml`](../.github/workflows/sync-releases.yml)) runs on a **schedule** and **manual dispatch** only. It does not run on tag push, so it does not race with this release job when you push `v*`.
+
+After creating the release commit and tag, run `make check-no-cursor-coauthor` again **before** `git push` (REQ-GIT-001). The release commit itself is not covered by an earlier `release-check` run.

@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.35 to the next release](#upgrading-from-1035-to-the-next-release)
+- [Upgrading from 1.0.36 to the next release](#upgrading-from-1036-to-the-next-release)
+- [Upgrading from 1.0.35 to 1.0.36](#upgrading-from-1035-to-1036)
 - [Upgrading from 1.0.34 to 1.0.35](#upgrading-from-1034-to-1035)
 - [Upgrading from 1.0.33 to 1.0.34](#upgrading-from-1033-to-1034)
 - [Upgrading from 1.0.32 to 1.0.33](#upgrading-from-1032-to-1033)
@@ -69,9 +70,19 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.35 to the next release
+## Upgrading from 1.0.36 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.35 to 1.0.36
+
+**No action required** for bundle consumers — contributor tooling, CI hygiene, and documentation only.
+
+### What changed
+
+- **Git hygiene (REQ-GIT-001)**: CI and `make release-check` reject Cursor agent `Co-authored-by` trailers in git history. Contributors should run `make setup-hooks` once and may use `make check-no-cursor-coauthor`. See [`docs/GITHUB_CI.md`](GITHUB_CI.md).
+- **Community**: Added [`CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) (Contributor Covenant 2.1).
+- **Dependencies**: Dev lockfile bumps (php-cs-fixer, Rector). No runtime or configuration changes for applications using the bundle.
 
 ## Upgrading from 1.0.34 to 1.0.35
 
