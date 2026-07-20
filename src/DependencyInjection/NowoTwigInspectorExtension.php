@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\DependencyInjection;
 
+use Nowo\TwigInspectorBundle\DevEnvironments;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -13,6 +14,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 /**
  * Dependency injection extension for the Twig Inspector Bundle.
  * Loads services, processes config, and wires the HtmlCommentsExtension and DataCollector.
+ * Refuse to load outside dev/test when kernel.environment is set (fail-closed for prod).
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
@@ -27,6 +29,10 @@ class NowoTwigInspectorExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
+        if ($container->hasParameter('kernel.environment')) {
+            DevEnvironments::assertAllowed((string) $container->getParameter('kernel.environment'));
+        }
+
         $processor     = new Processor();
         $configuration = new Configuration();
         $config        = $processor->processConfiguration($configuration, $configs);

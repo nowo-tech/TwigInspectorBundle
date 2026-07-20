@@ -15,7 +15,7 @@
 **Package**: `nowo-tech/twig-inspector-bundle`  
 **Configuration root**: `nowo_twig_inspector`
 
-Symfony **dev-only** bundle: injects Twig HTML comments, Web Profiler metrics, browser overlay, and click-to-open-in-IDE workflow. Production source count follows [`SPEC-KIT.md`](../../docs/SPEC-KIT.md): **37** hand-authored units under `src/` (legacy public JS/CSS counted; Vite `dist/` outputs documented separately).
+Symfony **dev-only** bundle: injects Twig HTML comments, Web Profiler metrics, browser overlay, and click-to-open-in-IDE workflow. Production source count follows [`SPEC-KIT.md`](../../docs/SPEC-KIT.md): **38** hand-authored units under `src/` (legacy public JS/CSS counted; Vite `dist/` outputs documented separately).
 
 ---
 
@@ -120,11 +120,11 @@ As an integrator, I exclude noisy templates/blocks and tune overlay theme, compa
 
 - **FR-TWIG-002**: `TwigInspectorExtension` registers `DebugInfoNodeVisitor`, which wraps `ModuleNode` display bodies and `BlockNode` bodies with compiled `NodeStart`/`NodeEnd` calling `HtmlCommentsExtension::start/end` with `NodeReference` (unique `uniqid()` per node).
 - **FR-TWIG-003**: `HtmlCommentsExtension` MUST wrap output in paired HTML comments using `BoxDrawings` prefixes that cycle by nesting depth; format: `<!-- {prefix} {name} [{url}] #{id}-->` … `<!-- {endPrefix} {name} [{url}] #{id}-->`.
-- **FR-TWIG-004**: `shouldInspect()` MUST gate on: `kernel.debug`, cookie on master/sub-request policy, excluded profiler paths, enabled file extension, template/block exclusion lists (wildcard, regex, prefix). `end()` MUST respect `max_injection_depth`, `headers_sent`, and content-type heuristics (`isSupported`).
+- **FR-TWIG-004**: `shouldInspect()` MUST gate on: allowed environment (`dev`/`test` via `DevEnvironments`), `kernel.debug`, cookie on master/sub-request policy, excluded profiler paths, enabled file extension, template/block exclusion lists (wildcard, regex, prefix). `end()` MUST respect `max_injection_depth`, `headers_sent`, and content-type heuristics (`isSupported`).
 
 ### Controller instrumentation
 
-- **FR-CTRL-001**: `ControllerCommentSubscriber` on `kernel.response` (-512) MUST inject controller boundary comments when inspector active: `<!-- ┏ controller: {class}::{method} [main|fragment] template: {path} -->` with closing `<!-- ┗ /controller -->` for fragments; uses `HtmlCommentsExtension::REQUEST_ATTR_ROOT_TEMPLATE` when set.
+- **FR-CTRL-001**: `ControllerCommentSubscriber` on `kernel.response` (-512) MUST inject controller boundary comments when inspector active **and** environment is allowed (`dev`/`test`) with `kernel.debug`: `<!-- ┏ controller: {class}::{method} [main|fragment] template: {path} -->` with closing `<!-- ┗ /controller -->` for fragments; uses `HtmlCommentsExtension::REQUEST_ATTR_ROOT_TEMPLATE` when set.
 - **FR-PROF-003**: `ControllerRenderSubscriber` MUST record controller callables per master request on `kernel.controller` and expose aggregated `{name, count, is_main}` via `getControllersForRequest()`.
 
 ### IDE route & security
@@ -132,6 +132,7 @@ As an integrator, I exclude noisy templates/blocks and tune overlay theme, compa
 - **FR-IDE-001**: Route `nowo_twig_inspector_template_link` path `/_template/{template}` (requirements: no NUL), defaults `line=1`, `frontend=true`; controller `OpenTemplateController` validates name/path and redirects via `FileLinkFormatter`.
 - **FR-SEC-001**: Open template MUST 404 outside `dev`/`test`; resolved filesystem path MUST be under Twig loader paths (supports `ChainLoader`).
 - **FR-SEC-002**: Security config MUST expose firewall `twig_inspector` for `^/_template/` with `security: false` (local IDE redirect only).
+- **FR-SEC-003**: `DevEnvironments` defines the only allowed environments (`dev`, `test`). When `kernel.environment` is set, `NowoTwigInspectorExtension` MUST call `assertAllowed()` (throw `LogicException` otherwise). Install command MUST refuse non-allowed `--env`. Injectors MUST require `DevEnvironments::isAllowed()` in addition to `kernel.debug`.
 
 ### Web Profiler
 
@@ -140,7 +141,7 @@ As an integrator, I exclude noisy templates/blocks and tune overlay theme, compa
 
 ### CLI
 
-- **FR-CLI-001**: `nowo:twig-inspector:install` MUST write env-specific YAML from `CONFIG_TEMPLATE` and ensure routes import; options `--env` (default `dev`), `--force`.
+- **FR-CLI-001**: `nowo:twig-inspector:install` MUST write env-specific YAML from `CONFIG_TEMPLATE` and ensure routes import; options `--env` (default `dev`, **dev/test only**), `--force`. Non-allowed environments MUST return failure without writing files.
 
 ### Symfony compatibility
 
@@ -176,7 +177,7 @@ As an integrator, I exclude noisy templates/blocks and tune overlay theme, compa
 
 ## Success Criteria
 
-- **SC-001**: 100% of production files in `src/` appear in [`code-inventory.md`](code-inventory.md) with requirement IDs (37/37 mapped).
+- **SC-001**: 100% of production files in `src/` appear in [`code-inventory.md`](code-inventory.md) with requirement IDs (38/38 mapped).
 - **SC-002**: Inspector activation adds parseable HTML comments on a standard Twig HTML page in `dev` with cookie enabled.
 - **SC-003**: Click-to-IDE flow succeeds with Symfony `framework.ide` configured in demo apps.
 - **SC-004**: PHPUnit + PHPStan + Vitest pass in CI (`composer qa`).

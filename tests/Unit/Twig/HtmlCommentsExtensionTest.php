@@ -914,6 +914,34 @@ final class HtmlCommentsExtensionTest extends TestCase
         $this->assertFalse($result);
     }
 
+    public function testShouldInspectReturnsFalseInProdEvenWhenDebugTrue(): void
+    {
+        $extension = new HtmlCommentsExtension(
+            $this->requestStack,
+            $this->urlGenerator,
+            $this->boxDrawings,
+            ['.html.twig'],
+            [],
+            [],
+            'twig_inspector_is_active',
+            0,
+            [],
+            [],
+            [],
+            false,
+            true,   // debug (e.g. APP_DEBUG=1)
+            'prod', // environment
+        );
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $ref    = new NodeReference('block', 'template.html.twig', 1);
+        $method = new ReflectionMethod($extension, 'shouldInspect');
+        $result = $method->invoke($extension, $ref);
+        $this->assertFalse($result);
+    }
+
     public function testEndRespectsMaxInjectionDepth(): void
     {
         $extension = new HtmlCommentsExtension(

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\Controller;
 
+use Nowo\TwigInspectorBundle\DevEnvironments;
 use RuntimeException;
 use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -18,7 +19,6 @@ use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
 use Twig\Loader\LoaderInterface;
 
-use function in_array;
 use function is_string;
 use function sprintf;
 
@@ -31,15 +31,12 @@ use function sprintf;
  */
 class OpenTemplateController
 {
-    /** @var list<string> Environments where the "open in IDE" route is allowed (dev, test). In prod, returns 404. */
-    private const ALLOWED_ENVIRONMENTS = ['dev', 'test'];
-
     /**
      * Constructor.
      *
      * @param Environment $twig The Twig environment (to resolve template path)
      * @param FileLinkFormatter $fileLinkFormatter Formats file path and line into an IDE URL
-     * @param string $environment Kernel environment (e.g. dev, prod, test). Route returns 404 in prod.
+     * @param string $environment Kernel environment (e.g. dev, prod, test). Route returns 404 outside dev/test.
      */
     public function __construct(
         private readonly Environment $twig,
@@ -65,8 +62,8 @@ class OpenTemplateController
      */
     public function __invoke(Request $request, string $template): RedirectResponse
     {
-        // Restrict to dev/test: in prod, return 404 even if routes were accidentally enabled
-        if (!in_array($this->environment, self::ALLOWED_ENVIRONMENTS, true)) {
+        // Restrict to dev/test: outside those envs, return 404 even if routes were accidentally enabled
+        if (!DevEnvironments::isAllowed($this->environment)) {
             throw new NotFoundHttpException();
         }
 

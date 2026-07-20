@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle\Twig;
 
 use Nowo\TwigInspectorBundle\BoxDrawings;
+use Nowo\TwigInspectorBundle\DevEnvironments;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
@@ -44,6 +45,7 @@ class HtmlCommentsExtension extends AbstractExtension
      * @param array<string> $excludedBlocksRegex Regex patterns for block exclusion
      * @param bool $injectOnSubRequests When true, inject comments also during sub-requests (e.g. fragment rendering)
      * @param bool $debug When false (e.g. prod), no injection to avoid any overhead
+     * @param string $environment Kernel environment; injection only when allowed (dev/test)
      */
     public function __construct(
         private readonly RequestStack $requestStack,
@@ -58,7 +60,8 @@ class HtmlCommentsExtension extends AbstractExtension
         private readonly array $excludedTemplatesPrefixes = [],
         private readonly array $excludedBlocksRegex = [],
         private readonly bool $injectOnSubRequests = false,
-        private readonly bool $debug = true
+        private readonly bool $debug = true,
+        private readonly string $environment = 'dev'
     ) {
     }
 
@@ -153,7 +156,7 @@ class HtmlCommentsExtension extends AbstractExtension
 
     /**
      * Checks if the inspector should inspect the given node.
-     * Only runs when the Web Profiler toolbar can be present (kernel.debug), then checks:
+     * Only runs in allowed environments (dev/test) with kernel.debug, then checks:
      * - A request is available
      * - The cookie is set to true
      * - The template file extension is in the enabled extensions list
@@ -166,8 +169,8 @@ class HtmlCommentsExtension extends AbstractExtension
      */
     protected function shouldInspect(NodeReference $ref): bool
     {
-        // No toolbar in prod / when debug is off: skip all work to avoid consuming resources
-        if (!$this->debug) {
+        // No toolbar outside dev/test, or when debug is off (covers prod + APP_DEBUG=1 misconfig)
+        if (!$this->debug || !DevEnvironments::isAllowed($this->environment)) {
             return false;
         }
 

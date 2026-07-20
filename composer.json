@@ -119,6 +119,6 @@
         "qa": "Run all quality assurance checks"
     },
     "suggest": {
-        "symfony/flex": "For automatic recipe installation (config and routes)"
+        "symfony/flex": "For automatic recipe installation (config and routes; registers this bundle for dev/test only — always install with composer require --dev)"
     }
 }

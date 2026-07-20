@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\Tests\Unit\DependencyInjection;
 
+use LogicException;
 use Nowo\TwigInspectorBundle\DependencyInjection\NowoTwigInspectorExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -68,5 +69,47 @@ final class NowoTwigInspectorExtensionTest extends TestCase
         $this->extension->load([['inject_on_sub_requests' => true]], $container);
 
         $this->assertTrue($container->getParameter('nowo_twig_inspector.inject_on_sub_requests'));
+    }
+
+    public function testLoadSucceedsInDevEnvironment(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.environment', 'dev');
+
+        $this->extension->load([], $container);
+
+        $this->assertTrue($container->hasParameter('nowo_twig_inspector.cookie_name'));
+    }
+
+    public function testLoadSucceedsInTestEnvironment(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.environment', 'test');
+
+        $this->extension->load([], $container);
+
+        $this->assertTrue($container->hasParameter('nowo_twig_inspector.cookie_name'));
+    }
+
+    public function testLoadThrowsInProdEnvironment(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.environment', 'prod');
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('must not be enabled in the "prod" environment');
+
+        $this->extension->load([], $container);
+    }
+
+    public function testLoadThrowsInStagingEnvironment(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.environment', 'staging');
+
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('must not be enabled in the "staging" environment');
+
+        $this->extension->load([], $container);
     }
 }

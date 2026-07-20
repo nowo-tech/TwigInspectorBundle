@@ -6,6 +6,8 @@
 
 **Twig Inspector Bundle** — Debug Twig templates directly in the browser. See which template or block rendered each HTML element, click to open it in your IDE, and use it from the Symfony Web Profiler. For Symfony 6, 7 and 8 · PHP 8.1+.
 
+> **WARNING — Development only.** Do **not** enable this bundle in production. It depends on the Symfony **WebProfiler** toolbar and exposes template paths, controller names, and page structure. Install with `composer require --dev`, register only for `dev`/`test`, and see [docs/SECURITY.md](docs/SECURITY.md). Loading the bundle outside those environments throws a `LogicException` at container build time.
+
 ## Table of contents
 
 - [Quick search terms](#quick-search-terms)

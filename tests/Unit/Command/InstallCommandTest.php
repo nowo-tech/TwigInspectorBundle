@@ -117,7 +117,7 @@ final class InstallCommandTest extends TestCase
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
-    public function testExecuteCreatesConfigFileInProdEnvironment(): void
+    public function testExecuteRejectsProdEnvironment(): void
     {
         $command       = new InstallCommand($this->testProjectDir);
         $commandTester = new CommandTester($command);
@@ -125,8 +125,9 @@ final class InstallCommandTest extends TestCase
         $commandTester->execute(['--env' => 'prod']);
 
         $configFile = $this->testProjectDir . '/config/packages/prod/nowo_twig_inspector.yaml';
-        $this->assertFileExists($configFile);
-        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertFileDoesNotExist($configFile);
+        $this->assertSame(1, $commandTester->getStatusCode());
+        $this->assertStringContainsString('Refusing to install', $commandTester->getDisplay());
     }
 
     public function testExecuteCreatesDirectoryIfNotExists(): void

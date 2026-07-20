@@ -89,7 +89,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/twig-inspector-bundle",
-                "reference": "12199da4be98b38244ca9a538c98e3a1e3216a5a"
+                "reference": "e8e621162a9bf7c682f08d28ef7e91ae3280c2b3"
             },
             "require": {
                 "php": ">=8.1 <8.6",
@@ -116,7 +116,7 @@
                 "symfony/yaml": "^6.0 || ^7.0 || ^8.0"
             },
             "suggest": {
-                "symfony/flex": "For automatic recipe installation (config and routes)"
+                "symfony/flex": "For automatic recipe installation (config and routes; registers this bundle for dev/test only — always install with composer require --dev)"
             },
             "type": "symfony-bundle",
             "autoload": {

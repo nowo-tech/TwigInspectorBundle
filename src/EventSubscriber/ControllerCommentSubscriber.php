@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle\EventSubscriber;
 
 use Closure;
+use Nowo\TwigInspectorBundle\DevEnvironments;
 use Nowo\TwigInspectorBundle\RequestStack\MainOrMasterRequestProvider;
 use Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -40,11 +41,13 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
      * @param MainOrMasterRequestProvider $mainOrMasterProvider Provides main/master request (and current)
      * @param string $cookieName Cookie name used to enable the inspector (e.g. twig_inspector_is_active)
      * @param bool $debug When false, no comments are injected (e.g. in production)
+     * @param string $environment Kernel environment; injection only when allowed (dev/test)
      */
     public function __construct(
         private readonly MainOrMasterRequestProvider $mainOrMasterProvider,
         private readonly string $cookieName,
-        private readonly bool $debug = true
+        private readonly bool $debug = true,
+        private readonly string $environment = 'dev'
     ) {
     }
 
@@ -63,13 +66,13 @@ final class ControllerCommentSubscriber implements EventSubscriberInterface
 
     /**
      * Injects controller HTML comments into the response when inspector is enabled.
-     * Skips when debug is off, cookie is not set, or path is _wdt/_profiler.
+     * Skips outside dev/test, when debug is off, cookie is not set, or path is _wdt/_profiler.
      *
      * @param ResponseEvent $event The kernel response event
      */
     public function onKernelResponse(ResponseEvent $event): void
     {
-        if (!$this->debug) {
+        if (!$this->debug || !DevEnvironments::isAllowed($this->environment)) {
             return;
         }
 

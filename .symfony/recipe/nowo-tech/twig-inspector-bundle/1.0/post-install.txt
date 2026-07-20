@@ -1,5 +1,12 @@
 Twig Inspector Bundle has been installed!
 
+IMPORTANT — NEVER enable this bundle in production:
+  - It requires the Symfony WebProfiler toolbar.
+  - It exposes template names, controller FQCNs, and HTML structure (info disclosure).
+  - Install only with: composer require nowo-tech/twig-inspector-bundle --dev
+  - Register only for env "dev" and "test" in config/bundles.php.
+  - The DI extension hard-fails if kernel.environment is outside those values.
+
 The following files have been created:
   - config/packages/nowo_twig_inspector.yaml (configuration)
   - config/routes.yaml (routes import, if file didn't exist)
@@ -8,10 +15,9 @@ You can customize the configuration according to your needs.
 The bundle works with default values if you delete the config file.
 
 To use the bundle:
-1. Make sure Symfony Web Profiler is enabled
-2. Access your application in dev environment
+1. Make sure Symfony Web Profiler is enabled (dev)
+2. Access your application in the dev environment
 3. Enable the inspector via the Web Profiler toolbar (</> icon)
 
 Note: If routes.yaml already existed, the route import was added automatically.
 If you need to add it manually, see the README for instructions.
-

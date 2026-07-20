@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.36 to the next release](#upgrading-from-1036-to-the-next-release)
+- [Upgrading from 1.0.37 to the next release](#upgrading-from-1037-to-the-next-release)
+- [Upgrading from 1.0.36 to 1.0.37](#upgrading-from-1036-to-1037)
 - [Upgrading from 1.0.35 to 1.0.36](#upgrading-from-1035-to-1036)
 - [Upgrading from 1.0.34 to 1.0.35](#upgrading-from-1034-to-1035)
 - [Upgrading from 1.0.33 to 1.0.34](#upgrading-from-1033-to-1034)
@@ -70,9 +71,33 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.36 to the next release
+## Upgrading from 1.0.37 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.36 to 1.0.37
+
+**Action required** if the bundle was registered outside `dev`/`test`.
+
+### What changed
+
+- **Fail-closed for non-dev environments**: Loading the bundle when `kernel.environment` is not `dev` or `test` throws `LogicException` at container build time.
+- **Runtime gates**: HTML/controller comment injection requires an allowed environment **and** `kernel.debug` (so `prod` + `APP_DEBUG=1` no longer injects).
+- **Install CLI**: `nowo:twig-inspector:install --env=prod` (or any non-dev/test env) is rejected.
+- **Custom env names** (`local`, `staging`, `dev_local`, …) are **not** allowed — only `dev` and `test`.
+
+### Action required
+
+1. Install as a **dev** dependency: `composer require nowo-tech/twig-inspector-bundle --dev`.
+2. In `config/bundles.php`, register only for `dev` and `test`:
+
+```php
+Nowo\TwigInspectorBundle\NowoTwigInspectorBundle::class => ['dev' => true, 'test' => true],
+```
+
+3. Keep routes under `when@dev:` / `when@test:` (see [INSTALLATION.md](INSTALLATION.md) and [SECURITY.md](SECURITY.md)).
+
+Projects that already followed the documented setup need no further changes.
 
 ## Upgrading from 1.0.35 to 1.0.36
 

@@ -49,6 +49,32 @@ final class ControllerCommentSubscriberTest extends TestCase
         $this->assertSame('<html><body>Hello</body></html>', $response->getContent());
     }
 
+    public function testOnKernelResponseDoesNotModifyResponseInProdEvenWhenDebugTrue(): void
+    {
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
+
+        $subscriber = new ControllerCommentSubscriber(
+            new RequestStackMainOrMasterAdapter($requestStack),
+            'twig_inspector_is_active',
+            true,
+            'prod',
+        );
+        $response = new Response('<html><body>Hello</body></html>');
+        $event    = new ResponseEvent(
+            $this->createMock(HttpKernelInterface::class),
+            $request,
+            HttpKernelInterface::MAIN_REQUEST,
+            $response,
+        );
+
+        $subscriber->onKernelResponse($event);
+
+        $this->assertSame('<html><body>Hello</body></html>', $response->getContent());
+    }
+
     public function testOnKernelResponseDoesNotModifyResponseWhenCookieNotSet(): void
     {
         $request      = new Request();

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle\Command;
 
 use Exception;
+use Nowo\TwigInspectorBundle\DevEnvironments;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 
+use function implode;
 use function sprintf;
 
 use const E_WARNING;
@@ -116,9 +118,12 @@ This command:
   - Creates or updates <comment>config/routes.yaml</comment> with the bundle route import
 
                     By default, it creates the file for the <comment>dev</comment> environment.
-                    You can specify a different environment:
+                    You can specify <comment>test</comment> as well:
 
                       <info>php %command.full_name% --env=test</info>
+
+                    <comment>prod</comment> (and any other non-dev/test env) is rejected — this bundle
+                    must never be installed for production.
 
                     If the configuration file already exists, the command will ask for confirmation
                     unless you use the <comment>--force</comment> option:
@@ -133,7 +138,7 @@ TXT);
                 'env',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'The environment name (dev, test, prod)',
+                'The environment name (dev or test only)',
                 'dev',
             )
             ->addOption(
@@ -157,8 +162,19 @@ TXT);
         $io         = new SymfonyStyle($input, $output);
         $filesystem = $this->filesystem ?? new Filesystem();
 
-        $env   = $input->getOption('env') ?? 'dev';
+        $env   = (string) ($input->getOption('env') ?? 'dev');
         $force = $input->getOption('force');
+
+        if (!DevEnvironments::isAllowed($env)) {
+            $io->error(sprintf(
+                'Refusing to install Twig Inspector for environment "%s". Allowed: %s. '
+                . 'This bundle requires the WebProfiler toolbar and must not run in production.',
+                $env,
+                implode(', ', DevEnvironments::ALLOWED),
+            ));
+
+            return Command::FAILURE;
+        }
 
         // Determine project directory
         $projectDir = $this->projectDir;

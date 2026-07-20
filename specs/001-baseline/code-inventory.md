@@ -2,7 +2,7 @@
 
 **Baseline spec**: [`spec.md`](spec.md)  
 **Package**: `nowo-tech/twig-inspector-bundle`  
-**Last audited**: 2026-07-07
+**Last audited**: 2026-07-20
 
 This file proves that **every production source artifact** under `src/` is referenced by the baseline specification. Test-only files under `tests/` and demo trees are out of Packagist scope unless promoted in the spec.
 
@@ -12,19 +12,20 @@ This file proves that **every production source artifact** under `src/` is refer
 | --- | --- | --- |
 | `NowoTwigInspectorBundle.php` | Bundle entry | FR-BUNDLE-001 |
 | `BoxDrawings.php` | HTML comment prefixes | FR-TWIG-003 |
-| `Command/InstallCommand.php` | CLI install | FR-CLI-001 |
+| `DevEnvironments.php` | Allowed envs (dev/test) | FR-SEC-003 |
+| `Command/InstallCommand.php` | CLI install | FR-CLI-001, FR-SEC-003 |
 | `Controller/OpenTemplateController.php` | IDE open route | FR-IDE-001, FR-SEC-001 |
 | `DataCollector/TwigInspectorCollector.php` | Web Profiler panel | FR-PROF-001, FR-PROF-002 |
 | `DependencyInjection/Configuration.php` | Config tree | FR-CFG-001 |
-| `DependencyInjection/NowoTwigInspectorExtension.php` | DI extension | FR-CFG-002 |
+| `DependencyInjection/NowoTwigInspectorExtension.php` | DI extension | FR-CFG-002, FR-SEC-003 |
 | `DependencyInjection/Compiler/TwigPathsPass.php` | Twig namespace path | FR-TWIG-001 |
-| `EventSubscriber/ControllerCommentSubscriber.php` | Controller HTML comments | FR-CTRL-001 |
+| `EventSubscriber/ControllerCommentSubscriber.php` | Controller HTML comments | FR-CTRL-001, FR-SEC-003 |
 | `EventSubscriber/ControllerRenderSubscriber.php` | Controller metrics | FR-PROF-003 |
 | `RequestStack/LegacyRequestStackInterface.php` | Symfony 5 compat | FR-COMPAT-001 |
 | `RequestStack/MainOrMasterRequestProvider.php` | Request abstraction | FR-COMPAT-001 |
 | `RequestStack/RequestStackMainOrMasterAdapter.php` | Main/master adapter | FR-COMPAT-001 |
 | `Twig/DebugInfoNodeVisitor.php` | AST injection | FR-TWIG-002 |
-| `Twig/HtmlCommentsExtension.php` | Runtime comment wrap | FR-TWIG-003, FR-TWIG-004 |
+| `Twig/HtmlCommentsExtension.php` | Runtime comment wrap | FR-TWIG-003, FR-TWIG-004, FR-SEC-003 |
 | `Twig/NodeReference.php` | Compile/runtime DTO | FR-TWIG-002 |
 | `Twig/Node/NodeEnd.php` | Compiled end node | FR-TWIG-002 |
 | `Twig/Node/NodeStart.php` | Compiled start node | FR-TWIG-002 |
@@ -81,13 +82,13 @@ This file proves that **every production source artifact** under `src/` is refer
 
 | Category | Files | Mapped |
 | --- | ---: | ---: |
-| PHP classes | 19 | 19 |
+| PHP classes | 20 | 20 |
 | TS/SCSS production | 10 | 10 |
 | Legacy JS/CSS | 2 | 2 |
 | YAML config | 3 | 3 |
 | Twig/SVG views | 3 | 3 |
-| **Total production sources** | **37** | **37** |
+| **Total production sources** | **38** | **38** |
 
 Build artifacts are documented as outputs of listed sources; they are not counted as separate authoring units.
 
-Audit: `find src -type f ! -path '*/assets/dist/*' ! -name '*.test.ts' | wc -l` → **37** (includes legacy `Resources/public/assets/src/*`; excludes Vite `dist/` outputs listed above).
+Audit: `find src -type f ! -path '*/assets/dist/*' ! -name '*.test.ts' | wc -l` → **38** (includes legacy `Resources/public/assets/src/*`; excludes Vite `dist/` outputs listed above).

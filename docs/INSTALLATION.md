@@ -22,7 +22,7 @@ This guide covers installing Twig Inspector Bundle in a Symfony application.
 - **Symfony Web Profiler Bundle** (dev environment) — required for toolbar, collector and "open in IDE" feature
 - **Twig** >= 3.8 || >= 4.0
 
-> **Important:** Twig Inspector is a **development tool only**. Do **not** enable it in production (`prod`). Register the bundle for `dev` and `test` only. The "open in IDE" route returns 404 in `prod` even if mistakenly configured — but the bundle, its extensions and HTML comment injection should never be active in production. See [Security](SECURITY.md) for details.
+> **Important:** Twig Inspector is a **development tool only**. Do **not** enable it in production (`prod`). Register the bundle for `dev` and `test` only. The DI extension **hard-fails** outside those environments; injectors also require `dev`/`test` (not only `kernel.debug`); the "open in IDE" route returns 404 outside allowed envs; `nowo:twig-inspector:install --env=prod` is rejected. See [Security](SECURITY.md) for the threat model.
 
 ## Install with Composer
 
