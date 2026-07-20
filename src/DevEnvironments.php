@@ -35,11 +35,6 @@ final class DevEnvironments
             return;
         }
 
-        throw new LogicException(sprintf(
-            'NowoTwigInspectorBundle must not be enabled in the "%s" environment. '
-            . 'Register it only for "dev" and "test" (composer require --dev). '
-            . 'It depends on the WebProfiler toolbar and would expose template/controller structure.',
-            $environment,
-        ));
+        throw new LogicException(sprintf('NowoTwigInspectorBundle must not be enabled in the "%s" environment. Register it only for "dev" and "test" (composer require --dev). It depends on the WebProfiler toolbar and would expose template/controller structure.', $environment));
     }
 }
