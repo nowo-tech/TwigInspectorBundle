@@ -67,7 +67,7 @@ open coverage/index.html
 
 ## Code quality
 
-The bundle uses PHP-CS-Fixer to enforce code style (PSR-12).
+The bundle uses PHP-CS-Fixer (PSR-12), Rector, and PHPStan (level 8), including **`nowo-tech/phpstan-frankenphp`** classic and worker rulesets (`require-dev` only — consumers do not pull this transitively).
 
 ```bash
 # Check code style
@@ -75,6 +75,10 @@ composer cs-check
 
 # Fix code style
 composer cs-fix
+
+# Static analysis (includes FrankenPHP classic + worker rules)
+composer phpstan
+# or: make phpstan
 ```
 
 ## CI/CD

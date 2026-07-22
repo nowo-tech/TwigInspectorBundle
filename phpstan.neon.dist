@@ -1,6 +1,7 @@
 # PHPStan configuration for Twig Inspector Bundle.
 #
 # Static analysis on src/ only (level 8). Keeps PHP 8.1+ and Symfony 6|7|8 compatibility.
+# FrankenPHP classic + worker rulesets (REQ-CS-005): require-dev only; not a runtime dependency.
 # Run: make phpstan
 parameters:
     level: 8
@@ -15,3 +16,7 @@ parameters:
         -
             message: '#Call to function method_exists\(\) with.*will always evaluate to true#'
             path: src/EventSubscriber/*.php
+
+includes:
+    - vendor/nowo-tech/phpstan-frankenphp/ruleset-classic.neon
+    - vendor/nowo-tech/phpstan-frankenphp/ruleset-worker.neon

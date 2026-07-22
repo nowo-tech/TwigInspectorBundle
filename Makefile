@@ -6,7 +6,7 @@ COMPOSE_FILE := docker-compose.yml
 COMPOSE := docker-compose -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down build shell install test test-unit test-integration test-coverage coverage-php-percent coverage-ts-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos composer-sync rector rector-dry phpstan update validate check-no-cursor-coauthor strip-cursor-coauthor-from-history
+.PHONY: help up down down-dev build shell install test test-unit test-integration test-coverage coverage-php-percent coverage-ts-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos composer-sync rector rector-dry phpstan update validate check-no-cursor-coauthor strip-cursor-coauthor-from-history
 
 # Default target
 help:
@@ -17,6 +17,7 @@ help:
 	@echo "Targets:"
 	@echo "  up            Start Docker container"
 	@echo "  down          Stop Docker container"
+	@echo "  down-dev      Stop root dev container (alias of down; non-destructive)"
 	@echo "  build         Rebuild Docker image (no cache)"
 	@echo "  shell         Open shell in container"
 	@echo "  install       Install Composer and pnpm dependencies"
@@ -67,7 +68,10 @@ up:
 
 # Stop container
 down:
-	$(COMPOSE) down
+	$(COMPOSE) down --remove-orphans
+
+# REQ-MAKE-007: stop root dev environment without removing volumes
+down-dev: down
 
 # Open shell in container
 shell:

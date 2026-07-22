@@ -150,7 +150,7 @@ Run tests and QA with Docker: `make up && make install && make test` (or `make t
 ## Tests and coverage
 
 - Tests: PHPUnit (PHP), Vitest (TS/JS)
-- PHP: 99,69%
+- PHP: 99.70%
 - TS/JS: 99,58%
 
 ## License

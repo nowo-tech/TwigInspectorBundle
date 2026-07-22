@@ -186,7 +186,7 @@ open coverage/index.html
 - [ ] Documentation is updated (if necessary)
 - [ ] docs/CHANGELOG.md is updated (if necessary)
 - [ ] Code is well commented
-- [ ] No warnings or errors from PHPStan/Psalm (if used)
+- [ ] `make phpstan` passes (includes `nowo-tech/phpstan-frankenphp` classic + worker rulesets; require-dev only)
 
 ## Project Structure
 

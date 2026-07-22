@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\DependencyInjection;
 
+use InvalidArgumentException;
 use Nowo\TwigInspectorBundle\DevEnvironments;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+use function is_string;
 
 /**
  * Dependency injection extension for the Twig Inspector Bundle.
@@ -30,7 +33,11 @@ class NowoTwigInspectorExtension extends Extension
     public function load(array $configs, ContainerBuilder $container): void
     {
         if ($container->hasParameter('kernel.environment')) {
-            DevEnvironments::assertAllowed((string) $container->getParameter('kernel.environment'));
+            $environment = $container->getParameter('kernel.environment');
+            if (!is_string($environment)) {
+                throw new InvalidArgumentException('Parameter "kernel.environment" must be a string.');
+            }
+            DevEnvironments::assertAllowed($environment);
         }
 
         $processor     = new Processor();

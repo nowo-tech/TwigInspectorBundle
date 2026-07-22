@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\Tests\Unit\DependencyInjection;
 
+use InvalidArgumentException;
 use LogicException;
 use Nowo\TwigInspectorBundle\DependencyInjection\NowoTwigInspectorExtension;
 use PHPUnit\Framework\TestCase;
@@ -109,6 +110,17 @@ final class NowoTwigInspectorExtensionTest extends TestCase
 
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('must not be enabled in the "staging" environment');
+
+        $this->extension->load([], $container);
+    }
+
+    public function testLoadThrowsWhenKernelEnvironmentIsNotAString(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.environment', 123);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Parameter "kernel.environment" must be a string.');
 
         $this->extension->load([], $container);
     }

@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.39 to the next release](#upgrading-from-1039-to-the-next-release)
+- [Upgrading from 1.0.40 to the next release](#upgrading-from-1040-to-the-next-release)
+- [Upgrading from 1.0.39 to 1.0.40](#upgrading-from-1039-to-1040)
 - [Upgrading from 1.0.38 to 1.0.39](#upgrading-from-1038-to-1039)
 - [Upgrading from 1.0.37 to 1.0.38](#upgrading-from-1037-to-1038)
 - [Upgrading from 1.0.36 to 1.0.37](#upgrading-from-1036-to-1037)
@@ -73,9 +74,19 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.39 to the next release
+## Upgrading from 1.0.40 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.39 to 1.0.40
+
+**No action required** for bundle consumers — runtime API and configuration are unchanged. `nowo-tech/phpstan-frankenphp` is **require-dev only** and is **not** installed when you `composer require` / update this bundle in an application.
+
+### What changed
+
+- **Contributors / package maintainers**: After pulling, run `composer update` (or `make install`) so `nowo-tech/phpstan-frankenphp` is available. PHPStan config is now `phpstan.neon.dist` (includes classic + worker FrankenPHP rulesets). Use `make phpstan` / `composer phpstan` and `make down-dev` as documented in [`DEVELOPMENT.md`](DEVELOPMENT.md) and [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- **Install command**: Reading existing `routes.yaml` no longer uses `set_error_handler`; behavior for apps remains the same.
+- **Runtime**: No configuration or public API changes for applications using the bundle.
 
 ## Upgrading from 1.0.38 to 1.0.39
 
