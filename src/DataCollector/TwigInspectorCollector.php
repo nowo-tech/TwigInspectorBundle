@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
 use Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface;
 use Throwable;
 use Twig\Environment;
+use Twig\Extension\ExtensionInterface;
 use Twig\Extension\ProfilerExtension;
 use Twig\Profiler\Profile;
 
@@ -219,7 +220,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
         if (class_exists(\Symfony\Bridge\Twig\Extension\ProfilerExtension::class) && $this->twig->hasExtension(\Symfony\Bridge\Twig\Extension\ProfilerExtension::class)) {
             $extension = $this->twig->getExtension(\Symfony\Bridge\Twig\Extension\ProfilerExtension::class);
         }
-        if (!$extension instanceof \Twig\Extension\ExtensionInterface && $this->twig->hasExtension(ProfilerExtension::class)) {
+        if (!$extension instanceof ExtensionInterface && $this->twig->hasExtension(ProfilerExtension::class)) {
             $extension = $this->twig->getExtension(ProfilerExtension::class);
         }
         if (!$extension instanceof ProfilerExtension) {

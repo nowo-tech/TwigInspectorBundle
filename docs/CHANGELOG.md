@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.38] - 2026-07-22](#1038-2026-07-22)
+  - [Added](#added)
+  - [Changed](#changed)
 - [[1.0.37] - 2026-07-20](#1037-2026-07-20)
   - [Security](#security)
   - [Added](#added)
@@ -114,6 +117,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.38] - 2026-07-22
+
+### Added
+
+- **Demos (FrankenPHP)**: `FRANKENPHP_MODE` (`classic` \| `worker`, default `worker`) in `.env.example` and Compose; dedicated `docker/entrypoint.sh` selects the Caddyfile (REQ-DEMO-010). Documented in `docs/DEMO-FRANKENPHP.md`.
+
+### Changed
+
+- **PHP-CS-Fixer**: `fully_qualified_strict_types.import_symbols` enabled; short-name imports applied in collector and unit tests (`bundles.php` demos/fixtures included).
+- **CI**: `actions/checkout@v7` for the `git-hygiene` job; `softprops/action-gh-release@v3.0.2` in the release workflow.
+- **Code style**: `DevEnvironments` exception message formatted by CS Fixer (no behavior change).
 
 ## [1.0.37] - 2026-07-20
 

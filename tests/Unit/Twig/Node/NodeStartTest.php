@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle\Tests\Unit\Twig\Node;
 
 use Nowo\TwigInspectorBundle\Twig\Node\NodeStart;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Twig\Compiler;
 
@@ -34,7 +35,7 @@ final class NodeStartTest extends TestCase
         $writeCallCount = 0;
         $compiler->expects($this->exactly(2))
           ->method('write')
-          ->willReturnCallback(function (string $arg) use (&$writeCallCount, $compiler): \PHPUnit\Framework\MockObject\MockObject {
+          ->willReturnCallback(function (string $arg) use (&$writeCallCount, $compiler): MockObject {
               ++$writeCallCount;
               if ($writeCallCount === 1) {
                   $this->assertStringContainsString('$var123 = $this->env->getExtension(', $arg);
@@ -48,7 +49,7 @@ final class NodeStartTest extends TestCase
         $reprCallCount = 0;
         $compiler->expects($this->exactly(3))
           ->method('repr')
-          ->willReturnCallback(function ($arg) use (&$reprCallCount, $compiler): \PHPUnit\Framework\MockObject\MockObject {
+          ->willReturnCallback(function ($arg) use (&$reprCallCount, $compiler): MockObject {
               ++$reprCallCount;
               if ($reprCallCount === 1) {
                   $this->assertSame('ExtensionName', $arg);
@@ -64,7 +65,7 @@ final class NodeStartTest extends TestCase
         $rawCallCount = 0;
         $compiler->expects($this->exactly(3))
           ->method('raw')
-          ->willReturnCallback(function ($arg) use (&$rawCallCount, $compiler): \PHPUnit\Framework\MockObject\MockObject {
+          ->willReturnCallback(function ($arg) use (&$rawCallCount, $compiler): MockObject {
               ++$rawCallCount;
               if ($rawCallCount === 1) {
                   $this->assertSame(");\n", $arg);

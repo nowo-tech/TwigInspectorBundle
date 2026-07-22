@@ -7,6 +7,7 @@ namespace Nowo\TwigInspectorBundle\Tests\Unit\Twig;
 use Nowo\TwigInspectorBundle\BoxDrawings;
 use Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension;
 use Nowo\TwigInspectorBundle\Twig\NodeReference;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionMethod;
@@ -24,8 +25,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 final class HtmlCommentsExtensionTest extends TestCase
 {
-    private \PHPUnit\Framework\MockObject\MockObject $requestStack;
-    private \PHPUnit\Framework\MockObject\MockObject $urlGenerator;
+    private MockObject $requestStack;
+    private MockObject $urlGenerator;
     private BoxDrawings $boxDrawings;
     private HtmlCommentsExtension $extension;
 

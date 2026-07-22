@@ -8,7 +8,7 @@ This document describes how the bundle’s demo applications run under **Franken
 - [What the demos include](#what-the-demos-include)
 - [Development configuration](#development-configuration)
 - [Production configuration](#production-configuration)
-- [Switching between development and production](#switching-between-development-and-production)
+- [Switching classic vs worker (`FRANKENPHP_MODE`)](#switching-classic-vs-worker-frankenphp_mode)
 - [Reproducing in another bundle](#reproducing-in-another-bundle)
 - [Troubleshooting](#troubleshooting)
 
@@ -23,7 +23,7 @@ The demos use:
 - **FrankenPHP** (Caddy + PHP) in a single container.
 - **Docker Compose** with the app and the parent bundle mounted as volumes (`../..` → `/var/twig-inspector-bundle`).
 - **Two Caddyfiles**: `Caddyfile` (production, with worker) and `Caddyfile.dev` (development, no worker).
-- An **entrypoint** script that, when `APP_ENV=dev`, copies `Caddyfile.dev` over the default Caddyfile and then starts FrankenPHP.
+- An **entrypoint** that selects classic vs worker Caddyfile from **`FRANKENPHP_MODE`** (`classic` \| `worker`, default **`worker`** in `.env.example`)
 
 There are two demos: **demo/symfony7** and **demo/symfony8**. Each has its own Dockerfile, docker-compose.yml and Makefile. From the bundle root you run e.g. `make -C demo/symfony8 up` (see the demo’s README for the URL and port).
 
@@ -213,18 +213,23 @@ Or from the bundle root: `make -C demo/symfony8 build` then adjust env to prod a
 
 ---
 
-## Switching between development and production
+## Switching classic vs worker (`FRANKENPHP_MODE`)
 
-- **Development (demos’ default):** `APP_ENV=dev` and `APP_DEBUG=1`. The entrypoint copies `Caddyfile.dev` (no worker, no-cache headers) over the active Caddyfile. The demos use `config/packages/dev/twig.yaml` with `cache: false` and mount `docker/php-dev.ini` with `opcache.revalidate_freq=0`.
-- **Production:** Set `APP_ENV=prod` and `APP_DEBUG=0`. The entrypoint leaves the default Caddyfile (with worker) in place. Do not mount `php-dev.ini` in production.
+Mode is selected by **`FRANKENPHP_MODE`** (`classic` \| `worker`), not by `APP_ENV`. Default in `.env.example` / Compose is **`worker`**.
 
-After changing the Caddyfile or env, restart the container:
+| Mode | Effect |
+| --- | --- |
+| `classic` | Entrypoint copies `Caddyfile.dev` (no worker; better for hot-reload / per-request PHP). |
+| `worker` | Entrypoint uses the default worker-enabled Caddyfile. |
+
+Demos still run with `APP_ENV=dev` and `APP_DEBUG=1` for Symfony. They use `config/packages/dev/twig.yaml` with `cache: false` and mount `docker/php-dev.ini` with `opcache.revalidate_freq=0`.
+
+After changing `FRANKENPHP_MODE`, recreate the container so the entrypoint re-runs:
 
 ```bash
-docker-compose restart
+docker compose up -d --force-recreate
 # or from bundle root:
 make -C demo/symfony8 restart
-# or make -C demo/symfony7 restart
 # or make -C demo/symfony7 restart
 ```
 
@@ -234,14 +239,14 @@ make -C demo/symfony8 restart
 
 To replicate this setup in another bundle or app:
 
-1. **Dockerfile** — base image `dunglas/frankenphp:1-php8.x-alpine` (or your PHP version), install Composer and any extensions, copy the **default** Caddyfile (production) and a **Caddyfile.dev** (no worker) into the image.
-2. **Two Caddyfiles** — e.g. `docker/frankenphp/Caddyfile` (prod: `php_server { worker ... }`) and `docker/frankenphp/Caddyfile.dev` (dev: `php_server` only). Optionally add no-cache headers in the dev Caddyfile.
-3. **Entrypoint** — create `var/cache`, `var/log`, and when `APP_ENV=dev` copy `Caddyfile.dev` over `/etc/frankenphp/Caddyfile`. Then `exec frankenphp run --config /etc/frankenphp/Caddyfile --adapter caddyfile`.
+1. **Dockerfile** — base image `dunglas/frankenphp:1-php8.x-alpine` (or your PHP version), install Composer and any extensions, copy the **default** Caddyfile (worker) and a **Caddyfile.dev** (classic / no worker) into the image; `COPY` a dedicated `docker/entrypoint.sh`.
+2. **Two Caddyfiles** — e.g. `docker/frankenphp/Caddyfile` (worker: `php_server { worker ... }`) and `docker/frankenphp/Caddyfile.dev` (classic: `php_server` only). Optionally add no-cache headers in the classic Caddyfile.
+3. **Entrypoint** — create `var/cache`, `var/log`, and switch Caddyfile from **`FRANKENPHP_MODE`** (`classic` → `Caddyfile.dev`, `worker` → default). Then `exec frankenphp run --config /etc/frankenphp/Caddyfile --adapter caddyfile`.
 4. **Dev-only files (optional)** — `docker/php-dev.ini` with `opcache.revalidate_freq=0`; `config/packages/dev/twig.yaml` with `twig.cache: false`.
-5. **Compose** — dev: set `APP_ENV=dev`, `APP_DEBUG=1`, mount `Caddyfile.dev` so the entrypoint can use it. Prod: set `APP_ENV=prod`, `APP_DEBUG=0`, do not mount `php-dev.ini`.
+5. **Compose** — pass `FRANKENPHP_MODE=${FRANKENPHP_MODE:-worker}`; for Symfony demos keep `APP_ENV=dev`, `APP_DEBUG=1`.
 6. **Bundles** — enable `WebProfilerBundle`, `DebugBundle`, and your bundle only for `dev` and `test` in `bundles.php` as needed.
 
-This gives you a reproducible development setup (changes visible on refresh) and a production-ready setup (workers + cache).
+This gives you a reproducible classic (hot-reload) vs worker FrankenPHP setup.
 
 ---
 

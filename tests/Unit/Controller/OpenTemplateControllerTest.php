@@ -6,6 +6,7 @@ namespace Nowo\TwigInspectorBundle\Tests\Unit\Controller;
 
 use Exception;
 use Nowo\TwigInspectorBundle\Controller\OpenTemplateController;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use RuntimeException;
@@ -42,8 +43,8 @@ final class FilesystemLoaderWithNonStringNamespace extends FilesystemLoader
  */
 final class OpenTemplateControllerTest extends TestCase
 {
-    private \PHPUnit\Framework\MockObject\MockObject $twig;
-    private \PHPUnit\Framework\MockObject\MockObject $fileLinkFormatter;
+    private MockObject $twig;
+    private MockObject $fileLinkFormatter;
     private OpenTemplateController $controller;
 
     protected function setUp(): void

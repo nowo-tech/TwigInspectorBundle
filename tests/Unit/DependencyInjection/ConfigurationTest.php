@@ -6,6 +6,7 @@ namespace Nowo\TwigInspectorBundle\Tests\Unit\DependencyInjection;
 
 use Nowo\TwigInspectorBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 
 /**
@@ -154,7 +155,7 @@ final class ConfigurationTest extends TestCase
 
     public function testOverlayThemeInvalidThrows(): void
     {
-        $this->expectException(\Symfony\Component\Config\Definition\Exception\InvalidConfigurationException::class);
+        $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('overlay_theme must be one of');
 
         $this->processor->processConfiguration($this->configuration, [['overlay_theme' => 'invalid']]);

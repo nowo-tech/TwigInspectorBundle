@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle\Tests\Unit\Twig\Node;
 
 use Nowo\TwigInspectorBundle\Twig\Node\NodeEnd;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Twig\Compiler;
 
@@ -29,7 +30,7 @@ final class NodeEndTest extends TestCase
         $compiler = $this->createMock(Compiler::class);
 
         $compiler->method('write')
-          ->willReturnCallback(function ($arg) use ($compiler): \PHPUnit\Framework\MockObject\MockObject {
+          ->willReturnCallback(function ($arg) use ($compiler): MockObject {
               static $callCount = 0;
               ++$callCount;
               if ($callCount === 1) {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Nowo\TwigInspectorBundle\Tests\Unit\Twig;
 
 use Nowo\TwigInspectorBundle\Twig\DebugInfoNodeVisitor;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\Node\BlockNode;
@@ -12,6 +13,7 @@ use Twig\Node\BodyNode;
 use Twig\Node\ModuleNode;
 use Twig\Node\Node;
 use Twig\Node\TextNode;
+use Twig\Source;
 
 /**
  * Tests for DebugInfoNodeVisitor.
@@ -22,7 +24,7 @@ use Twig\Node\TextNode;
 final class DebugInfoNodeVisitorTest extends TestCase
 {
     private DebugInfoNodeVisitor $visitor;
-    private \PHPUnit\Framework\MockObject\MockObject $env;
+    private MockObject $env;
 
     protected function setUp(): void
     {
@@ -49,7 +51,7 @@ final class DebugInfoNodeVisitorTest extends TestCase
         $macros            = new BodyNode([]);
         $traits            = new BodyNode([]);
         $embeddedTemplates = [];
-        $source            = new \Twig\Source('', 'test.html.twig');
+        $source            = new Source('', 'test.html.twig');
         $moduleNode        = new ModuleNode($body, $parent, $blocks, $macros, $traits, $embeddedTemplates, $source);
 
         $originalDisplayStart = $moduleNode->getNode('display_start');
@@ -114,7 +116,7 @@ final class DebugInfoNodeVisitorTest extends TestCase
         $macros            = new BodyNode([]);
         $traits            = new BodyNode([]);
         $embeddedTemplates = [];
-        $source            = new \Twig\Source('', 'test.html.twig');
+        $source            = new Source('', 'test.html.twig');
         $moduleNode        = new ModuleNode($body, $parent, $blocks, $macros, $traits, $embeddedTemplates, $source);
 
         $visitor1->leaveNode($moduleNode, $this->env);

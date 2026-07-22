@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.37 to the next release](#upgrading-from-1037-to-the-next-release)
+- [Upgrading from 1.0.38 to the next release](#upgrading-from-1038-to-the-next-release)
+- [Upgrading from 1.0.37 to 1.0.38](#upgrading-from-1037-to-1038)
 - [Upgrading from 1.0.36 to 1.0.37](#upgrading-from-1036-to-1037)
 - [Upgrading from 1.0.35 to 1.0.36](#upgrading-from-1035-to-1036)
 - [Upgrading from 1.0.34 to 1.0.35](#upgrading-from-1034-to-1035)
@@ -71,9 +72,19 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.37 to the next release
+## Upgrading from 1.0.38 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.37 to 1.0.38
+
+**No action required** for bundle consumers — demos, tooling, and CI only.
+
+### What changed
+
+- **Demos**: FrankenPHP mode is controlled by `FRANKENPHP_MODE` (`classic`/`worker`) instead of switching Caddyfile solely from `APP_ENV`. Rebuild/recreate demo containers after pulling if you use the demos (`docker compose up -d --force-recreate`). See [`DEMO-FRANKENPHP.md`](DEMO-FRANKENPHP.md).
+- **Contributors**: PHP-CS-Fixer now imports FQCNs as `use` statements (`import_symbols`). CI pins for checkout v7 (git-hygiene) and `action-gh-release` v3.0.2.
+- **Runtime**: No configuration or API changes for applications using the bundle.
 
 ## Upgrading from 1.0.36 to 1.0.37
 
