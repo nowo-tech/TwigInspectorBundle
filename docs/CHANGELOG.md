@@ -6,13 +6,15 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.0.39] - 2026-07-22](#1039-2026-07-22)
+  - [Removed](#removed)
 - [[1.0.38] - 2026-07-22](#1038-2026-07-22)
   - [Added](#added)
   - [Changed](#changed)
 - [[1.0.37] - 2026-07-20](#1037-2026-07-20)
   - [Security](#security)
-  - [Added](#added)
-  - [Changed](#changed)
+  - [Added](#added-1)
+  - [Changed](#changed-1)
 - [[1.0.36] - 2026-07-16](#1036-2026-07-16)
   - [Added](#added-1)
   - [Changed](#changed-1)
@@ -117,6 +119,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.39] - 2026-07-22
+
+### Removed
+
+- **Symfony 7 demo**: Removed `demo/symfony7/` from the repository. The bundle still supports Symfony 7.x; only the standalone demo app was dropped. Remaining demo: Symfony 8 (`demo/symfony8`, port **8003**). Documentation (`README.md`, `docs/DEMO.md`, `docs/DEMO-FRANKENPHP.md`, `docs/CONTRIBUTING.md`, `demo/README.md`, `demo/Makefile`) updated accordingly.
 
 ## [1.0.38] - 2026-07-22
 

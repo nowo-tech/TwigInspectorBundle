@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.38 to the next release](#upgrading-from-1038-to-the-next-release)
+- [Upgrading from 1.0.39 to the next release](#upgrading-from-1039-to-the-next-release)
+- [Upgrading from 1.0.38 to 1.0.39](#upgrading-from-1038-to-1039)
 - [Upgrading from 1.0.37 to 1.0.38](#upgrading-from-1037-to-1038)
 - [Upgrading from 1.0.36 to 1.0.37](#upgrading-from-1036-to-1037)
 - [Upgrading from 1.0.35 to 1.0.36](#upgrading-from-1035-to-1036)
@@ -72,9 +73,17 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.38 to the next release
+## Upgrading from 1.0.39 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.38 to 1.0.39
+
+**No action required** for bundle consumers — demo and documentation only.
+
+### What changed
+
+- **Symfony 7 demo removed**: If you used `demo/symfony7/`, switch to `demo/symfony8/` (port **8003**). Bundle runtime compatibility with Symfony 7 is unchanged.
 
 ## Upgrading from 1.0.37 to 1.0.38
 

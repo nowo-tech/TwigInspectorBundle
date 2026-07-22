@@ -1,23 +1,14 @@
 # Demo Projects
 
-The bundle includes two demo projects, one for each supported Symfony LTS/current version. Each demo has its own `docker-compose.yml` and can be run independently:
+The bundle includes a demo project for the current Symfony major. It has its own `docker-compose.yml` and can be run independently:
 
-- **Symfony 7.0 Demo**: `demo/symfony7/` (Port 8002 by default, configurable via `PORT`)
 - **Symfony 8.0 Demo**: `demo/symfony8/` (Port 8003 by default, configurable via `PORT`)
 
-**Docker stack:** Demos use **FrankenPHP** with **Caddy** as the web server. The bundled **Caddyfiles serve HTTP only** (`:80` in the container, published to the host as `PORT`: 8002/8003 by demo). TLS/HTTPS is **not** enabled in the default demo configs; you can extend Caddy if you need HTTPS locally.
+**Docker stack:** The demo uses **FrankenPHP** with **Caddy** as the web server. The bundled **Caddyfile serves HTTP only** (`:80` in the container, published to the host as `PORT`: 8003). TLS/HTTPS is **not** enabled in the default demo config; you can extend Caddy if you need HTTPS locally.
 
 ## Quick Start with Docker
 
-Each demo can be started independently:
-
 ```bash
-# Symfony 7.0 Demo
-cd demo/symfony7
-docker-compose up -d
-docker-compose exec php composer install
-# Access at: http://localhost:8002 (default port)
-
 # Symfony 8.0 Demo
 cd demo/symfony8
 docker-compose up -d
@@ -29,9 +20,6 @@ Or use the Makefile helper commands from the `demo/` directory:
 
 ```bash
 cd demo
-
-make up-symfony7
-make install-symfony7
 
 make up-symfony8
 make install-symfony8
@@ -45,7 +33,7 @@ The demo `docker-compose.yml` sets explicit DNS servers on the PHP service so Co
 
 1. **Recreate the container** so Docker applies the `dns:` block (editing compose alone does not update a running container):
    ```bash
-   cd demo/symfony7   # or symfony8
+   cd demo/symfony8
    docker compose down
    docker compose up -d --force-recreate
    ```
@@ -58,9 +46,9 @@ The demo `docker-compose.yml` sets explicit DNS servers on the PHP service so Co
 
 ### Port already allocated (`Bind for 0.0.0.0:800x failed`)
 
-Another stack is using the host port. Set `PORT` in `.env` (see each demo’s `.env.example`) or stop the other container, then `docker compose down` and `docker compose up -d` again.
+Another stack is using the host port. Set `PORT` in `.env` (see the demo’s `.env.example`) or stop the other container, then `docker compose down` and `docker compose up -d` again.
 
-Each demo includes:
+The demo includes:
 
 - Independent `docker-compose.yml` for easy setup
 - Complete test suite to verify bundle integration
@@ -70,24 +58,22 @@ Each demo includes:
 
 ## Running Demo Tests
 
-Each demo has its own test suite with code coverage:
+The demo has its own test suite with code coverage:
 
 ```bash
 cd demo
 
-make test-symfony7
 make test-symfony8
 
-make test-coverage-symfony7
 make test-coverage-symfony8
 
 make test-coverage-all
 ```
 
-Or directly in each demo directory:
+Or directly in the demo directory:
 
 ```bash
-cd demo/symfony7
+cd demo/symfony8
 docker-compose exec php composer test
 docker-compose exec php composer test-coverage
 ```

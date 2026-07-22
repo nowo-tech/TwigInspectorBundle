@@ -2,7 +2,7 @@
 # Each demo has its own docker-compose.yml and can be run independently
 
 # Define available demos
-DEMOS := symfony7 symfony8
+DEMOS := symfony8
 
 # Helper function to get port from .env or .env.example (defaults to 8001)
 get-port = $(shell grep -E '^PORT=' $(1)/.env 2>/dev/null | cut -d '=' -f2 || grep -E '^PORT=' $(1)/.env.example 2>/dev/null | cut -d '=' -f2 || echo "8001")
@@ -54,17 +54,17 @@ help:
 	@echo ""
 	@echo "Verification:"
 	@echo "  verify-all         Start all demos and verify they respond correctly"
-	@echo "  verify <demo>      Start a specific demo and verify it responds (e.g., make verify DEMO=symfony7)"
+	@echo "  verify <demo>      Start a specific demo and verify it responds (e.g., make verify DEMO=symfony8)"
 	@echo ""
 	@echo "Generic commands (use with DEMO=<name>):"
-	@echo "  up <demo>         Start a specific demo (e.g., make up DEMO=symfony7)"
-	@echo "  down <demo>        Stop a specific demo (e.g., make down DEMO=symfony7)"
-	@echo "  restart <demo>     Restart containers (e.g., make restart DEMO=symfony7)"
-	@echo "  build <demo>       Rebuild image no cache (e.g., make build DEMO=symfony7)"
-	@echo "  install <demo>     Install dependencies (e.g., make install DEMO=symfony7)"
-	@echo "  update-bundle <demo>  Update bundle from path repo (e.g., make update-bundle DEMO=symfony7)"
-	@echo "  test <demo>        Run tests (e.g., make test DEMO=symfony7)"
-	@echo "  test-coverage <demo>  Run tests with coverage (e.g., make test-coverage DEMO=symfony7)"
+	@echo "  up <demo>         Start a specific demo (e.g., make up DEMO=symfony8)"
+	@echo "  down <demo>        Stop a specific demo (e.g., make down DEMO=symfony8)"
+	@echo "  restart <demo>     Restart containers (e.g., make restart DEMO=symfony8)"
+	@echo "  build <demo>       Rebuild image no cache (e.g., make build DEMO=symfony8)"
+	@echo "  install <demo>     Install dependencies (e.g., make install DEMO=symfony8)"
+	@echo "  update-bundle <demo>  Update bundle from path repo (e.g., make update-bundle DEMO=symfony8)"
+	@echo "  test <demo>        Run tests (e.g., make test DEMO=symfony8)"
+	@echo "  test-coverage <demo>  Run tests with coverage (e.g., make test-coverage DEMO=symfony8)"
 	@echo "  shell <demo>       Open shell in a specific demo container"
 	@echo "  logs <demo>        Show logs of a specific demo"
 	@echo ""
@@ -452,8 +452,6 @@ verify:
 check-all: verify-all
 
 # Run test-ts in each demo (TwigInspector bundle has TS; demos may have no-op if no Vitest)
-test-ts-symfony7:
-	@$(MAKE) -C symfony7 test-ts 2>/dev/null || true
 test-ts-symfony8:
 	@$(MAKE) -C symfony8 test-ts 2>/dev/null || true
 test-ts-all:
