@@ -6,9 +6,13 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
-- [[1.0.40] - 2026-07-22](#1040-2026-07-22)
+- [[1.0.41] - 2026-07-29](#1041-2026-07-29)
   - [Added](#added)
   - [Changed](#changed)
+  - [Removed](#removed)
+- [[1.0.40] - 2026-07-22](#1040-2026-07-22)
+  - [Added](#added-1)
+  - [Changed](#changed-1)
 - [[1.0.39] - 2026-07-22](#1039-2026-07-22)
   - [Removed](#removed)
 - [[1.0.38] - 2026-07-22](#1038-2026-07-22)
@@ -122,6 +126,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.0.41] - 2026-07-29
+
+### Added
+
+- FrankenPHP Friendly banner (`docs/images/frankenphp-friendly.png`) and canonical README sentence (REQ-DOCS-017).
+- Root **`make demo-smoke`** + `.github/workflows/demo-smoke.yml` (REQ-TEST-011).
+- `.scripts/check-open-prs.sh` wired into `release-check` (REQ-REL-003 / MAKE-002).
+- Composer keywords `php`, `frankenphp` (REQ-PKG-004).
+- README badges: GitHub stars + Coverage (REQ-DOCS-004).
+
+### Changed
+
+- **ASSETS-004**: Removed unused `src/Resources/public/`; overlay JS/CSS ship via Twig `include` from `views/assets/dist` (no named Symfony asset package required).
+- **CS-006**: `phpstan.neon.dist` uses `ignoreErrors: []`; `RequestStackMainOrMasterAdapter` uses `instanceof RequestStack` instead of `method_exists`.
+- PHPUnit / CI: `SYMFONY_DEPRECATIONS_HELPER=max[direct]=0` (REQ-SF-005).
+- README Documentation order: Installation first; `GITHUB_CI` under Additional (REQ-DOCS-002).
+- Demo Makefiles: absolute `DOCKER_BIN` to avoid local `docker/` PATH shadowing (REQ-MAKE-010).
+
+### Removed
+
+- Stale `src/Resources/public/assets/` tree (duplicate of Twig-embedded build output).
 
 ## [1.0.40] - 2026-07-22
 

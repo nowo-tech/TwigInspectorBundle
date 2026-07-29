@@ -123,8 +123,7 @@ make watch-assets     # Watch mode
 | Path | Purpose |
 |------|---------|
 | `src/Resources/assets/src/*.ts` | TypeScript source — compiled by Vite |
-| `src/Resources/views/assets/dist/` | Build output — used by the collector Twig template (`@NowoTwigInspector`) |
-| `src/Resources/public/assets/` | Distributable assets — copied to the host project with `assets:install` |
+| `src/Resources/views/assets/dist/` | Build output — inlined by the collector Twig template (`@NowoTwigInspectorBundle/assets/dist/…`) |
 
 Main output in `src/Resources/views/assets/dist/`:
 

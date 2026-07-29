@@ -3,10 +3,12 @@
 # All dev targets (test, install, qa, etc.) use the root docker-compose.yml.
 
 COMPOSE_FILE := docker-compose.yml
-COMPOSE := docker-compose -f $(COMPOSE_FILE)
+# Prefer Compose V2 plugin (GitHub Actions / modern Docker Desktop); fall back to docker-compose V1 (REQ-MAKE-010).
+COMPOSE_BIN := $(shell docker compose version >/dev/null 2>&1 && echo "docker compose" || echo "docker-compose")
+COMPOSE     := $(COMPOSE_BIN) -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down down-dev build shell install test test-unit test-integration test-coverage coverage-php-percent coverage-ts-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos composer-sync rector rector-dry phpstan update validate check-no-cursor-coauthor strip-cursor-coauthor-from-history
+.PHONY: help up down down-dev build shell install test test-unit test-integration test-coverage coverage-php-percent coverage-ts-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos demo-smoke composer-sync rector rector-dry phpstan update validate check-no-cursor-coauthor check-open-prs strip-cursor-coauthor-from-history
 
 # Default target
 help:
@@ -33,6 +35,8 @@ help:
 	@echo "  phpstan       Run PHPStan static analysis"
 	@echo "  qa            Run all QA checks (cs-check + test)"
 	@echo "  release-check Pre-release: cs-fix, cs-check, rector-dry, phpstan, test-coverage, test-ts, demo healthchecks"
+	@echo "  demo-smoke    REQ-TEST-011: boot FrankenPHP demo and assert HTTP 200"
+	@echo "  check-open-prs REQ-REL-003: fail if unresolved open PRs"
 	@echo "  composer-sync Validate composer.json and align composer.lock (no install)"
 	@echo "  clean         Remove vendor and cache"
 	@echo "  update        Update composer.lock (composer update)"
@@ -58,7 +62,7 @@ help:
 build:
 	$(COMPOSE) build --no-cache
 
-# Build and start container (root docker-compose)
+# Build and start container (root $(COMPOSE))
 up:
 	$(COMPOSE) build
 	$(COMPOSE) up -d
@@ -86,7 +90,7 @@ install: ensure-up
 # Ensure root container is running (start if not). Used by cs-fix, cs-check, qa, install, test, test-coverage.
 ensure-up:
 	@if ! $(COMPOSE) exec -T $(SERVICE_PHP) true 2>/dev/null; then \
-		echo "Starting container (root docker-compose)..."; \
+		echo "Starting container (root $(COMPOSE))..."; \
 		$(COMPOSE) up -d; \
 		sleep 3; \
 		$(COMPOSE) exec -T $(SERVICE_PHP) composer install --no-interaction; \
@@ -155,10 +159,13 @@ validate: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer validate --strict
 
 # Pre-release: cs-fix, cs-check, rector-dry, phpstan, test-coverage, demo healthchecks
-release-check: check-no-cursor-coauthor ensure-up composer-sync cs-fix cs-check rector-dry phpstan test-coverage test-ts release-check-demos
+release-check: check-no-cursor-coauthor check-open-prs ensure-up composer-sync cs-fix cs-check rector-dry phpstan test-coverage test-ts release-check-demos
 
 release-check-demos:
 	@$(MAKE) -C demo release-check
+
+demo-smoke:
+	@$(MAKE) -C demo demo-smoke
 
 composer-sync: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer validate --strict
@@ -172,6 +179,10 @@ clean: ensure-up
 check-no-cursor-coauthor:
 	@chmod +x .scripts/check-no-cursor-coauthor.sh
 	@./.scripts/check-no-cursor-coauthor.sh HEAD
+
+check-open-prs:
+	@chmod +x .scripts/check-open-prs.sh
+	@bash .scripts/check-open-prs.sh
 
 setup-hooks:
 	@chmod +x .githooks/pre-commit 2>/dev/null || true
@@ -222,7 +233,8 @@ assets-clean: ensure-up
 
 # REQ-MAKE-008: update-deps (REQ-MAKE-008)
 BUNDLE_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-include $(BUNDLE_ROOT)/../.scripts/Makefile.update-deps.mk
+# Optional: monorepo helper absent on standalone GitHub Actions checkout (REQ-MAKE-009).
+-include $(BUNDLE_ROOT)/../.scripts/Makefile.update-deps.mk
 
 strip-cursor-coauthor-from-history:
 	@chmod +x .scripts/strip-cursor-coauthor-from-history.sh

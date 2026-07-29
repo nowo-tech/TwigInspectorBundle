@@ -89,7 +89,7 @@
             "dist": {
                 "type": "path",
                 "url": "/var/twig-inspector-bundle",
-                "reference": "c6d5e954a2f85df8d262493f8d53cba7a8b52263"
+                "reference": "c8962c45bb85bcc3be49b4cd2d626e4a70245818"
             },
             "require": {
                 "php": ">=8.1 <8.6",
@@ -106,6 +106,7 @@
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.0",
+                "nowo-tech/phpstan-frankenphp": "^1.0",
                 "phpstan/extension-installer": "^1.4",
                 "phpstan/phpstan": "^2.0",
                 "phpstan/phpstan-symfony": "^2.0",

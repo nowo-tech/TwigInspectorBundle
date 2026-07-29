@@ -1,5 +1,10 @@
 # Release checklist
 
+## Table of contents
+
+- [Before tagging](#before-tagging)
+- [Tag and push](#tag-and-push)
+
 Use this checklist when cutting a new version. The workflow [.github/workflows/release.yml](../.github/workflows/release.yml) runs on push of a tag `v*` and creates the GitHub Release with body from the tag message and changelog.
 
 ## Before tagging
@@ -27,6 +32,14 @@ git checkout main
 git pull origin main
 git tag -a vX.Y.Z -m "Release vX.Y.Z"
 git push origin vX.Y.Z
+```
+
+Example for v1.0.41:
+
+```bash
+git tag -a v1.0.41 -m "Release v1.0.41 - FrankenPHP banner, remove public assets dupe, demo-smoke"
+git push origin main
+git push origin v1.0.41
 ```
 
 Example for v1.0.31:

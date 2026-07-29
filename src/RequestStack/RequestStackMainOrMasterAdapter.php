@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Adapts RequestStack (or a legacy-style stack) to MainOrMasterRequestProvider.
- * Uses getMainRequest() when available (Symfony 6+), otherwise getMasterRequest() (Symfony 5.x).
+ * Uses getMainRequest() on Symfony RequestStack; otherwise getMasterRequest() (legacy stub).
  *
  * @internal Used by the bundle DI and tests
  */
@@ -27,13 +27,10 @@ final class RequestStackMainOrMasterAdapter implements MainOrMasterRequestProvid
 
     public function getMainOrMasterRequest(): ?Request
     {
-        if (method_exists($this->stack, 'getMainRequest')) {
+        if ($this->stack instanceof RequestStack) {
             return $this->stack->getMainRequest();
         }
 
-        /** @var LegacyRequestStackInterface $stack */
-        $stack = $this->stack;
-
-        return $stack->getMasterRequest();
+        return $this->stack->getMasterRequest();
     }
 }

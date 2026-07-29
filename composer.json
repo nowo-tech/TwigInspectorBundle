@@ -4,7 +4,10 @@
     "type": "symfony-bundle",
     "license": "MIT",
     "keywords": [
+        "php",
         "symfony",
+        "symfony-bundle",
+        "frankenphp",
         "bundle",
         "twig",
         "debug",

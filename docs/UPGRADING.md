@@ -5,7 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
-- [Upgrading from 1.0.40 to the next release](#upgrading-from-1040-to-the-next-release)
+- [Upgrading from 1.0.41 to the next release](#upgrading-from-1041-to-the-next-release)
+- [Upgrading from 1.0.40 to 1.0.41](#upgrading-from-1040-to-1041)
 - [Upgrading from 1.0.39 to 1.0.40](#upgrading-from-1039-to-1040)
 - [Upgrading from 1.0.38 to 1.0.39](#upgrading-from-1038-to-1039)
 - [Upgrading from 1.0.37 to 1.0.38](#upgrading-from-1037-to-1038)
@@ -74,9 +75,24 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-## Upgrading from 1.0.40 to the next release
+## Upgrading from 1.0.41 to the next release
 
 _Placeholder for the next release._
+
+## Upgrading from 1.0.40 to 1.0.41
+
+**Usually no action** for application consumers — overlay assets remain Twig-inlined (no `assets:install` for the inspector UI).
+
+### What changed
+
+- Removed unused `src/Resources/public/` (stale duplicate of Twig-embedded build output).
+- FrankenPHP Friendly banner in README; `make demo-smoke` / open-PR gate for maintainers.
+- PHPStan: `ignoreErrors: []`; RequestStack adapter uses `instanceof`.
+- PHPUnit: `SYMFONY_DEPRECATIONS_HELPER=max[direct]=0`.
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+```
 
 ## Upgrading from 1.0.39 to 1.0.40
 

@@ -1,5 +1,15 @@
 # Spec-driven development
 
+## Table of contents
+
+- [User stories](#user-stories)
+- [Bundle functional scope](#bundle-functional-scope)
+- [Validating the functional spec](#validating-the-functional-spec)
+- [Requirement identifiers (`REQ-*`)](#requirement-identifiers-req-)
+- [Suggested workflow for contributors](#suggested-workflow-for-contributors)
+- [GitHub Spec Kit (summary)](#github-spec-kit-summary)
+- [See also](#see-also)
+
 In this repository, **spec-driven development** has three layers that stay in sync:
 
 1. **GitHub Spec Kit baseline** — machine- and human-readable product spec under [`specs/001-baseline/`](../specs/001-baseline/) ([`spec.md`](../specs/001-baseline/spec.md), [`code-inventory.md`](../specs/001-baseline/code-inventory.md)), initialized with [GitHub Spec Kit](https://github.com/github/spec-kit) (`.specify/`, Cursor Agent skills in `.cursor/skills/speckit-*`). The inventory maps **100%** of production code in `src/` to requirement IDs. **How to install, initialize, and use Spec Kit:** [`SPEC-KIT.md`](SPEC-KIT.md).

@@ -1,27 +1,31 @@
 # Twig Inspector Bundle
 
-[![CI](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/twig-inspector-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/twig-inspector-bundle.svg)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-6.0%2B%20%7C%207.4%2B%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com)
+[![CI](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/twig-inspector-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/twig-inspector-bundle.svg)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-6.0%2B%20%7C%207.4%2B%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/TwigInspectorBundle.svg?style=social&label=Star)](https://github.com/nowo-tech/TwigInspectorBundle) [![Coverage](https://img.shields.io/badge/Coverage-99%25-brightgreen)](#tests-and-coverage)
 
 > ⭐ **Found this useful?** [Install from Packagist](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) · Give it a **star** on [GitHub](https://github.com/nowo-tech/TwigInspectorBundle) so more developers can find it.
+> **WARNING — Development only.** Do **not** enable this bundle in production. It depends on the Symfony **WebProfiler** toolbar and exposes template paths, controller names, and page structure. Install with `composer require --dev`, register only for `dev`/`test`, and see [docs/SECURITY.md](docs/SECURITY.md). Loading the bundle outside those environments throws a `LogicException` at container build time.
 
 **Twig Inspector Bundle** — Debug Twig templates directly in the browser. See which template or block rendered each HTML element, click to open it in your IDE, and use it from the Symfony Web Profiler. For Symfony 6, 7 and 8 · PHP 8.1+.
 
-> **WARNING — Development only.** Do **not** enable this bundle in production. It depends on the Symfony **WebProfiler** toolbar and exposes template paths, controller names, and page structure. Install with `composer require --dev`, register only for `dev`/`test`, and see [docs/SECURITY.md](docs/SECURITY.md). Loading the bundle outside those environments throws a `LogicException` at container build time.
+![FrankenPHP Friendly Worker Mode](docs/images/frankenphp-friendly.png)
+
+This bundle is **FrankenPHP worker mode friendly**.
 
 ## Table of contents
 
 - [Quick search terms](#quick-search-terms)
 - [Features](#features)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Screenshots](#screenshots)
-- [How it works](#how-it-works)
-- [Configuration](#configuration)
-- [Documentation](#documentation)
 - [Requirements](#requirements)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [How it works](#how-it-works)
 - [Demo](#demo)
 - [Development](#development)
-- [License & author](#license--author)
+- [Documentation](#documentation)
+- [Tests and coverage](#tests-and-coverage)
+- [License](#license)
+- [Author](#author)
 
 ## Quick search terms
 
@@ -63,6 +67,26 @@ return [
 ];
 ```
 
+## Requirements
+
+- PHP >= 8.1, < 8.6
+- Symfony >= 6.0 \|\| >= 7.0 \|\| >= 8.0
+- Symfony Web Profiler Bundle (for development)
+- Twig >= 3.8 \|\| >= 4.0
+
+See [docs/INSTALLATION.md](docs/INSTALLATION.md#requirements) and [docs/UPGRADING.md](docs/UPGRADING.md) for compatibility notes.
+
+## Configuration
+
+The bundle works with **no configuration file**; defaults are defined in `Configuration.php`. Create `config/packages/nowo_twig_inspector.yaml` only if you want to customize behavior (exclusions, cookie name, overlay theme, etc.).
+
+- **Flex**: config and routes are created automatically when installing from Packagist.
+- **Manual / private bundle**: run `php bin/console nowo:twig-inspector:install` to create the config file and update routes.
+
+Full options and behavior: [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
+
+**IDE integration**: set `framework.ide` in your config (e.g. `phpstorm://open?file=%%f&line=%%l`). Examples for PhpStorm, VS Code, Sublime, etc.: [docs/INSTALLATION.md](docs/INSTALLATION.md#ide-integration-optional).
+
 ## Usage
 
 1. **Enable the bundle** (only in `dev` and `test` environments).
@@ -89,21 +113,16 @@ See [docs/USAGE.md](docs/USAGE.md) for the full step-by-step and overlay behavio
 
 The bundle injects HTML comments before and after every Twig block and template. When the inspector is enabled, a JavaScript overlay maps those comments to HTML elements and lets you open the template in your IDE. With the inspector on, it also injects **controller comments** in the HTML (main controller after `<body>`, and start/end comments around each fragment from `render(controller(...))`). The Web Profiler panel shows templates, blocks, and **controllers** (with Main/Fragment roles). See [docs/USAGE.md](docs/USAGE.md) for details.
 
-## Configuration
+## Demo
 
-The bundle works with **no configuration file**; defaults are defined in `Configuration.php`. Create `config/packages/nowo_twig_inspector.yaml` only if you want to customize behavior (exclusions, cookie name, overlay theme, etc.).
+The Symfony 8.0 demo is in `demo/symfony8`. It runs **FrankenPHP** (Caddy + PHP): the app listens on **:80 inside the container**, and `docker-compose` maps that to the host port **`PORT`** (default: **8003**). Production-style configs use FrankenPHP **worker** mode; classic/dev-friendly mode uses `Caddyfile.dev` without workers (see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md)). Quick start: [docs/DEMO.md](docs/DEMO.md).
 
-- **Flex**: config and routes are created automatically when installing from Packagist.
-- **Manual / private bundle**: run `php bin/console nowo:twig-inspector:install` to create the config file and update routes.
+## Development
 
-Full options and behavior: [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
-
-**IDE integration**: set `framework.ide` in your config (e.g. `phpstorm://open?file=%%f&line=%%l`). Examples for PhpStorm, VS Code, Sublime, etc.: [docs/INSTALLATION.md](docs/INSTALLATION.md#ide-integration-optional).
+Run tests and QA with Docker: `make up && make install && make test` (or `make test-coverage`, `make qa`). Without Docker: `composer install && composer test`. Building assets: `make assets` (runs inside container) or `pnpm install && pnpm run build`. Full details: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Documentation
 
-
-- [GitHub Actions CI requirements](docs/GITHUB_CI.md)
 - [Installation](docs/INSTALLATION.md)
 - [Configuration](docs/CONFIGURATION.md)
 - [Usage](docs/USAGE.md)
@@ -120,6 +139,7 @@ Full options and behavior: [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
 ### Additional documentation
 
+- [GitHub Actions CI requirements](docs/GITHUB_CI.md)
 - [Overriding bundle templates](docs/USAGE.md#overriding-bundle-templates)
 - [Demo](docs/DEMO.md)
 - [Demo with FrankenPHP (development and production)](docs/DEMO-FRANKENPHP.md)
@@ -129,23 +149,6 @@ Full options and behavior: [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 **Security**: The bundle validates template paths and restricts routes to `dev`/`test`. See [docs/SECURITY.md](docs/SECURITY.md).
 
 **Template usage metrics**: When `enable_metrics` is `true` (default), the Web Profiler shows template/block usage. Details in [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
-
-## Requirements
-
-- PHP >= 8.1, < 8.6
-- Symfony >= 6.0 \|\| >= 7.0 \|\| >= 8.0
-- Symfony Web Profiler Bundle (for development)
-- Twig >= 3.8 \|\| >= 4.0
-
-See [docs/INSTALLATION.md](docs/INSTALLATION.md#requirements) and [docs/UPGRADING.md](docs/UPGRADING.md) for compatibility notes.
-
-## Demo
-
-The Symfony 8.0 demo is in `demo/symfony8`. It runs **FrankenPHP** (Caddy + PHP): the app listens on **:80 inside the container**, and `docker-compose` maps that to the host port **`PORT`** (default: **8003**). Production-style configs use FrankenPHP **worker** mode; classic/dev-friendly mode uses `Caddyfile.dev` without workers (see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md)). Quick start: [docs/DEMO.md](docs/DEMO.md).
-
-## Development
-
-Run tests and QA with Docker: `make up && make install && make test` (or `make test-coverage`, `make qa`). Without Docker: `composer install && composer test`. Building assets: `make assets` (runs inside container) or `pnpm install && pnpm run build`. Full details: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
 ## Tests and coverage
 

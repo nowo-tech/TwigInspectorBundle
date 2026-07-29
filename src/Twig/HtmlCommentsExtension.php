@@ -223,7 +223,7 @@ class HtmlCommentsExtension extends AbstractExtension
             return false;
         }
 
-        return !($blockName !== $template && $this->isExcludedByRegex($blockName, $this->excludedBlocksRegex))
+        return $blockName === $template || !$this->isExcludedByRegex($blockName, $this->excludedBlocksRegex)
 
         ;
     }

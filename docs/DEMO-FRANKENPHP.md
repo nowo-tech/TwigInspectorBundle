@@ -1,8 +1,6 @@
 # Demo applications with FrankenPHP (development and production)
 
-This document describes how the bundle’s demo applications run under **FrankenPHP** in Docker, and how to reproduce **development** (no cache, changes visible on refresh) and **production** (worker mode, cache enabled) configurations. The same approach can be used in other Symfony bundles or applications that ship a FrankenPHP-based demo.
-
-## Contents
+## Table of contents
 
 - [Overview](#overview)
 - [What the demos include](#what-the-demos-include)
@@ -11,6 +9,8 @@ This document describes how the bundle’s demo applications run under **Franken
 - [Switching classic vs worker (`FRANKENPHP_MODE`)](#switching-classic-vs-worker-frankenphp_mode)
 - [Reproducing in another bundle](#reproducing-in-another-bundle)
 - [Troubleshooting](#troubleshooting)
+
+This document describes how the bundle’s demo applications run under **FrankenPHP** in Docker, and how to reproduce **development** (no cache, changes visible on refresh) and **production** (worker mode, cache enabled) configurations. The same approach can be used in other Symfony bundles or applications that ship a FrankenPHP-based demo.
 
 ---
 
