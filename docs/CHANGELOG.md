@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.1.0] - 2026-08-04](#110-2026-08-04)
 - [[1.0.41] - 2026-07-29](#1041-2026-07-29)
   - [Added](#added)
   - [Changed](#changed)
@@ -126,6 +127,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.1.0] - 2026-08-04
+
+### Added
+- **REQ-TWIG-004:** require `twig/extra-bundle` + `twig/string-extra`; `make check-twig-extra` in `release-check`; demos register `TwigExtraBundle`.
+- **Twig-CS-Fixer:** `vincentlanglet/twig-cs-fixer`, `.twig-cs-fixer.php`, `composer twig:lint` / `twig:fix`.
+
+[1.1.0]: https://github.com/nowo-tech/TwigInspectorBundle/releases/tag/v1.1.0
 
 ## [1.0.41] - 2026-07-29
 

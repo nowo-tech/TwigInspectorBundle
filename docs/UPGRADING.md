@@ -5,6 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
+- [Unreleased](#unreleased)
+- [To 1.1.0](#to-110)
 - [Upgrading from 1.0.41 to the next release](#upgrading-from-1041-to-the-next-release)
 - [Upgrading from 1.0.40 to 1.0.41](#upgrading-from-1040-to-1041)
 - [Upgrading from 1.0.39 to 1.0.40](#upgrading-from-1039-to-1040)
@@ -74,6 +76,33 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Twig Version Requirements](#twig-version-requirements)
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
+
+
+## Unreleased
+
+## To 1.1.0
+
+From **1.0.41** — Adds required Twig Extra (REQ-TWIG-004) and Twig-CS-Fixer. Register TwigExtraBundle if Flex did not.
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+php bin/console cache:clear
+```
+
+### Twig Extra Bundle (REQ-TWIG-004)
+
+Hosts that render this bundle's Twig templates must install:
+
+```bash
+composer require twig/extra-bundle twig/string-extra
+```
+
+and enable `Twig\Extra\TwigExtraBundle\TwigExtraBundle`. Flex recipes usually register it automatically.
+
+### Twig-CS-Fixer (maintainers)
+
+Package maintainers: `composer twig:lint` / `composer twig:fix` use `.twig-cs-fixer.php` over `src/` (and `templates/` when present).
+
 
 ## Upgrading from 1.0.41 to the next release
 

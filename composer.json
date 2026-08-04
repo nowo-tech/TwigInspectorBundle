@@ -55,10 +55,12 @@
         "symfony/dependency-injection": "^6.0 || ^7.0 || ^8.0",
         "symfony/error-handler": "^6.0 || ^7.0 || ^8.0",
         "symfony/filesystem": "^6.0 || ^7.0 || ^8.0",
-        "symfony/http-kernel": "^6.0 || ^7.0 || ^8.0",
         "symfony/http-foundation": "^6.0 || ^7.0 || ^8.0",
+        "symfony/http-kernel": "^6.0 || ^7.0 || ^8.0",
         "symfony/routing": "^6.0 || ^7.0 || ^8.0",
         "symfony/web-profiler-bundle": "^6.0 || ^7.0 || ^8.0",
+        "twig/extra-bundle": "^3.12",
+        "twig/string-extra": "^3.12",
         "twig/twig": "^3.8 || ^4.0"
     },
     "require-dev": {
@@ -71,7 +73,8 @@
         "rector/rector": "^2.0",
         "symfony/framework-bundle": "^6.0 || ^7.0 || ^8.0",
         "symfony/twig-bundle": "^6.0 || ^7.0 || ^8.0",
-        "symfony/yaml": "^6.0 || ^7.0 || ^8.0"
+        "symfony/yaml": "^6.0 || ^7.0 || ^8.0",
+        "vincentlanglet/twig-cs-fixer": "^3.0"
     },
     "autoload": {
         "psr-4": {
@@ -84,7 +87,10 @@
         }
     },
     "archive": {
-        "exclude": ["/demo", "/.cursor"]
+        "exclude": [
+            "/demo",
+            "/.cursor"
+        ]
     },
     "config": {
         "sort-packages": true,
@@ -108,7 +114,10 @@
         "qa": [
             "@cs-check",
             "@test"
-        ]
+        ],
+        "twig:lint": "twig-cs-fixer lint --config=.twig-cs-fixer.php",
+        "twig:fix": "twig-cs-fixer fix --config=.twig-cs-fixer.php",
+        "twig:fix:check": "twig-cs-fixer lint --config=.twig-cs-fixer.php --fix"
     },
     "scripts-descriptions": {
         "test": "Run PHPUnit tests",

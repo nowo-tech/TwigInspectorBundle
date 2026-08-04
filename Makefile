@@ -8,7 +8,7 @@ COMPOSE_BIN := $(shell docker compose version >/dev/null 2>&1 && echo "docker co
 COMPOSE     := $(COMPOSE_BIN) -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down down-dev build shell install test test-unit test-integration test-coverage coverage-php-percent coverage-ts-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos demo-smoke composer-sync rector rector-dry phpstan update validate check-no-cursor-coauthor check-open-prs strip-cursor-coauthor-from-history
+.PHONY: help up down down-dev build shell install test test-unit test-integration test-coverage coverage-php-percent coverage-ts-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos demo-smoke composer-sync rector rector-dry phpstan update validate check-no-cursor-coauthor check-open-prs strip-cursor-coauthor-from-history check-twig-extra
 
 # Default target
 help:
@@ -159,7 +159,11 @@ validate: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer validate --strict
 
 # Pre-release: cs-fix, cs-check, rector-dry, phpstan, test-coverage, demo healthchecks
-release-check: check-no-cursor-coauthor check-open-prs ensure-up composer-sync cs-fix cs-check rector-dry phpstan test-coverage test-ts release-check-demos
+
+check-twig-extra:
+	@chmod +x .scripts/check-twig-extra.sh
+	@./.scripts/check-twig-extra.sh
+release-check: check-no-cursor-coauthor check-open-prs check-twig-extra ensure-up composer-sync cs-fix cs-check rector-dry phpstan test-coverage test-ts release-check-demos
 
 release-check-demos:
 	@$(MAKE) -C demo release-check
@@ -239,3 +243,6 @@ BUNDLE_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 strip-cursor-coauthor-from-history:
 	@chmod +x .scripts/strip-cursor-coauthor-from-history.sh
 	@./.scripts/strip-cursor-coauthor-from-history.sh main
+
+twig-lint: ensure-up
+	@$(COMPOSE) exec -T $(SERVICE_PHP) composer twig:lint || $(COMPOSE) exec -T $(SERVICE_PHP) ./vendor/bin/twig-cs-fixer lint --config=.twig-cs-fixer.php
