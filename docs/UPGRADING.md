@@ -6,6 +6,7 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.1.1](#to-111)
 - [To 1.1.0](#to-110)
 - [Upgrading from 1.0.41 to the next release](#upgrading-from-1041-to-the-next-release)
 - [Upgrading from 1.0.40 to 1.0.41](#upgrading-from-1040-to-1041)
@@ -79,6 +80,14 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 
 ## Unreleased
+
+## To 1.1.1
+
+From **1.1.0** — Dev-dependency pin (`webmozart/assert` ^1.11) so CI stays installable on PHP 8.1. No host migration.
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+```
 
 ## To 1.1.0
 
