@@ -33,6 +33,7 @@ What is already implemented vs. what remains from the ideas below:
 | **Exclusions** | ✅ Done (partial) | `excluded_templates` and `excluded_blocks` with **wildcard** support (`*`) are implemented. Regex, namespace or PHP attribute-based exclusion are not. |
 | **Metrics** | ✅ Done (partial) | Web Profiler shows templates used, blocks used, usage counts and totals. **Render time per template** is not implemented. |
 | **IDE support** | ✅ Done (partial) | Uses Symfony’s `FileLinkFormatter` and `framework.ide` (PhpStorm, VS Code, Sublime, Atom). Broader schemes or platform-specific handling are not. |
+| **Controller HTML comments** | ✅ Done | Overlay / Profiler include controller (main + fragment) source links. |
 | **UI (theme/layout)** | ❌ Not done | No dark mode, compact tooltip or overlay theme options yet. |
 
 ## Possible future (2.x / ideas)
