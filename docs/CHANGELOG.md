@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.1.2] - 2026-08-18](#112-2026-08-18)
 - [[1.1.1] - 2026-08-04](#111-2026-08-04)
 - [[1.1.0] - 2026-08-04](#110-2026-08-04)
 - [[1.0.41] - 2026-07-29](#1041-2026-07-29)
@@ -128,6 +129,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.1.2] - 2026-08-18
+
+### Changed
+
+- **Demos:** pin `nowo-tech/hot-reload-bundle` to `^1.4` with FrankenPHP Mercure/`hot_reload` (`dev`/`test` only).
+
+[1.1.2]: https://github.com/nowo-tech/TwigInspectorBundle/releases/tag/v1.1.2
 
 ## [1.1.1] - 2026-08-04
 

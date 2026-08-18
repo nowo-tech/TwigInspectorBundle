@@ -6,6 +6,7 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.1.2](#to-112)
 - [To 1.1.1](#to-111)
 - [To 1.1.0](#to-110)
 - [Upgrading from 1.0.41 to the next release](#upgrading-from-1041-to-the-next-release)
@@ -80,6 +81,15 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 
 ## Unreleased
+
+## To 1.1.2
+
+No application upgrade steps. **Demos only:** Hot Reload Bundle `^1.4` (FrankenPHP Mercure/`hot_reload`, `dev`/`test`).
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+php bin/console cache:clear
+```
 
 ## To 1.1.1
 
