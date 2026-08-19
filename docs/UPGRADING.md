@@ -6,6 +6,7 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.1.3](#to-113)
 - [To 1.1.2](#to-112)
 - [To 1.1.1](#to-111)
 - [To 1.1.0](#to-110)
@@ -81,6 +82,14 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 
 ## Unreleased
+
+## To 1.1.3
+
+No application upgrade steps.
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+```
 
 ## To 1.1.2
 
