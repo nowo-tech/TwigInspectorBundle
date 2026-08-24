@@ -5,6 +5,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 ## Table of contents
 
+
+- [From 1.1.3 to 1.1.4](#from-113-to-114)
 - [Unreleased](#unreleased)
 - [To 1.1.3](#to-113)
 - [To 1.1.2](#to-112)
