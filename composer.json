@@ -75,7 +75,7 @@
         "symfony/twig-bundle": "^6.0 || ^7.0 || ^8.0",
         "symfony/yaml": "^6.0 || ^7.0 || ^8.0",
         "vincentlanglet/twig-cs-fixer": "^4.0",
-        "webmozart/assert": "^1.11"
+        "webmozart/assert": "^2.4"
     },
     "autoload": {
         "psr-4": {
