@@ -10,7 +10,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Service\ResetInterface;
 use Twig\Extension\AbstractExtension;
+use WeakReference;
 
 use function in_array;
 
@@ -18,16 +20,30 @@ use function in_array;
  * Twig extension that injects HTML comments before and after every block and template.
  * Comments contain template name, link, and a unique id for the inspector overlay.
  *
+ * Rendering state (previous block, nesting level, box-drawing charset) is reset whenever a new main request
+ * is detected, so it never carries over between worker requests even without kernel.reset.
+ *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-class HtmlCommentsExtension extends AbstractExtension
+class HtmlCommentsExtension extends AbstractExtension implements ResetInterface
 {
     /** @var string|null Last wrapped content (used to detect nested blocks and update box style) */
     private ?string $previousContent = null;
 
     /** @var int Current nesting level for box-drawing style */
     private int $nestingLevel = 0;
+
+    /** @var WeakReference<Request>|null Main request the rendering state belongs to */
+    private ?WeakReference $stateRequest = null;
+
+    /**
+     * Output-buffer levels opened by {@see start()} and not yet closed by {@see end()}.
+     * Used to discard leaked buffers on {@see reset()} without closing unrelated buffers.
+     *
+     * @var list<int>
+     */
+    private array $ownedBufferLevels = [];
 
     /**
      * Constructor.
@@ -80,12 +96,15 @@ class HtmlCommentsExtension extends AbstractExtension
             return;
         }
 
+        $this->resetStateOnNewMainRequest();
+
         $request = $this->requestStack->getCurrentRequest();
         if ($request instanceof Request && !$request->attributes->has(self::REQUEST_ATTR_ROOT_TEMPLATE)) {
             $request->attributes->set(self::REQUEST_ATTR_ROOT_TEMPLATE, $ref->getTemplate());
         }
 
         ob_start();
+        $this->ownedBufferLevels[] = ob_get_level();
     }
 
     /**
@@ -101,16 +120,16 @@ class HtmlCommentsExtension extends AbstractExtension
             return;
         }
 
+        $this->resetStateOnNewMainRequest();
+
         // Do not output if headers were already sent (e.g. error response) to avoid "Cannot modify header" warning
         if (headers_sent()) { // @codeCoverageIgnore
-            if (ob_get_level() > 0) { // @codeCoverageIgnore
-                ob_end_clean(); // @codeCoverageIgnore
-            }
+            $this->discardTopOwnedBuffer(); // @codeCoverageIgnore
 
             return; // @codeCoverageIgnore
         }
 
-        if (ob_get_level() === 0) { // @codeCoverageIgnore
+        if (!$this->popOwnedBufferIfOnTop()) { // @codeCoverageIgnore
             return; // @codeCoverageIgnore
         }
 
@@ -152,6 +171,70 @@ class HtmlCommentsExtension extends AbstractExtension
         if (ob_get_level() > 0) {
             echo $content;
         }
+    }
+
+    /**
+     * Clears the rendering state (previous block, nesting level, box-drawing charset, owned buffers).
+     */
+    public function reset(): void
+    {
+        $this->discardOwnedBuffers();
+        $this->previousContent = null;
+        $this->nestingLevel    = 0;
+        $this->stateRequest    = null;
+        $this->boxDrawings->reset();
+    }
+
+    private function resetStateOnNewMainRequest(): void
+    {
+        $mainRequest = $this->requestStack->getMainRequest();
+        if (!$mainRequest instanceof Request || $this->stateRequest?->get() === $mainRequest) {
+            return;
+        }
+
+        $this->reset();
+        $this->stateRequest = WeakReference::create($mainRequest);
+    }
+
+    /**
+     * Closes every still-open buffer that this extension started (exact level match only).
+     */
+    private function discardOwnedBuffers(): void
+    {
+        while ($this->ownedBufferLevels !== []) {
+            $this->discardTopOwnedBuffer();
+        }
+    }
+
+    /**
+     * Closes the most recently opened owned buffer when it is still the top buffer.
+     */
+    private function discardTopOwnedBuffer(): void
+    {
+        if ($this->ownedBufferLevels === []) {
+            return;
+        }
+
+        $level = array_pop($this->ownedBufferLevels);
+        if (ob_get_level() === $level) {
+            ob_end_clean();
+        }
+    }
+
+    /**
+     * Pops tracking for the top owned buffer when it is still the active output buffer.
+     *
+     * @return bool True when the caller should {@see ob_get_clean()} that buffer
+     */
+    private function popOwnedBufferIfOnTop(): bool
+    {
+        if ($this->ownedBufferLevels === []) {
+            return false;
+        }
+
+        $level = array_pop($this->ownedBufferLevels);
+
+        return !(ob_get_level() !== $level);
     }
 
     /**

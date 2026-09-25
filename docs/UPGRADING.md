@@ -6,8 +6,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 ## Table of contents
 
 
+- [From 1.1.4 to 1.1.5](#from-114-to-115)
 - [From 1.1.3 to 1.1.4](#from-113-to-114)
-- [Unreleased](#unreleased)
 - [To 1.1.3](#to-113)
 - [To 1.1.2](#to-112)
 - [To 1.1.1](#to-111)
@@ -83,7 +83,23 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Getting Help](#getting-help)
 
 
-## Unreleased
+## From 1.1.4 to 1.1.5
+
+No configuration changes. FrankenPHP worker mode with the kernel **not** reset between requests is supported (see [`FRANKENPHP-WORKER-AUDIT.md`](FRANKENPHP-WORKER-AUDIT.md)).
+
+`HtmlCommentsExtension` and `BoxDrawings` now implement `Symfony\Contracts\Service\ResetInterface` with a public `reset(): void` method; if you extend either class and already declare a `reset()` method, make it compatible (and call `parent::reset()`).
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+```
+
+## From 1.1.3 to 1.1.4
+
+Minimum PHP is **8.2**. No other application upgrade steps.
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+```
 
 ## To 1.1.3
 

@@ -117,4 +117,16 @@ final class BoxDrawingsTest extends TestCase
         $this->assertStringStartsWith('╰', $prefix);
         $this->assertGreaterThan(1, strlen($prefix));
     }
+
+    public function testResetRestoresInitialCharsetAndLength(): void
+    {
+        $boxDrawings = new BoxDrawings();
+        $boxDrawings->blockChanged(2);
+        self::assertNotSame('┏', $boxDrawings->getStartCommentPrefix());
+
+        $boxDrawings->reset();
+
+        self::assertSame('┏', $boxDrawings->getStartCommentPrefix());
+        self::assertSame('┗', $boxDrawings->getEndCommentPrefix());
+    }
 }

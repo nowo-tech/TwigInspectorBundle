@@ -9,7 +9,7 @@
 
 ![FrankenPHP Friendly Worker Mode](docs/images/frankenphp-friendly.png)
 
-This bundle is **FrankenPHP worker mode friendly**.
+This bundle is **FrankenPHP worker mode friendly**, including when the kernel is **not** reset between requests. See [docs/FRANKENPHP-WORKER-AUDIT.md](docs/FRANKENPHP-WORKER-AUDIT.md).
 
 ## Table of contents
 
@@ -144,6 +144,7 @@ Run tests and QA with Docker: `make up && make install && make test` (or `make t
 - [Overriding bundle templates](docs/USAGE.md#overriding-bundle-templates)
 - [Demo](docs/DEMO.md)
 - [Demo with FrankenPHP (development and production)](docs/DEMO-FRANKENPHP.md)
+- [FrankenPHP worker audit (no kernel reset)](docs/FRANKENPHP-WORKER-AUDIT.md)
 - [Development](docs/DEVELOPMENT.md)
 - [Branching](docs/BRANCHING.md)
 

@@ -100,9 +100,10 @@ As an integrator, I exclude noisy templates/blocks and tune overlay theme, compa
 - Sub-requests (fragments): Twig comment injection skipped by default (`inject_on_sub_requests=false`); controller comments still wrap fragment responses when cookie active on master request.
 - Profiler/WDT paths (`/_wdt`, `/_profiler`): injection skipped to avoid breaking toolbar HTML.
 - Non-HTML output (JSON, plain text, Backbone `<%`): `end()` echoes buffer without wrapping.
-- `headers_sent` before `end()`: buffer cleaned, no partial comments.
+- `headers_sent` before `end()`: owned buffer cleaned, no partial comments.
 - `max_injection_depth > 0`: deep nesting stops wrapping but still outputs content.
 - Multiple templates on one element: click opens picker instead of immediate navigation.
+- FrankenPHP worker without kernel reboot / without `services_resetter`: per-request state MUST NOT leak (see FR-WORKER-*).
 
 ---
 
@@ -125,7 +126,14 @@ As an integrator, I exclude noisy templates/blocks and tune overlay theme, compa
 ### Controller instrumentation
 
 - **FR-CTRL-001**: `ControllerCommentSubscriber` on `kernel.response` (-512) MUST inject controller boundary comments when inspector active **and** environment is allowed (`dev`/`test`) with `kernel.debug`: `<!-- ┏ controller: {class}::{method} [main|fragment] template: {path} -->` with closing `<!-- ┗ /controller -->` for fragments; uses `HtmlCommentsExtension::REQUEST_ATTR_ROOT_TEMPLATE` when set.
-- **FR-PROF-003**: `ControllerRenderSubscriber` MUST record controller callables per master request on `kernel.controller` and expose aggregated `{name, count, is_main}` via `getControllersForRequest()`.
+- **FR-PROF-003**: `ControllerRenderSubscriber` MUST record controller callables per master request on `kernel.controller` and expose aggregated `{name, count, is_main}` via `getControllersForRequest()`. Entries MUST be keyed by the main `Request` object in a `WeakMap`, removed on `kernel.terminate` using `$event->getRequest()` (request stack is empty there), and dropped by `ResetInterface::reset()`.
+
+### FrankenPHP worker (kernel not reset)
+
+- **FR-WORKER-001**: Shared HTTP-path services that keep per-request mutable state (`ControllerRenderSubscriber`, `HtmlCommentsExtension`, `BoxDrawings`) MUST implement `Symfony\Contracts\Service\ResetInterface` so autoconfiguration tags them `kernel.reset`.
+- **FR-WORKER-002**: Under scenario B (FrankenPHP worker, kernel not rebooted, `services_resetter` does not run), those services MUST still isolate requests: WeakMap/WeakReference and/or reset-on-new-main-request; collector `collect()` MUST start with `reset()`.
+- **FR-WORKER-003**: `HtmlCommentsExtension` MUST track output buffers it opens and discard only those owned levels on `reset()` / new main request, without closing unrelated outer buffers.
+- **FR-WORKER-004**: Audit record and usage notes live in [`docs/FRANKENPHP-WORKER-AUDIT.md`](../../docs/FRANKENPHP-WORKER-AUDIT.md).
 
 ### IDE route & security
 

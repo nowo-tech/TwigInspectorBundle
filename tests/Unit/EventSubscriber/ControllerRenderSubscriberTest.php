@@ -17,6 +17,7 @@ use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use WeakMap;
 
 final class ControllerRenderSubscriberTest extends TestCase
 {
@@ -192,5 +193,69 @@ final class ControllerRenderSubscriberTest extends TestCase
         $this->assertCount(1, $controllers);
         $this->assertSame('Closure', $controllers[0]['name']);
         $this->assertTrue($controllers[0]['is_main']);
+    }
+
+    /**
+     * Mirrors HttpKernel in a worker: the request is popped before kernel.terminate and no reset() runs.
+     */
+    public function testConsecutiveWorkerRequestsWithoutResetDoNotAccumulate(): void
+    {
+        $kernel = $this->createMock(HttpKernelInterface::class);
+
+        foreach ([1, 2, 3] as $iteration) {
+            $request = new Request();
+            $this->requestStack->push($request);
+            $this->subscriber->onController(new ControllerEvent($kernel, static fn () => null, $request, HttpKernelInterface::MAIN_REQUEST));
+            $this->requestStack->pop();
+
+            $controllers = $this->subscriber->getControllersForRequest($request);
+            $this->assertCount(1, $controllers, 'iteration ' . $iteration);
+            $this->assertSame(1, $controllers[0]['count'], 'iteration ' . $iteration);
+
+            $this->assertNull($this->requestStack->getMainRequest());
+            $this->subscriber->onTerminate(new TerminateEvent($kernel, $request, new HttpResponse()));
+            $this->assertSame([], $this->subscriber->getControllersForRequest($request));
+        }
+
+        $this->assertCount(0, $this->controllerMap($this->subscriber));
+    }
+
+    public function testEntriesOfARequestThatNeverTerminatedAreFreedWithTheRequest(): void
+    {
+        $kernel  = $this->createMock(HttpKernelInterface::class);
+        $request = new Request();
+        $this->requestStack->push($request);
+        $this->subscriber->onController(new ControllerEvent($kernel, static fn () => null, $request, HttpKernelInterface::MAIN_REQUEST));
+        $this->requestStack->pop();
+        $this->assertCount(1, $this->controllerMap($this->subscriber));
+
+        unset($request);
+        gc_collect_cycles();
+
+        $this->assertCount(0, $this->controllerMap($this->subscriber));
+        $this->assertSame([], $this->subscriber->getControllersForRequest(new Request()));
+    }
+
+    public function testResetDropsAllEntries(): void
+    {
+        $kernel  = $this->createMock(HttpKernelInterface::class);
+        $request = new Request();
+        $this->requestStack->push($request);
+        $this->subscriber->onController(new ControllerEvent($kernel, static fn () => null, $request, HttpKernelInterface::MAIN_REQUEST));
+
+        $this->subscriber->reset();
+
+        $this->assertSame([], $this->subscriber->getControllersForRequest($request));
+    }
+
+    /**
+     * @return WeakMap<object, mixed>
+     */
+    private function controllerMap(ControllerRenderSubscriber $subscriber): WeakMap
+    {
+        $map = (new ReflectionClass($subscriber))->getProperty('controllersByMasterRequest')->getValue($subscriber);
+        $this->assertInstanceOf(WeakMap::class, $map);
+
+        return $map;
     }
 }

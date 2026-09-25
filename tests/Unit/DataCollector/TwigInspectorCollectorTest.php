@@ -572,4 +572,26 @@ final class TwigInspectorCollectorTest extends TestCase
         $this->assertArrayHasKey('child.html.twig', $times);
         $this->assertEqualsWithDelta(1.0, $times['child.html.twig'], 0.01, 'Template duration in ms (float precision)');
     }
+
+    public function testNextRequestWithoutCookieDoesNotKeepPreviousProfileDataWithoutReset(): void
+    {
+        $inspected = new Request();
+        $inspected->cookies->set('twig_inspector_is_active', '1');
+        $response = new Response('<!-- ┏━ template1.html.twig [/_template/template1.html.twig?line=1] #id1-->');
+        $this->collector->collect($inspected, $response);
+        (new ReflectionProperty(TwigInspectorCollector::class, 'data'))->setValue(
+            $this->collector,
+            ['template_times' => ['template1.html.twig' => 3.5]] + $this->collector->getData(),
+        );
+        $this->assertSame(1, $this->collector->getTotalTemplates());
+
+        // Next request on the same collector, profiler reset() not called, inspector cookie off.
+        $this->collector->collect(new Request(), new Response('<p>plain</p>'));
+
+        $this->assertFalse($this->collector->isEnabled());
+        $this->assertSame([], $this->collector->getTemplates());
+        $this->assertSame([], $this->collector->getBlocks());
+        $this->assertSame(0, $this->collector->getTotalTemplates());
+        $this->assertSame([], $this->collector->getTemplateTimes());
+    }
 }

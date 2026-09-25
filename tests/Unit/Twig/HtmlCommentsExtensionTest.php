@@ -118,9 +118,9 @@ final class HtmlCommentsExtensionTest extends TestCase
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
+        ob_start();
         $this->extension->start($ref);
         echo 'plain text';
-        ob_start();
         $this->extension->end($ref);
         $output = ob_get_clean();
 
@@ -136,9 +136,9 @@ final class HtmlCommentsExtensionTest extends TestCase
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
+        ob_start();
         $this->extension->start($ref);
         echo '{"key": "value"}';
-        ob_start();
         $this->extension->end($ref);
         $output = ob_get_clean();
 
@@ -154,9 +154,9 @@ final class HtmlCommentsExtensionTest extends TestCase
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
+        ob_start();
         $this->extension->start($ref);
         echo '<div><% code %></div>';
-        ob_start();
         $this->extension->end($ref);
         $output = ob_get_clean();
 
@@ -1016,5 +1016,97 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $this->assertSame('<div>nested</div>', $output);
         $this->assertStringNotContainsString('<!--', $output);
+    }
+
+    public function testRenderingStateDoesNotCarryOverToNextMainRequestWithoutReset(): void
+    {
+        $requestStack = new RequestStack();
+        $extension    = new HtmlCommentsExtension($requestStack, $this->urlGenerator, $this->boxDrawings);
+        $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
+
+        // Request 1: three nested blocks advance nesting level and charset.
+        $request1 = new Request();
+        $request1->cookies->set('twig_inspector_is_active', '1');
+        $requestStack->push($request1);
+        $output1 = $this->renderBlock($extension, new NodeReference('outer', 'template.html.twig', 1), '<div>outer</div>');
+        $output2 = $this->renderBlock($extension, new NodeReference('middle', 'template.html.twig', 2), $output1 . '<p>x</p>');
+        $output3 = $this->renderBlock($extension, new NodeReference('inner', 'template.html.twig', 3), $output2 . '<p>y</p>');
+        self::assertStringStartsWith('<!-- ╭─ inner ', $output3);
+        $requestStack->pop();
+
+        // Request 2 on the same instances, no reset(): content that embeds request 1's output is a new top-level block.
+        $request2 = new Request();
+        $request2->cookies->set('twig_inspector_is_active', '1');
+        $requestStack->push($request2);
+        $output4 = $this->renderBlock($extension, new NodeReference('page', 'template.html.twig', 4), $output3 . '<p>z</p>');
+
+        self::assertStringStartsWith('<!-- ┏ page ', $output4);
+        self::assertStringContainsString('<!-- ┗ page ', $output4);
+    }
+
+    public function testNestingIsKeptWithinTheSameMainRequest(): void
+    {
+        $requestStack = new RequestStack();
+        $extension    = new HtmlCommentsExtension($requestStack, $this->urlGenerator, $this->boxDrawings);
+        $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
+
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $requestStack->push($request);
+
+        $output1 = $this->renderBlock($extension, new NodeReference('outer', 'template.html.twig', 1), '<div>outer</div>');
+        $output2 = $this->renderBlock($extension, new NodeReference('middle', 'template.html.twig', 2), $output1 . '<p>x</p>');
+        $output3 = $this->renderBlock($extension, new NodeReference('inner', 'template.html.twig', 3), $output2 . '<p>y</p>');
+
+        self::assertStringStartsWith('<!-- ╭─ inner ', $output3);
+    }
+
+    public function testResetRestoresInitialRenderingState(): void
+    {
+        $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+
+        $output1 = $this->renderBlock($this->extension, new NodeReference('outer', 'template.html.twig', 1), '<div>outer</div>');
+        $output2 = $this->renderBlock($this->extension, new NodeReference('middle', 'template.html.twig', 2), $output1 . '<p>x</p>');
+        $this->renderBlock($this->extension, new NodeReference('inner', 'template.html.twig', 3), $output2 . '<p>y</p>');
+        self::assertNotSame('┏', $this->boxDrawings->getStartCommentPrefix());
+
+        $this->extension->reset();
+
+        self::assertNull((new ReflectionProperty(HtmlCommentsExtension::class, 'previousContent'))->getValue($this->extension));
+        self::assertSame(0, (new ReflectionProperty(HtmlCommentsExtension::class, 'nestingLevel'))->getValue($this->extension));
+        self::assertSame('┏', $this->boxDrawings->getStartCommentPrefix());
+    }
+
+    public function testResetClosesLeakedOwnedBuffersWithoutTouchingOuterBuffers(): void
+    {
+        $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
+        $request = new Request();
+        $request->cookies->set('twig_inspector_is_active', '1');
+        $this->requestStack->method('getCurrentRequest')->willReturn($request);
+        $this->requestStack->method('getMainRequest')->willReturn($request);
+
+        ob_start();
+        $outerLevel = ob_get_level();
+        $this->extension->start(new NodeReference('page', 'template.html.twig', 1));
+        self::assertSame($outerLevel + 1, ob_get_level());
+
+        $this->extension->reset();
+
+        self::assertSame($outerLevel, ob_get_level());
+        self::assertSame('', (string) ob_get_clean());
+        self::assertSame([], (new ReflectionProperty(HtmlCommentsExtension::class, 'ownedBufferLevels'))->getValue($this->extension));
+    }
+
+    private function renderBlock(HtmlCommentsExtension $extension, NodeReference $ref, string $content): string
+    {
+        ob_start();
+        $extension->start($ref);
+        echo $content;
+        $extension->end($ref);
+
+        return (string) ob_get_clean();
     }
 }

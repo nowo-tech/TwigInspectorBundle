@@ -115,6 +115,8 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
      */
     public function collect(Request $request, Response $response, ?Throwable $exception = null): void
     {
+        $this->reset();
+
         $this->data['enabled'] = $request->cookies->getBoolean($this->cookieName, false);
         $this->data['config']  = [
             'cookie_name'       => $this->cookieName,

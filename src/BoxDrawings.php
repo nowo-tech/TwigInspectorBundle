@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle;
 
+use Symfony\Contracts\Service\ResetInterface;
+
 use function count;
 
 /**
@@ -13,7 +15,7 @@ use function count;
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-class BoxDrawings
+class BoxDrawings implements ResetInterface
 {
     /** @var array<int, array<int, string>> Box-drawing character sets: [start, line, end] per set */
     protected const CHARSETS = [
@@ -69,6 +71,15 @@ class BoxDrawings
         if ($length === 0 || count(self::CHARSETS) - 1 === $this->charsetIndex) {
             $this->charsetIndex = 0;
         }
+    }
+
+    /**
+     * Restores the initial charset and length.
+     */
+    public function reset(): void
+    {
+        $this->charsetIndex = 0;
+        $this->length       = 0;
     }
 
     /**

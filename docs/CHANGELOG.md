@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.1.5] - 2026-09-25](#115-2026-09-25)
+- [[1.1.4] - 2026-08-24](#114-2026-08-24)
 - [[1.1.2] - 2026-08-18](#112-2026-08-18)
 - [[1.1.1] - 2026-08-04](#111-2026-08-04)
 - [[1.1.0] - 2026-08-04](#110-2026-08-04)
@@ -130,6 +132,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.5] - 2026-09-25
+
+### Fixed
+
+- **FrankenPHP worker mode (no `kernel.reset`):** `ControllerRenderSubscriber` stores controllers in a `WeakMap` keyed by the main request and removes the entry on `kernel.terminate` using the event request (the request stack is already empty there), so the profiler "Controllers" list no longer grows across requests; it also implements `ResetInterface`.
+- `HtmlCommentsExtension` and `BoxDrawings` implement `ResetInterface`; the extension resets its nesting / box-drawing state whenever a new main request is detected, so comment styling never continues from a previous request.
+- `HtmlCommentsExtension` tracks output buffers it opens and discards only those owned levels on `reset()` / new main request (safe with Twig `use_yield` and without closing unrelated outer buffers).
+- `TwigInspectorCollector::collect()` starts from a clean state, so a request without the inspector cookie never shows the previous request's templates, blocks or times.
+
+### Added
+
+- Audit report [`docs/FRANKENPHP-WORKER-AUDIT.md`](FRANKENPHP-WORKER-AUDIT.md) (scenario B: kernel not rebooted, no `services_resetter`).
+- Spec requirements FR-WORKER-001…004 and regression tests for consecutive worker requests without `reset()`.
+
+### Notes
+
+- **No configuration changes** for integrators. Subclasses of `HtmlCommentsExtension` / `BoxDrawings` that already define `reset()` must stay compatible with `ResetInterface` (call `parent::reset()`).
+
+[1.1.5]: https://github.com/nowo-tech/TwigInspectorBundle/releases/tag/v1.1.5
 
 ## [1.1.4] - 2026-08-24
 

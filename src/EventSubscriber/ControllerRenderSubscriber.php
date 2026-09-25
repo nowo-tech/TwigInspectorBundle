@@ -7,10 +7,11 @@ namespace Nowo\TwigInspectorBundle\EventSubscriber;
 use Closure;
 use Nowo\TwigInspectorBundle\RequestStack\MainOrMasterRequestProvider;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\TerminateEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Contracts\Service\ResetInterface;
+use WeakMap;
 
 use function count;
 use function is_array;
@@ -21,13 +22,16 @@ use function is_string;
  * Records every controller invocation (main request + sub-requests from render(controller(...)))
  * so the Twig Inspector collector can display them in the profiler panel.
  *
+ * Entries are keyed by the main request object (weakly), removed on kernel.terminate and dropped by
+ * {@see reset()}, so nothing accumulates in a long-running worker even without kernel.reset.
+ *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-final class ControllerRenderSubscriber implements EventSubscriberInterface
+final class ControllerRenderSubscriber implements EventSubscriberInterface, ResetInterface
 {
-    /** @var array<int, list<array{name: string, is_main: bool}>> Master request object id => list of controller entries */
-    private array $controllersByMasterRequest = [];
+    /** @var WeakMap<object, list<array{name: string, is_main: bool}>> Master request => list of controller entries */
+    private WeakMap $controllersByMasterRequest;
 
     /**
      * Constructor.
@@ -37,6 +41,7 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
     public function __construct(
         private readonly MainOrMasterRequestProvider $mainOrMasterProvider
     ) {
+        $this->controllersByMasterRequest = new WeakMap();
     }
 
     /**
@@ -62,33 +67,32 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
         $master  = $this->mainOrMasterProvider->getMainOrMasterRequest();
         $master ??= $request;
-        $key = spl_object_id($master);
 
-        if (!isset($this->controllersByMasterRequest[$key])) {
-            $this->controllersByMasterRequest[$key] = [];
-        }
-
-        $controller                               = $event->getController();
-        $this->controllersByMasterRequest[$key][] = [
-            'name'    => $this->controllerToString($controller),
+        $entries   = $this->controllersByMasterRequest[$master] ?? [];
+        $entries[] = [
+            'name'    => $this->controllerToString($event->getController()),
             'is_main' => $request === $master,
         ];
+        $this->controllersByMasterRequest[$master] = $entries;
     }
 
     /**
-     * Cleans up recorded controllers for the master request when the request terminates.
+     * Cleans up recorded controllers for the terminating request.
+     * The request stack is already empty at kernel.terminate, so the event request is used directly.
      *
      * @param TerminateEvent $event The terminate event
      */
     public function onTerminate(TerminateEvent $event): void
     {
-        $request = $event->getRequest();
-        $master  = $this->mainOrMasterProvider->getMainOrMasterRequest();
-        if (!$master instanceof Request || $request !== $master) {
-            return;
-        }
-        $key = spl_object_id($request);
-        unset($this->controllersByMasterRequest[$key]);
+        unset($this->controllersByMasterRequest[$event->getRequest()]);
+    }
+
+    /**
+     * Drops every recorded controller list (kernel.reset).
+     */
+    public function reset(): void
+    {
+        $this->controllersByMasterRequest = new WeakMap();
     }
 
     /**
@@ -101,8 +105,7 @@ final class ControllerRenderSubscriber implements EventSubscriberInterface
      */
     public function getControllersForRequest(object $masterRequest): array
     {
-        $key  = spl_object_id($masterRequest);
-        $list = $this->controllersByMasterRequest[$key] ?? [];
+        $list = $this->controllersByMasterRequest[$masterRequest] ?? [];
 
         $byName = [];
         foreach ($list as $entry) {

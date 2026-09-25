@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\Tests\Integration;
 
+use Nowo\TwigInspectorBundle\BoxDrawings;
 use Nowo\TwigInspectorBundle\Command\InstallCommand;
 use Nowo\TwigInspectorBundle\Controller\OpenTemplateController;
+use Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber;
 use Nowo\TwigInspectorBundle\Tests\Kernel\TestKernel;
+use Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension;
+use ReflectionProperty;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Application as ConsoleApplication;
@@ -41,6 +45,19 @@ final class BundleIntegrationTest extends KernelTestCase
         $this->assertTrue($container->has('nowo_twig_inspector.controller.open_template'), 'OpenTemplateController (public) should be registered');
         $application = new Application(self::$kernel);
         $this->assertTrue($application->has('nowo:twig-inspector:install'), 'Install command should be registered');
+    }
+
+    public function testStatefulServicesAreRegisteredForKernelReset(): void
+    {
+        self::bootKernel();
+        $resetter = self::getContainer()->get('services_resetter');
+
+        $resetMethods = (new ReflectionProperty($resetter, 'resetMethods'))->getValue($resetter);
+        $this->assertIsArray($resetMethods);
+
+        foreach ([HtmlCommentsExtension::class, BoxDrawings::class, ControllerRenderSubscriber::class] as $serviceId) {
+            $this->assertArrayHasKey($serviceId, $resetMethods, $serviceId . ' should be tagged kernel.reset');
+        }
     }
 
     public function testInstallCommandRunsAndCreatesConfigAndRoutes(): void
