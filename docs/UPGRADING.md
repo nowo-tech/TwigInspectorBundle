@@ -1,5 +1,19 @@
 # Upgrading Guide
 
+
+## Unreleased
+
+## To 1.1.6
+
+From **1.1.5** — REQ-CS-008 Igor FrankenPHP worker audit (igor-php require-dev, igor.json, make igor).
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+php bin/console cache:clear
+```
+
+- No application upgrade steps for require-dev Igor tooling (REQ-CS-008). Consumers do not pull `igor-php/igor-php` transitively.
+
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
 

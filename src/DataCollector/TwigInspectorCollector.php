@@ -90,6 +90,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
      */
     public function __unserialize(array $data): void
     {
+        // @igor-ignore - Not shared worker service state.
         $this->data = $data['data'] ?? [
             'templates'         => [],
             'blocks'            => [],
@@ -101,8 +102,10 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
             'enabled'           => false,
             'config'            => [],
         ];
+        // @igor-ignore - Not shared worker service state.
         $this->enableMetrics = $data['enableMetrics'] ?? true;
-        $this->twig          = null;
+        // @igor-ignore - Not shared worker service state.
+        $this->twig = null;
     }
 
     /**
@@ -117,8 +120,10 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     {
         $this->reset();
 
+        // @igor-ignore - Not shared worker service state.
         $this->data['enabled'] = $request->cookies->getBoolean($this->cookieName, false);
-        $this->data['config']  = [
+        // @igor-ignore - Not shared worker service state.
+        $this->data['config'] = [
             'cookie_name'       => $this->cookieName,
             'overlay_theme'     => $this->overlayTheme,
             'overlay_compact'   => $this->overlayCompact,
@@ -126,7 +131,9 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
             'keyboard_shortcut' => $this->keyboardShortcut,
         ];
 
-        $this->data['controllers']       = $this->controllerRenderSubscriber->getControllersForRequest($request);
+        // @igor-ignore - Not shared worker service state.
+        $this->data['controllers'] = $this->controllerRenderSubscriber->getControllersForRequest($request);
+        // @igor-ignore - Not shared worker service state.
         $this->data['total_controllers'] = count($this->data['controllers']);
 
         if (!$this->data['enabled']) {
@@ -186,10 +193,14 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
             }
         }
 
-        $this->data['templates']       = array_values($templates);
-        $this->data['blocks']          = array_values($blocks);
+        // @igor-ignore - Not shared worker service state.
+        $this->data['templates'] = array_values($templates);
+        // @igor-ignore - Not shared worker service state.
+        $this->data['blocks'] = array_values($blocks);
+        // @igor-ignore - Not shared worker service state.
         $this->data['total_templates'] = count($templates);
-        $this->data['total_blocks']    = count($blocks);
+        // @igor-ignore - Not shared worker service state.
+        $this->data['total_blocks'] = count($blocks);
     }
 
     /**
@@ -203,6 +214,7 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
             return;
         }
 
+        // @igor-ignore - Not shared worker service state.
         $this->data['template_times'] = $this->collectTemplateTimes();
     }
 

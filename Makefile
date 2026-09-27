@@ -8,7 +8,7 @@ COMPOSE_BIN := $(shell docker compose version >/dev/null 2>&1 && echo "docker co
 COMPOSE     := $(COMPOSE_BIN) -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down down-dev build shell install test test-unit test-integration test-coverage coverage-php-percent coverage-ts-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos demo-smoke composer-sync rector rector-dry phpstan update validate check-no-cursor-coauthor check-open-prs strip-cursor-coauthor-from-history check-twig-extra
+.PHONY: help up down down-dev build shell install test test-unit test-integration test-coverage coverage-php-percent coverage-ts-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos demo-smoke composer-sync rector rector-dry phpstan igor update validate check-no-cursor-coauthor check-open-prs strip-cursor-coauthor-from-history check-twig-extra
 
 # Default target
 help:
@@ -33,8 +33,9 @@ help:
 	@echo "  rector        Apply Rector refactoring"
 	@echo "  rector-dry    Run Rector in dry-run mode"
 	@echo "  phpstan       Run PHPStan static analysis"
+	@echo "  igor          Run Igor worker-state audit (REQ-CS-008)"
 	@echo "  qa            Run all QA checks (cs-check + test)"
-	@echo "  release-check Pre-release: cs-fix, cs-check, rector-dry, phpstan, test-coverage, test-ts, demo healthchecks"
+	@echo "  release-check Pre-release: cs-fix, cs-check, rector-dry, phpstan, igor, test-coverage, test-ts, demo healthchecks"
 	@echo "  demo-smoke    REQ-TEST-011: boot FrankenPHP demo and assert HTTP 200"
 	@echo "  check-open-prs REQ-REL-003: fail if unresolved open PRs"
 	@echo "  composer-sync Validate composer.json and align composer.lock (no install)"
@@ -163,7 +164,11 @@ validate: ensure-up
 check-twig-extra:
 	@chmod +x .scripts/check-twig-extra.sh
 	@./.scripts/check-twig-extra.sh
-release-check: check-no-cursor-coauthor check-open-prs check-twig-extra ensure-up composer-sync cs-fix cs-check rector-dry phpstan test-coverage test-ts release-check-demos
+
+# Run Igor worker-state audit (REQ-CS-008)
+igor: ensure-up
+	$(COMPOSE) exec -T php composer igor
+release-check: check-no-cursor-coauthor check-open-prs check-twig-extra ensure-up composer-sync cs-fix cs-check rector-dry phpstan igor test-coverage test-ts release-check-demos
 
 release-check-demos:
 	@$(MAKE) -C demo release-check
