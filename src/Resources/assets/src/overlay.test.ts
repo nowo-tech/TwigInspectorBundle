@@ -218,9 +218,16 @@ describe('Overlay', () => {
       expect(overlay.isEnabled).toBe(false);
     });
 
-    it('returns true for keyCode 27', () => {
+    it('returns true for keyCode 27 when overlay is enabled', () => {
+      overlay.enable();
       const evt = new KeyboardEvent('keydown', { keyCode: 27 });
       expect(overlay.handleKeyDown(evt)).toBe(true);
+    });
+
+    it('returns false for Escape when overlay is disabled', () => {
+      const evt = new KeyboardEvent('keydown', { key: 'Escape' });
+      expect(overlay.handleKeyDown(evt)).toBe(false);
+      expect(overlay.isEnabled).toBe(false);
     });
 
     it('returns false for non-Escape key', () => {
