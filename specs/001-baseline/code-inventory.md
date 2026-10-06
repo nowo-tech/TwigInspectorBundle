@@ -2,7 +2,7 @@
 
 **Baseline spec**: [`spec.md`](spec.md)  
 **Package**: `nowo-tech/twig-inspector-bundle`  
-**Last audited**: 2026-09-25
+**Last audited**: 2026-10-06
 
 This file proves that **every production source artifact** under `src/` is referenced by the baseline specification. Test-only files under `tests/` and demo trees are out of Packagist scope unless promoted in the spec.
 
@@ -40,7 +40,7 @@ This file proves that **every production source artifact** under `src/` is refer
 | `types.ts` | Shared interfaces | FR-UI-003 |
 | `models.ts` | Template/Block models | FR-UI-004 |
 | `block-storage.ts` | DOM comment scan | FR-UI-005 |
-| `overlay.ts` | Hover overlay & click | FR-UI-006 |
+| `overlay.ts` | Hover overlay, click, Escape | FR-UI-002, FR-UI-006 |
 | `filter-match.ts` | Template filter | FR-UI-007 |
 | `shortcut.ts` | Keyboard matching | FR-UI-002 |
 | `logger.ts` | Debug logging | FR-UI-008 |

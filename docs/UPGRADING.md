@@ -3,6 +3,17 @@
 
 ## Unreleased
 
+## To 1.1.7
+
+From **1.1.6** — Escape is only claimed while the inspector overlay is on, so native popovers and dialogs close again ([#52](https://github.com/nowo-tech/TwigInspectorBundle/issues/52)).
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+php bin/console cache:clear
+```
+
+- No configuration or API changes. After update, hard-refresh the page so the rebuilt overlay script loads.
+
 ## To 1.1.6
 
 From **1.1.5** — REQ-CS-008 Igor FrankenPHP worker audit (igor-php require-dev, igor.json, make igor).
@@ -20,6 +31,8 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 ## Table of contents
 
 
+- [From 1.1.6 to 1.1.7](#to-117)
+- [From 1.1.5 to 1.1.6](#to-116)
 - [From 1.1.4 to 1.1.5](#from-114-to-115)
 - [From 1.1.3 to 1.1.4](#from-113-to-114)
 - [To 1.1.3](#to-113)

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.1.7] - 2026-10-06](#117-2026-10-06)
 - [[1.1.6] - 2026-09-27](#116-2026-09-27)
 - [[1.1.5] - 2026-09-25](#115-2026-09-25)
 - [[1.1.4] - 2026-08-24](#114-2026-08-24)
@@ -132,6 +133,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.1.7] - 2026-10-06
+
+### Fixed
+
+- **Escape no longer blocks native popovers and dialogs:** the overlay `keydown` listener calls `preventDefault()` on Escape only while the inspector overlay is active (`isEnabled`). With the overlay off, `popover="auto"` light dismiss and `<dialog>` still close on Escape ([#52](https://github.com/nowo-tech/TwigInspectorBundle/issues/52), [#53](https://github.com/nowo-tech/TwigInspectorBundle/pull/53)).
+
+[1.1.7]: https://github.com/nowo-tech/TwigInspectorBundle/releases/tag/v1.1.7
 
 ## [1.1.6] - 2026-09-27
 

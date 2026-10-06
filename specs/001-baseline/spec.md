@@ -104,6 +104,7 @@ As an integrator, I exclude noisy templates/blocks and tune overlay theme, compa
 - `max_injection_depth > 0`: deep nesting stops wrapping but still outputs content.
 - Multiple templates on one element: click opens picker instead of immediate navigation.
 - FrankenPHP worker without kernel reboot / without `services_resetter`: per-request state MUST NOT leak (see FR-WORKER-*).
+- Escape with overlay disabled (`isEnabled === false`) MUST NOT `preventDefault()`, so native `popover="auto"` light dismiss and `<dialog>` close requests still run.
 
 ---
 
@@ -158,11 +159,11 @@ As an integrator, I exclude noisy templates/blocks and tune overlay theme, compa
 ### Frontend overlay (TypeScript)
 
 - **FR-UI-001**: `index.ts` MUST initialize only when `.sf-toolbar` exists; wire cookie checkbox reload, toolbar icon green/yellow states, and `#_twig_inspector__icon` click toggle.
-- **FR-UI-002**: Keyboard: configurable shortcut toggles overlay; `Ctrl+Shift+R` rescans DOM; `Escape` closes overlay (`shortcut.ts`).
+- **FR-UI-002**: Keyboard: configurable shortcut toggles inspector; `Ctrl+Shift+R` rescans DOM; `Escape` resets the overlay and MUST `preventDefault()` only while `Overlay.isEnabled` is true (`overlay.ts` `handleKeyDown`, `index.ts`). Native popover/dialog Escape dismissal MUST keep working when the overlay is off.
 - **FR-UI-003**: `config.ts` merges `window.__twig_inspector_config` with defaults; applies theme/accessibility data attributes on `<html>`.
 - **FR-UI-004**: `models.ts` defines `TemplateClass` and `BlockClass` (tooltip HTML via `toString()`).
 - **FR-UI-005**: `BlockStorage.collectData()` scans DOM for Twig and controller comments; `find`/`create`/`findOrCreate` map elements to blocks; sort order: controllers before templates, main before fragment.
-- **FR-UI-006**: `Overlay` handles hover veil, filter highlights, single vs multi-template click (picker), `rescan()`, `freeze()`.
+- **FR-UI-006**: `Overlay` handles hover veil, filter highlights, single vs multi-template click (picker), `rescan()`, `freeze()`, and `handleKeyDown()` (Escape claimed only when enabled).
 - **FR-UI-007**: `filter-match.ts` OR-comma-separated case-insensitive match on template name/link.
 - **FR-UI-008**: `logger.ts` provides namespaced bundle logger with test hook `clearBundleLoggerForTest`.
 - **FR-UI-009**: `style.scss` styles overlay, filter veils, dark/compact/reduced-motion via `data-twig-inspector-*` attributes.

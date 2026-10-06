@@ -55,7 +55,7 @@ This guide explains how to use the inspector overlay and the Web Profiler panel.
 1. **Click** the highlighted element (or the popup).
 2. If a single template rendered it, the browser opens the link and your IDE opens the file (if [IDE integration](INSTALLATION.md#ide-integration-optional) is configured).
 3. If several templates apply (e.g. nested blocks), a small **picker** appears; click the template you want to open.
-4. Press **Esc** to close the picker or reset the overlay.
+4. Press **Esc** (only while the overlay is on) to close the picker or reset the overlay.
 
 ### 5. Hide the overlay (yellow icon)
 
@@ -81,7 +81,7 @@ When the filter is not empty, **persistent colored frames** (veils) are drawn ar
 
 - **Ctrl+Shift+T** (or the configured shortcut) — Toggle the inspector on/off (same as the checkbox; reloads).
 - **Ctrl+Shift+R** — Rescan the DOM (e.g. after AJAX or dynamic content).
-- **Esc** — Close the overlay picker or reset the overlay.
+- **Esc** — Close the overlay picker or reset the overlay **only while the overlay is on** (green icon). When the overlay is off, Escape is left to the page so native `popover` and `<dialog>` still dismiss.
 
 ## Full panel
 
@@ -125,5 +125,6 @@ After adding or changing overrides, clear the Twig cache if needed: `php bin/con
 ## Troubleshooting
 
 - **No blue highlight / no popup** — Ensure the icon is **green** (click it). Ensure the inspector is **enabled** (checkbox checked and page reloaded).
+- **Native popover or `<dialog>` does not close on Esc** — Upgrade to **1.1.7+**. Before that, the inspector called `preventDefault()` on every Escape even with the overlay off.
 - **“No template timing data”** — The Twig profiler may be disabled; template timings are optional. The overlay and “open in IDE” still work.
 - **Click does not open IDE** — Configure `framework.ide` in `config/packages/dev/framework.yaml` (see [Installation – IDE integration](INSTALLATION.md#ide-integration-optional)).
