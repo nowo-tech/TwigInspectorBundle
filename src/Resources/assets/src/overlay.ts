@@ -384,11 +384,12 @@ export class Overlay {
 
   /**
    * Handles Escape to reset the overlay. Called from the global keydown listener.
+   * Only claims Escape while the overlay is enabled so native popover/dialog dismissal still works.
    * @param evt - Keyboard event.
    * @returns True if Escape was handled (caller should preventDefault).
    */
   handleKeyDown(evt: KeyboardEvent): boolean {
-    if (evt.key === 'Escape' || evt.keyCode === 27) {
+    if (this.isEnabled && (evt.key === 'Escape' || evt.keyCode === 27)) {
       this.reset();
       return true;
     }
