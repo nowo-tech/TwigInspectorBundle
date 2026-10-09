@@ -3,6 +3,16 @@
 
 ## Unreleased
 
+## To 1.1.8
+
+From **1.1.7** — dependency refresh.
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+```
+
+- No breaking changes. No application upgrade steps.
+
 ## To 1.1.7
 
 From **1.1.6** — Escape is only claimed while the inspector overlay is on, so native popovers and dialogs close again ([#52](https://github.com/nowo-tech/TwigInspectorBundle/issues/52)).
@@ -31,6 +41,7 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
 ## Table of contents
 
 
+- [From 1.1.7 to 1.1.8](#to-118)
 - [From 1.1.6 to 1.1.7](#to-117)
 - [From 1.1.5 to 1.1.6](#to-116)
 - [From 1.1.4 to 1.1.5](#from-114-to-115)

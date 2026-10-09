@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.1.8] - 2026-10-09](#118-2026-10-09)
 - [[1.1.7] - 2026-10-06](#117-2026-10-06)
 - [[1.1.6] - 2026-09-27](#116-2026-09-27)
 - [[1.1.5] - 2026-09-25](#115-2026-09-25)
@@ -133,6 +134,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.1.8] - 2026-10-09
+
+### Dependencies
+
+- Dev lock refreshed: Symfony 7.4.20, PHPStan 2.3.1, `phpstan/phpstan-symfony` 2.1.0, Rector 2.7.0, `igor-php/igor-php` 0.10.1, `nowo-tech/phpstan-frankenphp` 1.2.3.
+- Demo `symfony8`: Symfony 8.1.8, Twig 3.30.0, `nowo-tech/hot-reload-bundle` 1.5.5.
+
+[1.1.8]: https://github.com/nowo-tech/TwigInspectorBundle/releases/tag/v1.1.8
 
 ## [1.1.7] - 2026-10-06
 
