@@ -1,7 +1,14 @@
 # Upgrading Guide
 
-
 ## Unreleased
+
+## To 1.2.0
+
+From **1.1.8** — template path check rejects sibling prefixes; Symfony >=6.4; vitest 4.
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+```
 
 - **Symfony 6.4+ required:** constraints are now `^6.4 || ^7.0 || ^8.0` (6.0–6.3 were never tested in CI). Upgrade to Symfony 6.4 first if needed.
 - The open-in-IDE endpoint now rejects template files in sibling directories that only share a path prefix with a Twig loader path (e.g. `templates_x/` when `templates/` is configured). Templates inside configured paths are unaffected.
@@ -40,10 +47,9 @@ php bin/console cache:clear
 
 This guide helps you upgrade between versions of the Twig Inspector Bundle.
 
-
 ## Table of contents
 
-
+- [To 1.2.0](#to-120)
 - [From 1.1.7 to 1.1.8](#to-118)
 - [From 1.1.6 to 1.1.7](#to-117)
 - [From 1.1.5 to 1.1.6](#to-116)
@@ -123,7 +129,6 @@ This guide helps you upgrade between versions of the Twig Inspector Bundle.
   - [Breaking Changes](#breaking-changes)
   - [Getting Help](#getting-help)
 
-
 ## From 1.1.4 to 1.1.5
 
 No configuration changes. FrankenPHP worker mode with the kernel **not** reset between requests is supported (see [`FRANKENPHP-WORKER-AUDIT.md`](FRANKENPHP-WORKER-AUDIT.md)).
@@ -189,7 +194,6 @@ and enable `Twig\Extra\TwigExtraBundle\TwigExtraBundle`. Flex recipes usually re
 ### Twig-CS-Fixer (maintainers)
 
 Package maintainers: `composer twig:lint` / `composer twig:fix` use `.twig-cs-fixer.php` over `src/` (and `templates/` when present).
-
 
 ## Upgrading from 1.0.41 to the next release
 

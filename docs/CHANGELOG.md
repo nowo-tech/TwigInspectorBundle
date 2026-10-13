@@ -2,10 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.2.0] - 2026-10-13](#120-2026-10-13)
 - [[1.1.8] - 2026-10-09](#118-2026-10-09)
 - [[1.1.7] - 2026-10-06](#117-2026-10-06)
 - [[1.1.6] - 2026-09-27](#116-2026-09-27)
@@ -135,6 +135,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-13
+
 ### Security
 
 - `OpenTemplateController`: the "file is inside a Twig path" check now compares against the directory plus a trailing separator, so a sibling directory sharing the prefix (e.g. `/app/templates_x` for `/app/templates`) is no longer accepted.
@@ -143,6 +145,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Minimum Symfony version is now 6.4 (`^6.4 || ^7.0 || ^8.0`), the lowest version tested in CI; README/INSTALLATION updated.
 - Development: `vitest` and `@vitest/coverage-v8` upgraded to 4.x.
+
+[1.2.0]: https://github.com/nowo-tech/TwigInspectorBundle/releases/tag/v1.2.0
 
 ## [1.1.8] - 2026-10-09
 
