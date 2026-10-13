@@ -22,6 +22,8 @@ use Twig\Loader\LoaderInterface;
 use function is_string;
 use function sprintf;
 
+use const DIRECTORY_SEPARATOR;
+
 /**
  * Controller that redirects to an IDE file link for a given Twig template and line.
  * Used by the inspector overlay when clicking "open in IDE".
@@ -147,7 +149,9 @@ class OpenTemplateController
         $isValid = false;
         foreach ($paths as $path) {
             $realPath = realpath($path);
-            if ($realPath !== false && str_starts_with($realFilePath, $realPath)) {
+            // Compare against the directory plus a trailing separator so that a sibling directory sharing
+            // the prefix (e.g. /app/templates_x for /app/templates) is not accepted.
+            if ($realPath !== false && str_starts_with($realFilePath, rtrim($realPath, '/' . DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR)) {
                 $isValid = true;
                 break;
             }

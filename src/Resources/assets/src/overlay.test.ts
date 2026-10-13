@@ -371,6 +371,33 @@ describe('Overlay', () => {
       Object.defineProperty(window, 'location', { configurable: true, value: origLocation });
     });
 
+    it('multiple templates: click on a picker row without data-href only resets', () => {
+      const div = document.createElement('div');
+      storage.create(div);
+      storage.addTemplate(0, new TemplateClass('a', '/page-a'));
+      storage.addTemplate(0, new TemplateClass('b', '/page-b'));
+      overlay.block.dataset.templateIndex = '0';
+      let navigatedTo = '';
+      const origLocation = window.location;
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: {
+          ...origLocation,
+          set href(v: string) {
+            navigatedTo = v;
+          },
+        },
+      });
+      overlay.initClickHandler();
+      overlay.block.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 50, clientY: 50 }));
+      const row = overlay.block.querySelector('[data-href]') as HTMLElement;
+      delete row.dataset.href;
+      row.click();
+      expect(overlay.isEnabled).toBe(false);
+      expect(navigatedTo).toBe('');
+      Object.defineProperty(window, 'location', { configurable: true, value: origLocation });
+    });
+
     it('click when already static picker does nothing', () => {
       overlay.block.classList.add('_twig_inspector__overlay__block_static');
       const spy = vi.spyOn(overlay, 'freeze');

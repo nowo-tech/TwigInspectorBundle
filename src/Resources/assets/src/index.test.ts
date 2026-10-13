@@ -163,6 +163,25 @@ describe('index (Twig Inspector entry)', () => {
     expect(document.getElementById('_twig_inspector__overlay__block')).not.toBeNull();
   });
 
+  it('rescan button click rescans the DOM', async () => {
+    vi.resetModules();
+    setupFullDOM();
+    const { Overlay: OverlayClass } = await import('./overlay');
+    const rescanSpy = vi.spyOn(OverlayClass.prototype, 'rescan');
+    await import('./index');
+    expect(rescanSpy).not.toHaveBeenCalled();
+    (document.getElementById('_twig_inspector__rescan') as HTMLButtonElement).click();
+    expect(rescanSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('starts without a rescan button (older toolbar markup)', async () => {
+    vi.resetModules();
+    setupFullDOM({ withRescan: false });
+    await import('./index');
+    expect(document.getElementById('_twig_inspector__rescan')).toBeNull();
+    expect(document.getElementById('_twig_inspector__overlay__block')).not.toBeNull();
+  });
+
   it('keyboard shortcut (Ctrl+Shift+T) toggles inspector and reloads', async () => {
     vi.resetModules();
     setupFullDOM();

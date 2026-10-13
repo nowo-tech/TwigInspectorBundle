@@ -654,4 +654,54 @@ final class OpenTemplateControllerTest extends TestCase
             }
         }
     }
+
+    public function testValidateFilePathRejectsSiblingDirectorySharingThePrefix(): void
+    {
+        // /…/templates is allowed; /…/templates_x/evil.html.twig shares the string prefix but is outside it.
+        $base       = sys_get_temp_dir() . '/twig_inspector_prefix_' . uniqid();
+        $allowedDir = $base . '/templates';
+        $siblingDir = $base . '/templates_x';
+        mkdir($allowedDir, 0o777, true);
+        mkdir($siblingDir, 0o777, true);
+        $allowedFile = $allowedDir . '/ok.html.twig';
+        $siblingFile = $siblingDir . '/evil.html.twig';
+        file_put_contents($allowedFile, 'ok');
+        file_put_contents($siblingFile, 'evil');
+
+        try {
+            $twig       = new Environment(new FilesystemLoader([$allowedDir]));
+            $controller = new OpenTemplateController($twig, $this->createMock(FileLinkFormatter::class), 'dev');
+            $method     = (new ReflectionClass($controller))->getMethod('validateFilePath');
+
+            // A file inside the allowed directory is still accepted.
+            $method->invoke($controller, $allowedFile);
+
+            $this->expectException(BadRequestException::class);
+            $this->expectExceptionMessage('outside allowed Twig template directories');
+
+            $method->invoke($controller, $siblingFile);
+        } finally {
+            foreach ([$allowedFile, $siblingFile] as $file) {
+                if (file_exists($file)) {
+                    unlink($file);
+                }
+            }
+            foreach ([$allowedDir, $siblingDir, $base] as $dir) {
+                if (is_dir($dir)) {
+                    rmdir($dir);
+                }
+            }
+        }
+    }
+
+    public function testValidateFilePathAcceptsFilesUnderTheFilesystemRoot(): void
+    {
+        // Edge case: a loader path of "/" must not become "//" after appending the separator.
+        $twig       = new Environment(new FilesystemLoader(['/']));
+        $controller = new OpenTemplateController($twig, $this->createMock(FileLinkFormatter::class), 'dev');
+        $method     = (new ReflectionClass($controller))->getMethod('validateFilePath');
+
+        $method->invoke($controller, __FILE__);
+        $this->addToAssertionCount(1);
+    }
 }

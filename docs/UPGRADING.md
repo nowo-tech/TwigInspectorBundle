@@ -3,6 +3,9 @@
 
 ## Unreleased
 
+- **Symfony 6.4+ required:** constraints are now `^6.4 || ^7.0 || ^8.0` (6.0–6.3 were never tested in CI). Upgrade to Symfony 6.4 first if needed.
+- The open-in-IDE endpoint now rejects template files in sibling directories that only share a path prefix with a Twig loader path (e.g. `templates_x/` when `templates/` is configured). Templates inside configured paths are unaffected.
+
 ## To 1.1.8
 
 From **1.1.7** — dependency refresh.

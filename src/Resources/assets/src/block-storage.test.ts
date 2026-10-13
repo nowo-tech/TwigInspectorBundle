@@ -155,6 +155,33 @@ describe('BlockStorage', () => {
       expect(controllerTemplate!.link).toBe('/_template/base.html.twig');
     });
 
+    it('does not add controller info to script/style elements inside a controller range', () => {
+      const controllerOpen = document.createComment(
+        ' ┏ controller: App\\Controller\\Home::index [main] template: base.html.twig'
+      );
+      const script = document.createElement('script');
+      script.textContent = '/* inline */';
+      const div = document.createElement('div');
+      div.textContent = 'main content';
+      document.body.appendChild(controllerOpen);
+      document.body.appendChild(script);
+      document.body.appendChild(div);
+
+      storage.collectData();
+
+      expect(storage.find(script)).toBe(null);
+      expect(storage.find(div)).not.toBe(null);
+    });
+
+    it('treats a comment node without a value as not being a block close marker', () => {
+      const isClose = (
+        storage as unknown as { isTwigBlockCloseComment(node: Node, re: RegExp): boolean }
+      ).isTwigBlockCloseComment.bind(storage);
+      expect(isClose({ nodeType: 8, nodeValue: null } as unknown as Node, /^$/)).toBe(true);
+      expect(isClose({ nodeType: 8, nodeValue: null } as unknown as Node, /end/)).toBe(false);
+      expect(isClose({ nodeType: 1, nodeValue: 'end' } as unknown as Node, /end/)).toBe(false);
+    });
+
     it('collects controller [fragment] with closing comment and adds template to elements between', () => {
       const controllerOpen = document.createComment(
         ' ┏ controller: App\\Controller\\Fragment::foo [fragment]'
