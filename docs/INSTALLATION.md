@@ -17,7 +17,7 @@ This guide covers installing Twig Inspector Bundle in a Symfony application.
 
 ## Requirements
 
-- **PHP** >= 8.1, < 8.6
+- **PHP** >= 8.2, < 8.6
 - **Symfony** >= 6.4 || >= 7.0 || >= 8.0
 - **Symfony Web Profiler Bundle** (dev environment) — required for toolbar, collector and "open in IDE" feature
 - **Twig** >= 3.8 || >= 4.0
