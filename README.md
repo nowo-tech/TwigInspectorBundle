@@ -103,11 +103,11 @@ See [docs/USAGE.md](docs/USAGE.md) for the full step-by-step and overlay behavio
 
 | Overlay tooltip (hover) | Toolbar dropdown |
 |-------------------------|------------------|
-| [![Overlay tooltip](docs/img/overlay-tooltip.png)](docs/img/overlay-tooltip.png) | [![Toolbar dropdown](docs/img/toolbar-dropdown.png)](docs/img/toolbar-dropdown.png) |
+| [![Overlay tooltip](docs/images/demo/overlay-tooltip.webp)](docs/images/demo/overlay-tooltip.webp) | [![Toolbar dropdown](docs/images/demo/toolbar-dropdown.webp)](docs/images/demo/toolbar-dropdown.webp) |
 
-| DevTools: HTML comments |
-|-------------------------|
-| [![DevTools HTML comments](docs/img/devtools-html-comments.png)](docs/img/devtools-html-comments.png) |
+| Page source: template HTML comments |
+|-------------------------------------|
+| [![Template HTML comments in the page source](docs/images/demo/html-comments.webp)](docs/images/demo/html-comments.webp) |
 
 ## How it works
 
