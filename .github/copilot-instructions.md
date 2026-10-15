@@ -28,3 +28,7 @@ Use this when suggesting code, tests, documentation, or CI changes for this repo
 ### Tests
 
 - Add or update tests under `tests/` for new behavior; preserve high coverage targets from `README.md` and CI.
+
+## Commits
+
+- Never add AI co-author trailers: no `Co-authored-by: Cursor` / `cursoragent@cursor.com`, no `Co-Authored-By: Claude …` / `noreply@anthropic.com` (REQ-GIT-001).
