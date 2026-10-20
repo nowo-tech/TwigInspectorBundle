@@ -1,6 +1,5 @@
 # Configuration Guide
 
-
 ## Table of contents
 
 - [How Configuration Works in Symfony Bundles](#how-configuration-works-in-symfony-bundles)
@@ -13,6 +12,8 @@
 - [Routes Configuration](#routes-configuration)
 - [All configuration options (reference)](#all-configuration-options-reference)
 - [Best Practices](#best-practices)
+- [Troubleshooting](#troubleshooting)
+  - [`Unrecognized option "inject_on_sub_requests"` (or other keys) under `nowo_twig_inspector`](#unrecognized-option-inject_on_sub_requests-or-other-keys-under-nowo_twig_inspector)
 - [Summary](#summary)
 
 ## How Configuration Works in Symfony Bundles

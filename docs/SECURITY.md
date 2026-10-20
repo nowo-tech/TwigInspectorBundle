@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Security considerations for integrators](#security-considerations-for-integrators)
+- [Threat model (dev tool)](#threat-model-dev-tool)
 - [Bundle security measures](#bundle-security-measures)
 - [Supported Versions](#supported-versions)
 - [Reporting a Vulnerability](#reporting-a-vulnerability)

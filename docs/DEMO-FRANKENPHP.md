@@ -5,14 +5,26 @@
 - [Overview](#overview)
 - [What the demos include](#what-the-demos-include)
 - [Development configuration](#development-configuration)
+  - [1. Caddyfile (development)](#1-caddyfile-development)
+  - [2. PHP configuration (development)](#2-php-configuration-development)
+  - [3. Twig configuration (development)](#3-twig-configuration-development)
+  - [4. Docker Compose (development)](#4-docker-compose-development)
+  - [5. Entrypoint (development-friendly)](#5-entrypoint-development-friendly)
+  - [6. Start the demo (development)](#6-start-the-demo-development)
 - [Production configuration](#production-configuration)
+  - [1. Caddyfile (production)](#1-caddyfile-production)
+  - [2. PHP configuration (production)](#2-php-configuration-production)
+  - [3. Twig configuration (production)](#3-twig-configuration-production)
+  - [4. Docker Compose (production)](#4-docker-compose-production)
+  - [5. Build and run (production)](#5-build-and-run-production)
 - [Switching classic vs worker (`FRANKENPHP_MODE`)](#switching-classic-vs-worker-frankenphp_mode)
 - [Reproducing in another bundle](#reproducing-in-another-bundle)
 - [Troubleshooting](#troubleshooting)
-
-This document describes how the bundle’s demo applications run under **FrankenPHP** in Docker, and how to reproduce **development** (no cache, changes visible on refresh) and **production** (worker mode, cache enabled) configurations. The same approach can be used in other Symfony bundles or applications that ship a FrankenPHP-based demo.
-
----
+  - [Changes to Twig or PHP do not appear on refresh](#changes-to-twig-or-php-do-not-appear-on-refresh)
+  - [Web Profiler or Twig Inspector not visible](#web-profiler-or-twig-inspector-not-visible)
+  - [Demo does not respond or "make up" times out](#demo-does-not-respond-or-make-up-times-out)
+  - [Production: slow first request or "cache cold"](#production-slow-first-request-or-cache-cold)
+  - [Caddyfile changes have no effect](#caddyfile-changes-have-no-effect)
 
 ## Overview
 

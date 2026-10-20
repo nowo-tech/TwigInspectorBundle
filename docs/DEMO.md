@@ -6,6 +6,14 @@ The bundle includes a demo project for the current Symfony major. It has its own
 
 **Docker stack:** The demo uses **FrankenPHP** with **Caddy** as the web server. The bundled **Caddyfile serves HTTP only** (`:80` in the container, published to the host as `PORT`: 8003). TLS/HTTPS is **not** enabled in the default demo config; you can extend Caddy if you need HTTPS locally.
 
+## Table of contents
+
+- [Quick Start with Docker](#quick-start-with-docker)
+- [Troubleshooting](#troubleshooting)
+  - [Composer: `Could not resolve host: repo.packagist.org` (curl error 6)](#composer-could-not-resolve-host-repopackagistorg-curl-error-6)
+  - [Port already allocated (`Bind for 0.0.0.0:800x failed`)](#port-already-allocated-bind-for-0000800x-failed)
+- [Running Demo Tests](#running-demo-tests)
+
 ## Quick Start with Docker
 
 ```bash

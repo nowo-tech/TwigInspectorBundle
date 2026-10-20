@@ -15,7 +15,7 @@
 **Package**: `nowo-tech/twig-inspector-bundle`  
 **Configuration root**: `nowo_twig_inspector`
 
-Symfony **dev-only** bundle: injects Twig HTML comments, Web Profiler metrics, browser overlay, and click-to-open-in-IDE workflow. Production source count follows [`SPEC-KIT.md`](../../docs/SPEC-KIT.md): **38** hand-authored units under `src/` (legacy public JS/CSS counted; Vite `dist/` outputs documented separately).
+Symfony **dev-only** bundle: injects Twig HTML comments, Web Profiler metrics, browser overlay, and click-to-open-in-IDE workflow. Production source count follows [`SPEC-KIT.md`](../../docs/SPEC-KIT.md): **36** hand-authored units under `src/` (Vite `dist/` outputs documented separately).
 
 ---
 
@@ -167,7 +167,7 @@ As an integrator, I exclude noisy templates/blocks and tune overlay theme, compa
 - **FR-UI-007**: `filter-match.ts` OR-comma-separated case-insensitive match on template name/link.
 - **FR-UI-008**: `logger.ts` provides namespaced bundle logger with test hook `clearBundleLoggerForTest`.
 - **FR-UI-009**: `style.scss` styles overlay, filter veils, dark/compact/reduced-motion via `data-twig-inspector-*` attributes.
-- **FR-UI-010**: Legacy `Resources/public/assets/src/index.js` + `style.css` remain supported for non-Vite consumers (reduced feature parity documented in README).
+- **FR-UI-010**: *(Retired)* The legacy `Resources/public/assets/` pipeline was removed (see UPGRADING); the Vite build embedded through `@NowoTwigInspectorBundle/assets/dist` is the only overlay.
 
 ### Build
 
@@ -186,7 +186,7 @@ As an integrator, I exclude noisy templates/blocks and tune overlay theme, compa
 
 ## Success Criteria
 
-- **SC-001**: 100% of production files in `src/` appear in [`code-inventory.md`](code-inventory.md) with requirement IDs (38/38 mapped).
+- **SC-001**: 100% of production files in `src/` appear in [`code-inventory.md`](code-inventory.md) with requirement IDs (36/36 mapped, audited 2026-10-20).
 - **SC-002**: Inspector activation adds parseable HTML comments on a standard Twig HTML page in `dev` with cookie enabled.
 - **SC-003**: Click-to-IDE flow succeeds with Symfony `framework.ide` configured in demo apps.
 - **SC-004**: PHPUnit + PHPStan + Vitest pass in CI (`composer qa`).

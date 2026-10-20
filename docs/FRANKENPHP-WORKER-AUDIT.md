@@ -9,6 +9,19 @@
 | **Verdict** | ✅ **Viable under scenario B** — fully compatible with FrankenPHP worker when the kernel is not reset between requests; controller map is freed on terminate (and weakly keyed), rendering / owned buffers and collector state reset per main request |
 | Remediation (2026-09-23 / 2026-09-25) | W-01, W-02, W-03, W-04 resolved (`src/EventSubscriber/ControllerRenderSubscriber.php`, `src/Twig/HtmlCommentsExtension.php`, `src/BoxDrawings.php`, `src/DataCollector/TwigInspectorCollector.php`). Regression tests simulate consecutive requests on the same instances without `reset()` (`tests/Unit/EventSubscriber/ControllerRenderSubscriberTest.php`, `tests/Unit/Twig/HtmlCommentsExtensionTest.php`, `tests/Unit/DataCollector/TwigInspectorCollectorTest.php`) and assert `kernel.reset` registration (`tests/Integration/BundleIntegrationTest.php`) |
 
+## Table of contents
+
+- [Execution model assumed](#execution-model-assumed)
+- [Summary](#summary)
+- [Services reviewed](#services-reviewed)
+- [Findings](#findings)
+  - [W-01 — `ControllerRenderSubscriber` never removes its per-request entries (Medium)](#w-01--controllerrendersubscriber-never-removes-its-per-request-entries-medium)
+  - [W-02 — Twig comment rendering state carries over between requests (Low)](#w-02--twig-comment-rendering-state-carries-over-between-requests-low)
+  - [W-03 — Collector keeps previous data when the inspector is disabled (Low, scenario B only)](#w-03--collector-keeps-previous-data-when-the-inspector-is-disabled-low-scenario-b-only)
+  - [W-04 — Output buffers opened in `start()` depend on Twig to be closed on exceptions (Low)](#w-04--output-buffers-opened-in-start-depend-on-twig-to-be-closed-on-exceptions-low)
+- [Usage recommendations in worker mode](#usage-recommendations-in-worker-mode)
+- [Re-audit triggers](#re-audit-triggers)
+
 ## Execution model assumed
 
 FrankenPHP worker mode boots the Symfony kernel once per worker and serves many requests with the same container. This audit assumes the **strict** variant: the kernel is **not** rebooted between requests, so every shared service, static property and PHP global survives from one request to the next. Two scenarios are evaluated:

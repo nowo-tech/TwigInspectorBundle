@@ -2,7 +2,7 @@
 
 **Baseline spec**: [`spec.md`](spec.md)  
 **Package**: `nowo-tech/twig-inspector-bundle`  
-**Last audited**: 2026-10-06
+**Last audited**: 2026-10-20
 
 This file proves that **every production source artifact** under `src/` is referenced by the baseline specification. Test-only files under `tests/` and demo trees are out of Packagist scope unless promoted in the spec.
 
@@ -46,13 +46,6 @@ This file proves that **every production source artifact** under `src/` is refer
 | `logger.ts` | Debug logging | FR-UI-008 |
 | `style.scss` | Overlay styling | FR-UI-009 |
 
-## Legacy JavaScript (`src/Resources/public/`)
-
-| Source file | Spec section | Requirement IDs |
-| --- | --- | --- |
-| `assets/src/index.js` | Legacy overlay (ES5) | FR-UI-010 |
-| `assets/src/style.css` | Legacy styles | FR-UI-010 |
-
 ## Symfony config (`src/Resources/config/`)
 
 | Source file | Spec section | Requirement IDs |
@@ -75,8 +68,8 @@ This file proves that **every production source artifact** under `src/` is refer
 | --- | --- | --- |
 | `Resources/views/assets/dist/index.min.js` | `pnpm build` (Vite) | FR-BUILD-001 |
 | `Resources/views/assets/dist/style.min.css` | `pnpm build` (Sass) | FR-BUILD-001 |
-| `Resources/public/assets/dist/index.min.js` | Legacy build pipeline | FR-BUILD-001, FR-UI-010 |
-| `Resources/public/assets/dist/style.min.css` | Legacy build pipeline | FR-BUILD-001, FR-UI-010 |
+| `Resources/assets/dist/index.min.js` | Initial-commit build copy, not referenced at runtime nor written by `vite.config.ts` (candidate for removal) | FR-BUILD-001 |
+| `Resources/assets/dist/style.min.css` | Initial-commit build copy, not referenced at runtime nor written by `package.json` (candidate for removal) | FR-BUILD-001 |
 
 ## Coverage summary
 
@@ -84,11 +77,10 @@ This file proves that **every production source artifact** under `src/` is refer
 | --- | ---: | ---: |
 | PHP classes | 20 | 20 |
 | TS/SCSS production | 10 | 10 |
-| Legacy JS/CSS | 2 | 2 |
 | YAML config | 3 | 3 |
 | Twig/SVG views | 3 | 3 |
-| **Total production sources** | **38** | **38** |
+| **Total production sources** | **36** | **36** |
 
 Build artifacts are documented as outputs of listed sources; they are not counted as separate authoring units.
 
-Audit: `find src -type f ! -path '*/assets/dist/*' ! -name '*.test.ts' | wc -l` → **38** (includes legacy `Resources/public/assets/src/*`; excludes Vite `dist/` outputs listed above).
+Audit: `find src -type f ! -path '*/assets/dist/*' ! -name '*.test.ts' | wc -l` → **36** (2026-10-20; excludes the Vite `dist/` outputs listed above and the co-located Vitest `*.test.ts` files). The former legacy `Resources/public/assets/` pipeline no longer exists.

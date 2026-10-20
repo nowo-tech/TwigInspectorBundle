@@ -2,13 +2,12 @@
 
 This document outlines the direction of Twig Inspector Bundle and helps contributors and users understand upcoming priorities.
 
-
 ## Table of contents
 
 - [Vision](#vision)
 - [Current focus (1.x)](#current-focus-1x)
 - [Current status of “future ideas”](#current-status-of-future-ideas)
-- [Possible future (2.x / ideas)](#possible-future-2x-ideas)
+- [Possible future (2.x / ideas)](#possible-future-2x--ideas)
 - [Community](#community)
 
 ## Vision
