@@ -178,7 +178,7 @@ demo-smoke:
 
 composer-sync: ensure-up
 	$(COMPOSE) exec -T $(SERVICE_PHP) composer validate --strict
-	$(COMPOSE) exec -T $(SERVICE_PHP) composer update --no-install
+	$(COMPOSE) exec -T $(SERVICE_PHP) composer install --no-interaction --prefer-dist
 
 # Clean vendor and cache — runs inside container
 clean: ensure-up
