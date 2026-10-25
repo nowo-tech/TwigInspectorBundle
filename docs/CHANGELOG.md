@@ -65,6 +65,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Assets:** reproducible bundle build. `__TWIG_INSPECTOR_BUILD_TIME__` now holds a build id (a hash of the TypeScript/CSS sources and `pnpm-lock.yaml`) instead of the build time, so rebuilding unchanged sources (`make assets`, `make release-check`) no longer rewrites the committed JS; the console line reads `script loaded, build: <id>`.
+
 ## [1.2.1] - 2026-10-23
 
 Rebuilt inspector asset (dist/index.min.js) after the 2026-10-19 dependency refresh; documentation and tooling updates. See [UPGRADING](UPGRADING.md#to-121).
