@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.2.2](#to-122)
 - [To 1.2.1](#to-121)
 - [To 1.2.0](#to-120)
 - [To 1.1.8](#to-118)
@@ -107,6 +108,14 @@
   - [Getting Help](#getting-help)
 
 ## Unreleased
+
+## To 1.2.2
+
+From **1.2.1**:
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+```
 
 ## To 1.2.1
 

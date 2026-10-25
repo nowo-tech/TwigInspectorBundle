@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.2.2] - 2026-10-25](#122---2026-10-25)
 - [[1.2.1] - 2026-10-23](#121---2026-10-23)
 - [[1.2.0] - 2026-10-13](#120---2026-10-13)
 - [[1.1.8] - 2026-10-09](#118---2026-10-09)
@@ -65,9 +66,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-10-25
+
+Reproducible JS bundle: the build stamp is a hash of the sources instead of the build time. See [UPGRADING](UPGRADING.md#to-122).
+
 ### Changed
 
 - **Assets:** reproducible bundle build. `__TWIG_INSPECTOR_BUILD_TIME__` now holds a build id (a hash of the TypeScript/CSS sources and `pnpm-lock.yaml`) instead of the build time, so rebuilding unchanged sources (`make assets`, `make release-check`) no longer rewrites the committed JS; the console line reads `script loaded, build: <id>`.
+
+[1.2.2]: https://github.com/nowo-tech/TwigInspectorBundle/releases/tag/v1.2.2
 
 ## [1.2.1] - 2026-10-23
 
