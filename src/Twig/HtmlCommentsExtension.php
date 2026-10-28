@@ -234,7 +234,7 @@ class HtmlCommentsExtension extends AbstractExtension implements ResetInterface
 
         $level = array_pop($this->ownedBufferLevels);
 
-        return !(ob_get_level() !== $level);
+        return ob_get_level() === $level;
     }
 
     /**

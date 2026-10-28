@@ -17,7 +17,7 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/src',
     ])
-    ->withPhpVersion(PhpVersion::PHP_81)
+    ->withPhpVersion(PhpVersion::PHP_82)
     ->withComposerBased(symfony: true)
     ->withPreparedSets(
         deadCode: true,
