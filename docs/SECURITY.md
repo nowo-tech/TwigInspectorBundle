@@ -76,6 +76,7 @@ Before tagging a release, confirm:
 | **Cryptography** | If used: keys from secure config; never hardcoded. |
 | **Permissions / exposure** | Bundle only for `dev`/`test`; hard-fail + install reject prod; no prod exposure. |
 | **Limits / DoS** | Timeouts, size limits, rate limits where applicable. |
+| **AI security audit (REQ-SEC-004)** | Grade **Pass (good)** / risk **Low** (re-audit 2026-07-29: dev/test only, DI hard-fail elsewhere). Recorded in the Nowo monorepo `BUNDLES_SECURITY_ANALYSIS.md`. |
 
 Record confirmation in the release PR or tag notes.
 
