@@ -117,6 +117,8 @@ The bundle injects HTML comments before and after every Twig block and template.
 
 The Symfony 8.0 demo is in `demo/symfony8`. It runs **FrankenPHP** (Caddy + PHP): the app listens on **:80 inside the container**, and `docker-compose` maps that to the host port **`PORT`** (default: **8003**). Production-style configs use FrankenPHP **worker** mode; classic/dev-friendly mode uses `Caddyfile.dev` without workers (see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md)). Quick start: [docs/DEMO.md](docs/DEMO.md).
 
+Playwright e2e: `make -C demo/symfony8 test-e2e`; refresh the README screenshots with `make -C demo/symfony8 demo-screenshots` (see [CONTRIBUTING](docs/CONTRIBUTING.md#end-to-end-tests-and-screenshots-req-demo-013)).
+
 ## Development
 
 Run tests and QA with Docker: `make up && make install && make test` (or `make test-coverage`, `make qa`). Without Docker: `composer install && composer test`. Building assets: `make assets` (runs inside container) or `pnpm install && pnpm run build`. Full details: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
