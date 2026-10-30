@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.3.1] - 2026-10-30](#131---2026-10-30)
 - [[1.3.0] - 2026-10-30](#130---2026-10-30)
 - [[1.2.2] - 2026-10-25](#122---2026-10-25)
 - [[1.2.1] - 2026-10-23](#121---2026-10-23)
@@ -67,9 +68,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-10-30
+
+Fix: the template route is no longer registered without importing routes.yaml (Symfony >= 7.3 routing.controllers). See [UPGRADING](UPGRADING.md#to-131).
+
 ### Fixed
 
 - **Route registered without being imported (regression in 1.3.0):** on Symfony >= 7.3 the `#[Route]` on `OpenTemplateController` made the class autoconfigured with the `routing.controller` tag, so the host's default `controllers: { resource: routing.controllers }` exposed `nowo_twig_inspector_template_link` (`/_template/{template}`) in dev/test even when the host never imported `@NowoTwigInspectorBundle/Resources/config/routes.yaml`. The controller service is no longer autoconfigured and no longer carries `#[AsController]`; the route exists only where the host imports `routes.yaml`, as in 1.2.x. Regression test with a kernel that only loads `routing.controllers`.
+
+[1.3.1]: https://github.com/nowo-tech/TwigInspectorBundle/releases/tag/v1.3.1
 
 ## [1.3.0] - 2026-10-30
 

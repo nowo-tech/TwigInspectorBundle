@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Unreleased](#unreleased)
+- [To 1.3.1](#to-131)
 - [To 1.3.0](#to-130)
 - [To 1.2.2](#to-122)
 - [To 1.2.1](#to-121)
@@ -109,6 +110,14 @@
   - [Getting Help](#getting-help)
 
 ## Unreleased
+
+## To 1.3.1
+
+From **1.3.0**:
+
+```bash
+composer update nowo-tech/twig-inspector-bundle
+```
 
 From **1.3.0**: no action needed. If you relied on the 1.3.0 behaviour where `/_template/{template}` appeared without importing the bundle routes, import `@NowoTwigInspectorBundle/Resources/config/routes.yaml` under `when@dev` (see [INSTALLATION](INSTALLATION.md)).
 
