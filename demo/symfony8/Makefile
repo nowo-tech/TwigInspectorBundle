@@ -75,8 +75,9 @@ link-bundle: ensure-up
 	@echo "Bundle linked to mounted source. Reload the page in the browser."
 
 update-bundle: ensure-up
-	$(COMPOSE) exec php composer update nowo-tech/twig-inspector-bundle --no-interaction
-	$(COMPOSE) exec php php bin/console cache:clear
+	$(COMPOSE) exec -T php composer update nowo-tech/twig-inspector-bundle --no-interaction
+	$(COMPOSE) exec -T php composer dump-autoload
+	$(COMPOSE) exec -T php php bin/console cache:clear --env=dev --no-warmup
 	@echo "Bundle updated. Reload the page in the browser."
 
 
