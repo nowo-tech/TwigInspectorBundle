@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.3.0] - 2026-10-30](#130---2026-10-30)
 - [[1.2.2] - 2026-10-25](#122---2026-10-25)
 - [[1.2.1] - 2026-10-23](#121---2026-10-23)
 - [[1.2.0] - 2026-10-13](#120---2026-10-13)
@@ -66,6 +67,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-30
+
+Overlay tooltip without innerHTML (DOM-XSS hardening), attribute route, 100% PHP/TS coverage gates. See [UPGRADING](UPGRADING.md#to-130).
+
 ### Changed
 
 - Developer tooling: Rector targets PHP 8.2, the declared `php` floor (REQ-CS-003, REQ-SF-001).
@@ -82,6 +87,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - The stray root `package-lock.json` (pnpm is the package manager; `pnpm-lock.yaml` is the only root lockfile and `/package-lock.json` is now ignored) (REQ-ASSETS-001).
+[1.3.0]: https://github.com/nowo-tech/TwigInspectorBundle/releases/tag/v1.3.0
+
 ## [1.2.2] - 2026-10-25
 
 Reproducible JS bundle: the build stamp is a hash of the sources instead of the build time. See [UPGRADING](UPGRADING.md#to-122).
