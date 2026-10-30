@@ -8,7 +8,7 @@ COMPOSE_BIN := $(shell docker compose version >/dev/null 2>&1 && echo "docker co
 COMPOSE     := $(COMPOSE_BIN) -f $(COMPOSE_FILE)
 SERVICE_PHP := php
 
-.PHONY: help up down down-dev build shell install test test-unit test-integration test-coverage coverage-php-percent coverage-ts-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos demo-smoke composer-sync rector rector-dry phpstan igor update validate check-no-cursor-coauthor check-open-prs strip-cursor-coauthor-from-history check-twig-extra
+.PHONY: help up down down-dev build shell install test test-unit test-integration test-coverage coverage-check coverage-php-percent coverage-ts-percent cs-check cs-fix qa clean setup-hooks test-up test-down test-shell assets assets-build assets-test assets-dev assets-watch assets-clean test-ts release-check release-check-demos demo-smoke composer-sync rector rector-dry phpstan igor update validate check-no-cursor-coauthor check-open-prs strip-cursor-coauthor-from-history check-twig-extra
 
 # Default target
 help:
@@ -27,7 +27,8 @@ help:
 	@echo "  test          Run all PHPUnit tests (unit + integration)"
 	@echo "  test-unit     Run unit tests only (tests/Unit)"
 	@echo "  test-integration Run integration tests only (tests/Integration)"
-	@echo "  test-coverage Run tests with code coverage (starts container if needed)"
+	@echo "  test-coverage Run tests with code coverage; fails below PHP_COVERAGE_MIN (default 100%)"
+	@echo "  coverage-check REQ-TEST-006: same gate as test-coverage (exit != 0 below PHP_COVERAGE_MIN)"
 	@echo "  cs-check      Check code style"
 	@echo "  cs-fix        Fix code style"
 	@echo "  rector        Apply Rector refactoring"
@@ -109,10 +110,17 @@ test-unit: ensure-up
 test-integration: ensure-up
 	$(COMPOSE) exec $(SERVICE_PHP) vendor/bin/phpunit --testsuite integration
 
-# Run tests with coverage (no -T so coverage is shown in console with colors)
+# PHP line-coverage gate (REQ-TEST-003 / REQ-TEST-006): test-coverage fails when below this value.
+PHP_COVERAGE_MIN ?= 100
+
+# Run tests with coverage and enforce PHP_COVERAGE_MIN (pipefail: a PHPUnit failure is not masked by tee)
 test-coverage: ensure-up
-	$(COMPOSE) exec $(SERVICE_PHP) composer test-coverage | tee coverage-php.txt
+	bash -o pipefail -c '$(COMPOSE) exec -T $(SERVICE_PHP) composer test-coverage | tee coverage-php.txt'
 	sh ./.scripts/php-coverage-percent.sh coverage-php.txt
+	sh ./.scripts/coverage-fail-under.sh coverage-php.txt $(PHP_COVERAGE_MIN)
+
+# REQ-TEST-006: run coverage and fail (exit != 0) when PHP line coverage < PHP_COVERAGE_MIN
+coverage-check: test-coverage
 
 # Start container (same as up; alias for test workflow)
 test-up:
@@ -213,7 +221,7 @@ assets-build: assets
 test-ts: ensure-up
 	@echo "Running TypeScript tests (Vitest) with coverage..."
 	$(COMPOSE) exec -T -e CI=true $(SERVICE_PHP) pnpm install
-	$(COMPOSE) exec -T $(SERVICE_PHP) pnpm run test:coverage | tee coverage-ts.txt
+	bash -o pipefail -c '$(COMPOSE) exec -T $(SERVICE_PHP) pnpm run test:coverage | tee coverage-ts.txt'
 	sh ./.scripts/ts-coverage-percent.sh coverage-ts.txt
 	@echo "✅ TypeScript tests done!"
 

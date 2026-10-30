@@ -102,7 +102,7 @@
   {% set block_attrs = (block_attrs|default('')) ~ ' title="Click to toggle overlay: green = on, yellow = off"' %}
   {{ include('@NowoTwigInspectorBundle/Collector/toolbar_item.html.twig') }}
   <script>
-    window.__twig_inspector_config = {{ collector.config|json_encode|raw }};
+    window.__twig_inspector_config = {{ collector.config|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT'))|raw }};
   </script>
   <script>
     {{ include('@NowoTwigInspectorBundle/assets/dist/index.min.js') }}
@@ -159,7 +159,7 @@
               {% for name, ms in template_times %}
                 <tr>
                   <td>{{ name }}</td>
-                  <td>{{ "%.2f"|format(ms) }}</td>
+                  <td>{{ '%.2f'|format(ms) }}</td>
                 </tr>
               {% endfor %}
             </tbody>

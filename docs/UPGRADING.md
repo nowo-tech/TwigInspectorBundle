@@ -109,6 +109,12 @@
 
 ## Unreleased
 
+No action required for most apps.
+
+- **Routes (REQ-SF-004)**: keep importing `@NowoTwigInspectorBundle/Resources/config/routes.yaml` under `when@dev` / `when@test`; the file now loads the `#[Route]` attribute of `OpenTemplateController`. Route name `nowo_twig_inspector_template_link` and path `/_template/{template}` are unchanged. Only if your app reads the route's `_controller` default (e.g. a test asserting `nowo_twig_inspector.controller.open_template`) update it to `Nowo\TwigInspectorBundle\Controller\OpenTemplateController`; the old service id still exists.
+- **Overlay tooltip (REQ-UX-001)**: names are rendered as text. If you customised the overlay CSS for `<br/>`-separated HTML, the structure is the same (text nodes separated by `<br>`).
+- Clear the cache after updating (`php bin/console cache:clear --env=dev`).
+
 ## To 1.2.2
 
 From **1.2.1**:

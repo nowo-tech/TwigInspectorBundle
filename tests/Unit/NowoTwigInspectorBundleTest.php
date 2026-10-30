@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Nowo\TwigInspectorBundle\Tests\Unit;
 
+use Nowo\TwigInspectorBundle\DependencyInjection\Compiler\TwigPathsPass;
 use Nowo\TwigInspectorBundle\DependencyInjection\NowoTwigInspectorExtension;
 use Nowo\TwigInspectorBundle\NowoTwigInspectorBundle;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
 /**
@@ -45,5 +47,17 @@ final class NowoTwigInspectorBundleTest extends TestCase
         $extension = $this->bundle->getContainerExtension();
 
         $this->assertSame('nowo_twig_inspector', $extension->getAlias());
+    }
+
+    public function testBuildRegistersTwigPathsPass(): void
+    {
+        $container = new ContainerBuilder();
+        $this->bundle->build($container);
+
+        $passes = array_filter(
+            $container->getCompilerPassConfig()->getPasses(),
+            static fn (object $pass): bool => $pass instanceof TwigPathsPass,
+        );
+        $this->assertCount(1, $passes);
     }
 }

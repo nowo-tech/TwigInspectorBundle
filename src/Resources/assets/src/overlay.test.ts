@@ -129,6 +129,30 @@ describe('Overlay', () => {
       expect(overlay.info.innerHTML).toContain('base.html.twig');
     });
 
+    it('renders template names as text, never as markup (REQ-UX-001)', () => {
+      const div = document.createElement('div');
+      document.body.appendChild(div);
+      const payload = '<img src=x onerror="window.__twigInspectorXss=1">evil.html.twig';
+      const block = new BlockClass(0, div, [
+        new TemplateClass('base.html.twig', '/_template/base.html.twig'),
+        new TemplateClass(payload, '#'),
+      ]);
+      overlay.show(block);
+      expect(overlay.info.querySelector('img')).toBeNull();
+      expect(overlay.info.querySelectorAll('br').length).toBe(1);
+      expect(overlay.info.textContent).toBe('base.html.twig' + payload);
+      expect(overlay.info.childNodes[2].nodeType).toBe(Node.TEXT_NODE);
+      expect((overlay.info.childNodes[2] as Text).data).toBe(payload);
+    });
+
+    it('replaces previous tooltip content on each show', () => {
+      const div = document.createElement('div');
+      document.body.appendChild(div);
+      overlay.show(new BlockClass(0, div, [new TemplateClass('first.html.twig', '#')]));
+      overlay.show(new BlockClass(1, div, [new TemplateClass('second.html.twig', '#')]));
+      expect(overlay.info.textContent).toBe('second.html.twig');
+    });
+
     it('positions info above block when near bottom of viewport', () => {
       const div = document.createElement('div');
       div.style.position = 'absolute';

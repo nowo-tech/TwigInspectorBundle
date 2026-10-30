@@ -50,7 +50,7 @@ export interface Block {
   element: HTMLElement;
   /** Templates that rendered this block. */
   templates: Template[];
-  /** Renders template names as HTML for the tooltip. */
+  /** Template names as plain text, one per line (never HTML). */
   toString(): string;
 }
 

@@ -21,7 +21,7 @@ get-version = $(shell echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | s
 # Helper function to get demo version for shell commands
 get-version-shell = $(shell echo $(1) | sed 's/symfony/Symfony /' | sed 's/6/6.4/' | sed 's/7/7.0/' | sed 's/8/8.0/')
 
-.PHONY: help clean test-all test-coverage-all test-ts-all verify-all check-all release-check release-verify demo-smoke
+.PHONY: help clean test-all test-coverage-all test-ts-all verify-all check-all release-check release-verify demo-smoke update-bundle-all
 .PHONY: $(foreach demo,$(DEMOS),up-$(demo) down-$(demo) restart-$(demo) build-$(demo) install-$(demo) update-bundle-$(demo) shell-$(demo) logs-$(demo) test-$(demo) test-coverage-$(demo) test-ts-$(demo) verify-$(demo))
 .PHONY: up down restart build install update-bundle test shell logs test-coverage test-ts verify
 
@@ -58,7 +58,8 @@ help:
 	@echo "  test-coverage-all  Run tests with coverage for all demos"
 	@echo "  test-ts-all        Run TypeScript tests for all demos (bundle has TS)"
 	@echo "  verify-all         Verify all demos are running correctly (HTTP 200)"
-	@echo "  release-check      Pre-release: test-coverage-all, test-ts-all, release-verify"
+	@echo "  update-bundle-all  Update the bundle from the path repo and clear cache in every demo (REQ-DEMO-007)"
+	@echo "  release-check      Pre-release: update-bundle-all, test-coverage-all, test-ts-all, release-verify"
 	@echo "  demo-smoke         REQ-TEST-011: boot symfony8 and assert HTTP 200"
 	@echo ""
 	@echo "Verification:"
@@ -468,8 +469,12 @@ test-ts-all:
 	@$(foreach demo,$(DEMOS),$(MAKE) test-ts-$(demo);)
 	@echo "✅ test-ts-all done."
 
-# release-check: test-coverage-all, test-ts-all (bundle has TS), then release-verify
-release-check: test-coverage-all test-ts-all release-verify
+# REQ-DEMO-007: sync the bundle code into every demo (path repo update + cache clear).
+update-bundle-all:
+	@$(foreach demo,$(DEMOS),$(MAKE) update-bundle-$(demo);)
+
+# release-check: update-bundle-all (REQ-DEMO-007), test-coverage-all, test-ts-all (bundle has TS), then release-verify
+release-check: update-bundle-all test-coverage-all test-ts-all release-verify
 	@echo "✅ All demos passed release-check."
 
 # REQ-TEST-011: boot primary demo + HTTP 200

@@ -12,6 +12,11 @@ services:
       - '%kernel.environment%'
     public: true
 
+  # Attribute routes resolve the invokable controller by FQCN (REQ-SF-004)
+  Nowo\TwigInspectorBundle\Controller\OpenTemplateController:
+    alias: nowo_twig_inspector.controller.open_template
+    public: true
+
   Nowo\TwigInspectorBundle\BoxDrawings:
     class: Nowo\TwigInspectorBundle\BoxDrawings
 

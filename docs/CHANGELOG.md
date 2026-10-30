@@ -66,10 +66,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-
 ### Changed
 
 - Developer tooling: Rector targets PHP 8.2, the declared `php` floor (REQ-CS-003, REQ-SF-001).
+- Routing: the open-in-IDE route is now declared with `#[Route]` on `OpenTemplateController` (also `#[AsController]`, plus a public FQCN alias of the existing service). `Resources/config/routes.yaml` is now a thin attribute import, so existing `@NowoTwigInspectorBundle/Resources/config/routes.yaml` imports keep working. Route name, path, requirements, defaults and options are unchanged; only the route's `_controller` default changes from the service id to the controller FQCN (REQ-SF-004).
+- Coverage gates: `make test-coverage` / `make coverage-check` / `composer coverage-check` fail below 100% PHP line coverage; CI enforces it and runs a new **Frontend (Vitest + build)** job (Vitest thresholds raised to 100% branches) (REQ-TEST-003, REQ-TEST-006). README coverage figures now match the measured values (REQ-TEST-007).
+- Demos: `make -C demo release-check` runs the new `update-bundle-all` first; the demo `update-bundle` also dumps the autoloader and clears the `dev` cache (REQ-DEMO-007).
+- Docs: `docs/SECURITY.md` gains attack surface, threats and mitigations, CSP, secrets, logging, dependency and exposure sections (REQ-SEC-001); CONTRIBUTING lists the current CI matrix and coverage gates.
+
+### Fixed
+
+- Overlay tooltip: template names (parsed from HTML comments in the page) are rendered as text nodes instead of through `innerHTML`, so a crafted comment in rendered user content can no longer inject markup in `dev` (REQ-UX-001). Rebuilt `index.min.js`.
+- Profiler toolbar: the inline overlay config is JSON-encoded with `JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT` so a configured value cannot close the `<script>` element.
+
+### Removed
+
+- The stray root `package-lock.json` (pnpm is the package manager; `pnpm-lock.yaml` is the only root lockfile and `/package-lock.json` is now ignored) (REQ-ASSETS-001).
 ## [1.2.2] - 2026-10-25
 
 Reproducible JS bundle: the build stamp is a hash of the sources instead of the build time. See [UPGRADING](UPGRADING.md#to-122).

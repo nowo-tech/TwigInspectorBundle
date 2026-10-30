@@ -10,7 +10,9 @@ use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Attribute\Route;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -28,9 +30,13 @@ use const DIRECTORY_SEPARATOR;
  * Controller that redirects to an IDE file link for a given Twig template and line.
  * Used by the inspector overlay when clicking "open in IDE".
  *
+ * Routing is declared with #[Route] (REQ-SF-004); Resources/config/routes.yaml only imports
+ * the attribute routes of this directory so existing host imports keep working.
+ *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
+#[AsController]
 class OpenTemplateController
 {
     /**
@@ -62,6 +68,13 @@ class OpenTemplateController
      *
      * @return RedirectResponse Redirect response to the IDE with the file path and line number
      */
+    #[Route(
+        path: '/_template/{template}',
+        name: 'nowo_twig_inspector_template_link',
+        requirements: ['template' => '[^\0]+'], // slashes allowed for subdirectories, no null bytes
+        options: ['frontend' => true],
+        defaults: ['line' => 1],
+    )]
     public function __invoke(Request $request, string $template): RedirectResponse
     {
         // Restrict to dev/test: outside those envs, return 404 even if routes were accidentally enabled
