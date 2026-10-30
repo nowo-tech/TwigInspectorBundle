@@ -58,6 +58,22 @@ final class TwigPathsPassTest extends TestCase
         self::assertCount(1, $addPathCalls);
     }
 
+    public function testProcessUsesTwigLoaderNativeWhenDefinedAsService(): void
+    {
+        $container = new ContainerBuilder();
+        $nativeDef = new Definition();
+        $fsDef     = new Definition();
+        $container->setDefinition('twig.loader.native', $nativeDef);
+        $container->setDefinition('twig.loader.native_filesystem', $fsDef);
+
+        $pass = new TwigPathsPass();
+        $pass->process($container);
+
+        $addPathCalls = array_filter($nativeDef->getMethodCalls(), static fn (array $c): bool => $c[0] === 'addPath' && ($c[1][1] ?? '') === 'NowoTwigInspectorBundle');
+        self::assertCount(1, $addPathCalls);
+        self::assertSame([], $fsDef->getMethodCalls(), 'The native_filesystem fallback must not be used when twig.loader.native is defined.');
+    }
+
     public function testProcessDoesNothingWhenTwigLoaderNotDefined(): void
     {
         $container = new ContainerBuilder();

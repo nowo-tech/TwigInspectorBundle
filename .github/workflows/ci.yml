@@ -210,12 +210,14 @@ jobs:
         run: |
           echo "🧪 Running tests with coverage..."
           rm -rf .phpunit.cache
-          composer test-coverage
-          if [ $? -ne 0 ]; then
-            echo "❌ ERROR: Tests failed"
-            exit 1
-          fi
+          # bash runs with -eo pipefail: a PHPUnit failure still fails the step through tee
+          composer test-coverage | tee coverage-php.txt
           echo "✅ All tests passed successfully"
+
+      - name: Enforce 100% PHP line coverage (REQ-TEST-003)
+        run: |
+          sed 's/\x1B\[[0-9;]*[A-Za-z]//g' coverage-php.txt | grep -E '^[[:space:]]+Lines:' | head -1
+          sh .scripts/coverage-fail-under.sh coverage-php.txt 100
 
       - name: Validate coverage file
         run: |
@@ -230,6 +232,36 @@ jobs:
         with:
           files: coverage.xml
           fail_ci_if_error: false
+
+  frontend:
+    name: Frontend (Vitest + build)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      # pnpm version comes from package.json "packageManager"
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install JS dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Thresholds live in vitest.config.ts (lines/statements/functions 100%): Vitest exits non-zero below them (REQ-TEST-003)
+      - name: Vitest with coverage thresholds
+        run: pnpm run test:coverage | tee coverage-ts.txt
+
+      - name: TS coverage summary (REQ-TEST-009)
+        run: sh .scripts/ts-coverage-percent.sh coverage-ts.txt
+
+      - name: Build assets (Vite + Sass)
+        run: pnpm run build
 
 # Maintainer: Héctor Franco Aceituno (@HecFranco)
 # Organization: nowo-tech (https://github.com/nowo-tech)

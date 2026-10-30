@@ -881,11 +881,14 @@ final class HtmlCommentsExtensionTest extends TestCase
         $request->cookies->set('twig_inspector_is_active', '1');
         $this->requestStack->method('getCurrentRequest')->willReturn($request);
 
-        if (ob_get_level() !== 0) {
-            $this->markTestSkipped('Output buffer level is not 0; cannot test early-return branch without affecting other buffers');
-        }
+        // PHPUnit wraps each test in its own output buffer: end() without a matching start()
+        // must leave every buffer it does not own untouched and print nothing.
+        $levelBefore = ob_get_level();
+        ob_start();
+        echo 'foreign';
         $this->extension->end($ref);
-        $this->assertSame(0, ob_get_level(), 'end() with no buffer from start() should return early without touching buffers');
+        $this->assertSame($levelBefore + 1, ob_get_level(), 'end() with no buffer from start() should return early without touching buffers');
+        $this->assertSame('foreign', ob_get_clean());
     }
 
     public function testShouldInspectReturnsFalseWhenDebugDisabled(): void

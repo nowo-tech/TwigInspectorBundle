@@ -129,8 +129,8 @@ class HtmlCommentsExtension extends AbstractExtension implements ResetInterface
             return; // @codeCoverageIgnore
         }
 
-        if (!$this->popOwnedBufferIfOnTop()) { // @codeCoverageIgnore
-            return; // @codeCoverageIgnore
+        if (!$this->popOwnedBufferIfOnTop()) {
+            return;
         }
 
         $content = ob_get_clean();
@@ -142,7 +142,7 @@ class HtmlCommentsExtension extends AbstractExtension implements ResetInterface
             if ($this->maxInjectionDepth > 0 && $this->nestingLevel > $this->maxInjectionDepth) {
                 // Only echo when a parent buffer exists (e.g. Twig's render()), never to stdout
                 if (ob_get_level() > 0) {
-                    echo $content; // @codeCoverageIgnore
+                    echo $content;
                 }
 
                 return;
@@ -211,12 +211,8 @@ class HtmlCommentsExtension extends AbstractExtension implements ResetInterface
      */
     private function discardTopOwnedBuffer(): void
     {
-        if ($this->ownedBufferLevels === []) {
-            return;
-        }
-
         $level = array_pop($this->ownedBufferLevels);
-        if (ob_get_level() === $level) {
+        if ($level !== null && ob_get_level() === $level) {
             ob_end_clean();
         }
     }
@@ -228,13 +224,9 @@ class HtmlCommentsExtension extends AbstractExtension implements ResetInterface
      */
     private function popOwnedBufferIfOnTop(): bool
     {
-        if ($this->ownedBufferLevels === []) {
-            return false;
-        }
-
         $level = array_pop($this->ownedBufferLevels);
 
-        return ob_get_level() === $level;
+        return $level !== null && ob_get_level() === $level;
     }
 
     /**
