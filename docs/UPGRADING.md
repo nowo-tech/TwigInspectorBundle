@@ -110,6 +110,8 @@
 
 ## Unreleased
 
+From **1.3.0**: no action needed. If you relied on the 1.3.0 behaviour where `/_template/{template}` appeared without importing the bundle routes, import `@NowoTwigInspectorBundle/Resources/config/routes.yaml` under `when@dev` (see [INSTALLATION](INSTALLATION.md)).
+
 ## To 1.3.0
 
 From **1.2.2**:
