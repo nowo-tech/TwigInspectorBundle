@@ -1,12 +1,7 @@
-# This route should only be available in dev and test environments
-# Applications should wrap this import with when@dev or when@test
-nowo_twig_inspector_template_link:
-  path: /_template/{template}
-  requirements:
-    template: "[^\\0]+"  # Allow slashes for subdirectories (e.g., admin/users/list.html.twig), but no null bytes
-  defaults:
-    _controller: nowo_twig_inspector.controller.open_template
-    line: 1
-  options:
-    frontend: true
-
+# Thin import (REQ-SF-004): the bundle routes are declared with #[Route] attributes on
+# src/Controller (route name nowo_twig_inspector_template_link, path /_template/{template}).
+# This file is kept so existing imports of '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
+# keep working. Import it only for dev and test (when@dev / when@test), never prod.
+nowo_twig_inspector_attribute_routes:
+  resource: '../../Controller/'
+  type: attribute

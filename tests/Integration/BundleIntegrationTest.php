@@ -109,4 +109,27 @@ final class BundleIntegrationTest extends KernelTestCase
 
         $this->assertTrue($response->isRedirection(), 'Open template route should redirect to IDE.');
     }
+
+    /**
+     * REQ-SF-004: the route comes from #[Route] on the controller, imported through the
+     * BC path '@NowoTwigInspectorBundle/Resources/config/routes.yaml'; name, path and options are unchanged.
+     */
+    public function testOpenTemplateRouteIsDeclaredByAttributeAndKeepsItsContract(): void
+    {
+        self::bootKernel();
+        $router = self::getContainer()->get('router');
+        $route  = $router->getRouteCollection()->get('nowo_twig_inspector_template_link');
+
+        $this->assertNotNull($route, 'Route nowo_twig_inspector_template_link must be imported.');
+        $this->assertSame('/_template/{template}', $route->getPath());
+        $this->assertSame('[^\0]+', $route->getRequirement('template'));
+        $this->assertSame(1, $route->getDefault('line'));
+        $this->assertTrue($route->getOption('frontend'));
+        $this->assertSame(OpenTemplateController::class, $route->getDefault('_controller'));
+        $this->assertTrue(self::getContainer()->has(OpenTemplateController::class), 'Controller must be resolvable by FQCN.');
+        $this->assertSame(
+            '/_template/admin/users/list.html.twig?line=7',
+            $router->generate('nowo_twig_inspector_template_link', ['template' => 'admin/users/list.html.twig', 'line' => 7]),
+        );
+    }
 }
