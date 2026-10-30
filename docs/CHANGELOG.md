@@ -67,6 +67,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Route registered without being imported (regression in 1.3.0):** on Symfony >= 7.3 the `#[Route]` on `OpenTemplateController` made the class autoconfigured with the `routing.controller` tag, so the host's default `controllers: { resource: routing.controllers }` exposed `nowo_twig_inspector_template_link` (`/_template/{template}`) in dev/test even when the host never imported `@NowoTwigInspectorBundle/Resources/config/routes.yaml`. The controller service is no longer autoconfigured and no longer carries `#[AsController]`; the route exists only where the host imports `routes.yaml`, as in 1.2.x. Regression test with a kernel that only loads `routing.controllers`.
+
 ## [1.3.0] - 2026-10-30
 
 Overlay tooltip without innerHTML (DOM-XSS hardening), attribute route, 100% PHP/TS coverage gates. See [UPGRADING](UPGRADING.md#to-130).

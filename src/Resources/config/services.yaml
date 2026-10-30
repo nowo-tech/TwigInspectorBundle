@@ -4,8 +4,12 @@ services:
     autoconfigure: true
     public: false
 
+  # autoconfigure: false — on Symfony >= 7.3 a #[Route] class is autoconfigured with the
+  # routing.controller tag, and the host's `routing.controllers` resource would then expose
+  # /_template/{template} without the host importing the bundle routes (opt-in only).
   nowo_twig_inspector.controller.open_template:
     class: Nowo\TwigInspectorBundle\Controller\OpenTemplateController
+    autoconfigure: false
     arguments:
       - '@twig'
       - '@debug.file_link_formatter'

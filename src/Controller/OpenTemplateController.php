@@ -10,7 +10,6 @@ use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Twig\Environment;
@@ -31,12 +30,13 @@ use const DIRECTORY_SEPARATOR;
  * Used by the inspector overlay when clicking "open in IDE".
  *
  * Routing is declared with #[Route] (REQ-SF-004); Resources/config/routes.yaml only imports
- * the attribute routes of this directory so existing host imports keep working.
+ * the attribute routes of this directory so existing host imports keep working. The service is
+ * not autoconfigured (no #[AsController]): the route must exist only where the host imports
+ * routes.yaml, never through the host's `routing.controllers` resource.
  *
  * @author Héctor Franco Aceituno <hectorfranco@nowo.tech>
  * @copyright 2026 Nowo.tech
  */
-#[AsController]
 class OpenTemplateController
 {
     /**

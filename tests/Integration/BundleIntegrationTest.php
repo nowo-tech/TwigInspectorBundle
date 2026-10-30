@@ -8,6 +8,7 @@ use Nowo\TwigInspectorBundle\BoxDrawings;
 use Nowo\TwigInspectorBundle\Command\InstallCommand;
 use Nowo\TwigInspectorBundle\Controller\OpenTemplateController;
 use Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber;
+use Nowo\TwigInspectorBundle\Tests\Kernel\HostControllersRoutesKernel;
 use Nowo\TwigInspectorBundle\Tests\Kernel\TestKernel;
 use Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension;
 use ReflectionProperty;
@@ -17,6 +18,7 @@ use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Routing\Loader\AttributeServicesLoader;
 
 /**
  * Integration tests: kernel boots with the bundle and services are available.
@@ -131,5 +133,23 @@ final class BundleIntegrationTest extends KernelTestCase
             '/_template/admin/users/list.html.twig?line=7',
             $router->generate('nowo_twig_inspector_template_link', ['template' => 'admin/users/list.html.twig', 'line' => 7]),
         );
+    }
+
+    public function testRouteIsNotRegisteredWithoutTheRoutesImport(): void
+    {
+        if (!class_exists(AttributeServicesLoader::class)) {
+            $this->markTestSkipped('The routing.controllers resource needs symfony/routing >= 7.3.');
+        }
+
+        self::ensureKernelShutdown();
+        $kernel = new HostControllersRoutesKernel('test', true);
+        $kernel->boot();
+
+        try {
+            $routes = $kernel->getContainer()->get('router')->getRouteCollection();
+            $this->assertNull($routes->get('nowo_twig_inspector_template_link'), 'The bundle route must only exist when the host imports routes.yaml.');
+        } finally {
+            $kernel->shutdown();
+        }
     }
 }
