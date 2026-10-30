@@ -36,3 +36,6 @@
 # Cursor local sandbox (machine-specific; REQ-IDE-005)
 .cursor/sandbox.json
 
+
+# pnpm is the package manager (REQ-ASSETS-001): npm lockfile must not be committed at the root
+/package-lock.json

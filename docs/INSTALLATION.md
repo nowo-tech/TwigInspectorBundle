@@ -69,6 +69,17 @@ when@test:
         resource: '@NowoTwigInspectorBundle/Resources/config/routes.yaml'
 ```
 
+The route (`nowo_twig_inspector_template_link`, `GET /_template/{template}`) is declared with a `#[Route]` attribute on `OpenTemplateController` (REQ-SF-004). The imported file `Resources/config/routes.yaml` is a thin loader of those attribute routes, kept so this import (Flex recipe, install command, existing apps) works unchanged. Importing the controllers directly is equivalent:
+
+```yaml
+when@dev:
+    nowo_twig_inspector:
+        resource: '@NowoTwigInspectorBundle/Controller/'
+        type: attribute
+```
+
+Check with `php bin/console debug:router nowo_twig_inspector_template_link --env=dev`.
+
 **Import must be restricted to `dev` and `test`** — never in `prod`. For the **test** environment, add the `when@test:` block as shown above. If the route is imported without `when@dev`/`when@test` (e.g. in prod), the controller returns 404 as a safety measure — but you must not register the bundle for prod.
 
 3. **Optional config**: Create `config/packages/dev/nowo_twig_inspector.yaml` (or use the install command below). If you skip this, the bundle uses defaults from `Configuration.php`.

@@ -1,6 +1,6 @@
 # Twig Inspector Bundle
 
-[![CI](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/twig-inspector-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/twig-inspector-bundle.svg)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-6.4%2B%20%7C%207.4%2B%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/TwigInspectorBundle.svg?style=social&label=Star)](https://github.com/nowo-tech/TwigInspectorBundle) [![Coverage](https://img.shields.io/badge/Coverage-99%25-brightgreen)](#tests-and-coverage)
+[![CI](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml/badge.svg)](https://github.com/nowo-tech/TwigInspectorBundle/actions/workflows/ci.yml) [![Packagist Version](https://img.shields.io/packagist/v/nowo-tech/twig-inspector-bundle.svg?style=flat)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![Packagist Downloads](https://img.shields.io/packagist/dt/nowo-tech/twig-inspector-bundle.svg)](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)](https://php.net) [![Symfony](https://img.shields.io/badge/Symfony-6.4%2B%20%7C%207.4%2B%20%7C%208.0%20%7C%208.1%2B-000000?logo=symfony)](https://symfony.com) [![GitHub stars](https://img.shields.io/github/stars/nowo-tech/TwigInspectorBundle.svg?style=social&label=Star)](https://github.com/nowo-tech/TwigInspectorBundle) [![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](#tests-and-coverage)
 
 > ⭐ **Found this useful?** [Install from Packagist](https://packagist.org/packages/nowo-tech/twig-inspector-bundle) · Give it a **star** on [GitHub](https://github.com/nowo-tech/TwigInspectorBundle) so more developers can find it.
 > **WARNING — Development only.** Do **not** enable this bundle in production. It depends on the Symfony **WebProfiler** toolbar and exposes template paths, controller names, and page structure. Install with `composer require --dev`, register only for `dev`/`test`, and see [docs/SECURITY.md](docs/SECURITY.md). Loading the bundle outside those environments throws a `LogicException` at container build time.
@@ -154,9 +154,12 @@ Run tests and QA with Docker: `make up && make install && make test` (or `make t
 
 ## Tests and coverage
 
-- Tests: PHPUnit (PHP), Vitest (TS/JS)
-- PHP: 99.70%
-- TS/JS: 99,58%
+- Tests: PHPUnit unit + integration (PHP, 245 tests), Vitest with jsdom (TS/JS, 133 tests)
+- PHP: 100% (lines, 684/684; gate: `make test-coverage` / CI **Code Coverage** job fail below 100%)
+- TS/JS: 100% (lines, statements, functions and branches; gate: Vitest thresholds in `vitest.config.ts`, CI **Frontend** job)
+- Python: N/A
+
+Documented coverage exclusions (`@codeCoverageIgnore` in `src/Twig/HtmlCommentsExtension.php::end()`): the `headers_sent()` early return and the `ob_get_clean() === false` guard. PHPUnit runs in the CLI with its own output buffer, so neither branch can be reached from a test without breaking the test runner.
 
 ## License
 
