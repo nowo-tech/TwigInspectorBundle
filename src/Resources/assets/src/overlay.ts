@@ -81,7 +81,7 @@ export class Overlay {
    * @returns void
    */
   updateFilterHighlights(): void {
-    this.filterHighlightLayer.innerHTML = '';
+    this.filterHighlightLayer.replaceChildren();
     const q = this.filterQuery.trim();
     if (!q) {
       return;
@@ -141,12 +141,31 @@ export class Overlay {
 
     this.applyHighlightLayout(element.offsetWidth, element.offsetHeight, rect.left, topDocument);
     this.block.dataset.templateIndex = layoutItem.index.toString();
-    this.info.innerHTML = layoutItem.toString();
+    this.renderInfo(layoutItem);
     this.placeTooltipVertically(topDocument, element.offsetHeight);
     this.placeTooltipHorizontally(rect.left);
 
     this.block.classList.add('_twig_inspector__visible');
     this.info.classList.add('_twig_inspector__visible');
+  }
+
+  /**
+   * Writes one line per template name into the tooltip using text nodes and <br> elements.
+   * Names are parsed from HTML comments in the page, so they are never inserted as markup
+   * (no innerHTML: a crafted comment cannot inject elements or handlers, REQ-UX-001).
+   *
+   * @param layoutItem - Block whose template names are shown
+   * @returns void
+   */
+  private renderInfo(layoutItem: Block): void {
+    const fragment = document.createDocumentFragment();
+    layoutItem.templates.forEach((template, i) => {
+      if (i > 0) {
+        fragment.appendChild(document.createElement('br'));
+      }
+      fragment.appendChild(document.createTextNode(template.name));
+    });
+    this.info.replaceChildren(fragment);
   }
 
   private applyHighlightLayout(
@@ -245,8 +264,8 @@ export class Overlay {
   }
 
   private clearBlockAndFilterLayers(): void {
-    this.block.innerHTML = '';
-    this.filterHighlightLayer.innerHTML = '';
+    this.block.replaceChildren();
+    this.filterHighlightLayer.replaceChildren();
   }
 
   private setToolbarIconDisabled(): void {

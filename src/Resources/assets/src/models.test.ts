@@ -37,13 +37,13 @@ describe('BlockClass', () => {
     expect(block.toString()).toBe('single.html.twig');
   });
 
-  it('toString joins multiple template names with <br/>', () => {
+  it('toString joins multiple template names with newlines (plain text)', () => {
     const el = document.createElement('div');
     const block = new BlockClass(0, el, [
       new TemplateClass('base.html.twig', '/base'),
       new TemplateClass('home.html.twig', '/home'),
     ]);
-    expect(block.toString()).toBe('base.html.twig<br/>home.html.twig');
+    expect(block.toString()).toBe('base.html.twig\nhome.html.twig');
   });
 
   it('toString returns empty string when no templates', () => {

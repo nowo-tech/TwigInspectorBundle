@@ -25,8 +25,7 @@ export default defineConfig({
         lines: 100,
         statements: 100,
         functions: 100,
-        // branches: una rama en Overlay (picker link) no la atribuye v8 → 99.58%
-        branches: 99.5,
+        branches: 100,
       },
     },
   },

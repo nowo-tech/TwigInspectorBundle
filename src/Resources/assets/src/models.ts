@@ -34,19 +34,12 @@ export class BlockClass implements Block {
   ) {}
 
   /**
-   * Renders template names as HTML (separated by <br/>) for the overlay tooltip.
+   * Returns the template names as plain text, one per line (never HTML: names come from
+   * HTML comments in the rendered page and must not be parsed as markup, REQ-UX-001).
    *
-   * @returns HTML string of template names for this block
+   * @returns Newline-separated template names for this block
    */
   toString(): string {
-    let text = '';
-    for (let i = 0; i < this.templates.length; i++) {
-      const template = this.templates[i];
-      if (text.length > 0) {
-        text += '<br/>';
-      }
-      text += template.name;
-    }
-    return text;
+    return this.templates.map((template) => template.name).join('\n');
   }
 }
