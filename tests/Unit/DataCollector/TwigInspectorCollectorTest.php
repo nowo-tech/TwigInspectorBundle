@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 use Twig\Extension\ExtensionInterface;
 use Twig\Extension\ProfilerExtension;
@@ -325,6 +327,67 @@ final class TwigInspectorCollectorTest extends TestCase
         $this->assertArrayHasKey('reduced_motion', $config);
         $this->assertSame('Ctrl+Shift+T', $config['keyboard_shortcut']);
         $this->assertSame('light', $config['overlay_theme']);
+    }
+
+    public function testConfigTemplateRoutePrefixDefaultsWithoutRouter(): void
+    {
+        $this->collector->collect(new Request(), new Response());
+
+        $this->assertSame('/_template/', $this->collector->getConfig()['template_route_prefix']);
+    }
+
+    public function testConfigTemplateRoutePrefixFromRouter(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator->expects($this->once())
+            ->method('generate')
+            ->with('nowo_twig_inspector_template_link', ['template' => 'twig-inspector-prefix-probe'])
+            ->willReturn('/index.php/dev/_template/twig-inspector-prefix-probe');
+
+        $collector = $this->createCollectorWithUrlGenerator($urlGenerator);
+        $collector->collect(new Request(), new Response());
+
+        $this->assertSame('/index.php/dev/_template/', $collector->getConfig()['template_route_prefix']);
+    }
+
+    public function testConfigTemplateRoutePrefixFallsBackWhenRouteMissing(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willThrowException(new RouteNotFoundException('missing'));
+
+        $collector = $this->createCollectorWithUrlGenerator($urlGenerator);
+        $collector->collect(new Request(), new Response());
+
+        $this->assertSame('/_template/', $collector->getConfig()['template_route_prefix']);
+    }
+
+    public function testConfigTemplateRoutePrefixFallsBackWhenProbeNotInUrl(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willReturn('/something/else');
+
+        $collector = $this->createCollectorWithUrlGenerator($urlGenerator);
+        $collector->collect(new Request(), new Response());
+
+        $this->assertSame('/_template/', $collector->getConfig()['template_route_prefix']);
+    }
+
+    private function createCollectorWithUrlGenerator(UrlGeneratorInterface $urlGenerator): TwigInspectorCollector
+    {
+        $twig = $this->createMock(Environment::class);
+        $twig->method('hasExtension')->willReturn(false);
+
+        return new TwigInspectorCollector(
+            $this->createControllerSubscriber(),
+            $twig,
+            'twig_inspector_is_active',
+            true,
+            'light',
+            false,
+            false,
+            'Ctrl+Shift+T',
+            $urlGenerator,
+        );
     }
 
     public function testLateCollectWhenMetricsDisabled(): void

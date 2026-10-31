@@ -44,6 +44,7 @@ This file proves that **every production source artifact** under `src/` is refer
 | `filter-match.ts` | Template filter | FR-UI-007 |
 | `shortcut.ts` | Keyboard matching | FR-UI-002 |
 | `logger.ts` | Debug logging | FR-UI-008 |
+| `link-guard.ts` | Same-origin template-route allow-list for overlay links | FR-SEC-005 |
 | `style.scss` | Overlay styling | FR-UI-009 |
 
 ## Symfony config (`src/Resources/config/`)
@@ -52,7 +53,6 @@ This file proves that **every production source artifact** under `src/` is refer
 | --- | --- | --- |
 | `services.yaml` | Service wiring | FR-DI-001 |
 | `routes.yaml` | Dev/test route | FR-IDE-001 |
-| `packages/security.yaml` | Firewall for `/_template/` | FR-SEC-002 |
 
 ## Twig views (`src/Resources/views/`)
 
@@ -68,19 +68,17 @@ This file proves that **every production source artifact** under `src/` is refer
 | --- | --- | --- |
 | `Resources/views/assets/dist/index.min.js` | `pnpm build` (Vite) | FR-BUILD-001 |
 | `Resources/views/assets/dist/style.min.css` | `pnpm build` (Sass) | FR-BUILD-001 |
-| `Resources/assets/dist/index.min.js` | Initial-commit build copy, not referenced at runtime nor written by `vite.config.ts` (candidate for removal) | FR-BUILD-001 |
-| `Resources/assets/dist/style.min.css` | Initial-commit build copy, not referenced at runtime nor written by `package.json` (candidate for removal) | FR-BUILD-001 |
 
 ## Coverage summary
 
 | Category | Files | Mapped |
 | --- | ---: | ---: |
 | PHP classes | 20 | 20 |
-| TS/SCSS production | 10 | 10 |
-| YAML config | 3 | 3 |
+| TS/SCSS production | 11 | 11 |
+| YAML config | 2 | 2 |
 | Twig/SVG views | 3 | 3 |
 | **Total production sources** | **36** | **36** |
 
 Build artifacts are documented as outputs of listed sources; they are not counted as separate authoring units.
 
-Audit: `find src -type f ! -path '*/assets/dist/*' ! -name '*.test.ts' | wc -l` → **36** (2026-10-20; excludes the Vite `dist/` outputs listed above and the co-located Vitest `*.test.ts` files). The former legacy `Resources/public/assets/` pipeline no longer exists.
+Audit: `find src -type f ! -path '*/assets/dist/*' ! -name '*.test.ts' | wc -l` → **36** (2026-10-31; excludes the Vite `dist/` outputs listed above and the co-located Vitest `*.test.ts` files). The former legacy `Resources/public/assets/` pipeline and the stale `Resources/assets/dist/` copy (removed 2026-10-31, audit BS I1) no longer exist.

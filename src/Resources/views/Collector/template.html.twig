@@ -70,7 +70,8 @@
 {% endblock %}
 
 {% block toolbar %}
-  {% set isActive = app.request.cookies.getBoolean('twig_inspector_is_active', false) %}
+  {# collector.enabled reads the configured cookie_name (a hard-coded name ignored custom names) #}
+  {% set isActive = collector.enabled %}
   {% set icon %}
     <span class="icon">{{ source('@NowoTwigInspectorBundle/Icon/twig-inspector.svg') }}</span>
     {% if collector.enabled %}

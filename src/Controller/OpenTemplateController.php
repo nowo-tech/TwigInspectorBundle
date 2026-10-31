@@ -10,6 +10,7 @@ use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Twig\Environment;
@@ -20,6 +21,7 @@ use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
 use Twig\Loader\LoaderInterface;
 
+use function in_array;
 use function is_string;
 use function sprintf;
 
@@ -39,6 +41,9 @@ use const DIRECTORY_SEPARATOR;
  */
 class OpenTemplateController
 {
+    /** Sec-Fetch-Site values accepted for the IDE redirect: overlay/profiler clicks and typed/bookmarked URLs. */
+    private const ALLOWED_FETCH_SITES = ['same-origin', 'none'];
+
     /**
      * Constructor.
      *
@@ -60,6 +65,7 @@ class OpenTemplateController
      * @param Request $request The request object containing the optional 'line' query parameter
      * @param string $template The template name to open
      *
+     * @throws AccessDeniedHttpException When the browser reports a cross-site request (Sec-Fetch-Site)
      * @throws BadRequestException When the template name is invalid or contains path traversal
      * @throws NotFoundHttpException When the template cannot be found
      * @throws LoaderError When the template cannot be loaded
@@ -80,6 +86,13 @@ class OpenTemplateController
         // Restrict to dev/test: outside those envs, return 404 even if routes were accidentally enabled
         if (!DevEnvironments::isAllowed($this->environment)) {
             throw new NotFoundHttpException();
+        }
+
+        // Security: another site must not trigger "open in IDE" (audit BS I3). Browsers send Sec-Fetch-Site on every
+        // navigation; requests without it (older browsers, CLI tools) are still accepted.
+        $fetchSite = $request->headers->get('Sec-Fetch-Site');
+        if ($fetchSite !== null && !in_array($fetchSite, self::ALLOWED_FETCH_SITES, true)) {
+            throw new AccessDeniedHttpException('Cross-site requests cannot open templates in the IDE.');
         }
 
         // Security: Validate template name to prevent path traversal attacks

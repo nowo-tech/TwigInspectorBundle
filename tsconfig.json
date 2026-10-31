@@ -13,5 +13,5 @@
     "isolatedModules": true
   },
   "include": ["src/Resources/assets/src/**/*", "vite.config.ts"],
-  "exclude": ["node_modules", "src/Resources/assets/dist"]
+  "exclude": ["node_modules", "src/Resources/views/assets/dist"]
 }

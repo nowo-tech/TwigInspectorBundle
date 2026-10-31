@@ -132,7 +132,38 @@ describe('BlockStorage', () => {
       expect(block).not.toBe(null);
       expect(block!.templates).toHaveLength(1);
       expect(block!.templates[0].name).toContain('block_name');
-      expect(block!.templates[0].link).toBe('/_template/base.html.twig');
+      expect(block!.templates[0].link).toBe(new URL('/_template/base.html.twig', window.location.href).href);
+    });
+
+    it.each([
+      'javascript:alert(document.domain)',
+      'data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==',
+      '//evil.example/_template/x',
+      'https://other-origin.example/_template/x',
+      '/_template/../../admin',
+    ])('ignores untrusted link %s from a crafted page comment (L1)', (link) => {
+      const openComment = document.createComment(' ┏ evil.html.twig [' + link + '] #a1');
+      const p = document.createElement('p');
+      p.textContent = 'user content';
+      document.body.appendChild(openComment);
+      document.body.appendChild(p);
+      document.body.appendChild(document.createComment(' ┗ evil.html.twig [x] #a1'));
+
+      storage.collectData();
+
+      expect(storage.find(p)!.templates[0].link).toBe('#');
+    });
+
+    it('ignores a controller comment whose template path escapes the template route (L1)', () => {
+      document.body.appendChild(
+        document.createComment(' ┏ controller: App\\Controller\\Home::index [main] template: ../../admin')
+      );
+      const div = document.createElement('div');
+      document.body.appendChild(div);
+
+      storage.collectData();
+
+      expect(storage.find(div)!.templates[0].link).toBe('#');
     });
 
     it('collects controller [main] comment and adds template to elements in range', () => {
@@ -152,7 +183,7 @@ describe('BlockStorage', () => {
       expect(controllerTemplate).toBeDefined();
       expect(controllerTemplate!.name).toContain('[main]');
       expect(controllerTemplate!.name).toContain('base.html.twig');
-      expect(controllerTemplate!.link).toBe('/_template/base.html.twig');
+      expect(controllerTemplate!.link).toBe(new URL('/_template/base.html.twig', window.location.href).href);
     });
 
     it('does not add controller info to script/style elements inside a controller range', () => {
