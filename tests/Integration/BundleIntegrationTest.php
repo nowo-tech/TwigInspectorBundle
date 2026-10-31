@@ -7,6 +7,7 @@ namespace Nowo\TwigInspectorBundle\Tests\Integration;
 use Nowo\TwigInspectorBundle\BoxDrawings;
 use Nowo\TwigInspectorBundle\Command\InstallCommand;
 use Nowo\TwigInspectorBundle\Controller\OpenTemplateController;
+use Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector;
 use Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber;
 use Nowo\TwigInspectorBundle\Tests\Kernel\HostControllersRoutesKernel;
 use Nowo\TwigInspectorBundle\Tests\Kernel\TestKernel;
@@ -17,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Loader\AttributeServicesLoader;
 
@@ -110,6 +112,28 @@ final class BundleIntegrationTest extends KernelTestCase
         $response = $kernel->handle($request, HttpKernelInterface::MAIN_REQUEST, true);
 
         $this->assertTrue($response->isRedirection(), 'Open template route should redirect to IDE.');
+    }
+
+    public function testCrossSiteRequestToOpenTemplateRouteIsForbidden(): void
+    {
+        self::bootKernel();
+        $request = Request::create('http://localhost/_template/base.html.twig', 'GET');
+        $request->headers->set('Sec-Fetch-Site', 'cross-site');
+
+        $response = self::$kernel->handle($request, HttpKernelInterface::MAIN_REQUEST, true);
+
+        $this->assertSame(403, $response->getStatusCode(), 'Another site must not trigger the IDE redirect.');
+    }
+
+    public function testCollectorReportsTheRouterGeneratedTemplateRoutePrefix(): void
+    {
+        self::bootKernel();
+        $collector = self::getContainer()->get(TwigInspectorCollector::class);
+        $this->assertInstanceOf(TwigInspectorCollector::class, $collector);
+
+        $collector->collect(Request::create('http://localhost/'), new Response());
+
+        $this->assertSame('/_template/', $collector->getConfig()['template_route_prefix']);
     }
 
     /**

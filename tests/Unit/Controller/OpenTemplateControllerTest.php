@@ -6,6 +6,7 @@ namespace Nowo\TwigInspectorBundle\Tests\Unit\Controller;
 
 use Exception;
 use Nowo\TwigInspectorBundle\Controller\OpenTemplateController;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -14,6 +15,7 @@ use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Twig\Environment;
 use Twig\Error\LoaderError;
@@ -413,6 +415,51 @@ final class OpenTemplateControllerTest extends TestCase
                 rmdir($tempDir);
             }
         }
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function crossSiteFetchSiteProvider(): iterable
+    {
+        yield 'cross-site' => ['cross-site'];
+        yield 'same-site' => ['same-site'];
+        yield 'unknown value' => ['bogus'];
+    }
+
+    #[DataProvider('crossSiteFetchSiteProvider')]
+    public function testInvokeRejectsCrossSiteRequests(string $fetchSite): void
+    {
+        $request = new Request();
+        $request->headers->set('Sec-Fetch-Site', $fetchSite);
+        $this->twig->expects($this->never())->method('load');
+
+        $this->expectException(AccessDeniedHttpException::class);
+        ($this->controller)($request, 'test.html.twig');
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function allowedFetchSiteProvider(): iterable
+    {
+        yield 'same-origin (overlay / profiler click)' => ['same-origin'];
+        yield 'none (typed or bookmarked URL)' => ['none'];
+    }
+
+    #[DataProvider('allowedFetchSiteProvider')]
+    public function testInvokeAllowsSameOriginAndDirectRequests(string $fetchSite): void
+    {
+        $request = new Request();
+        $request->headers->set('Sec-Fetch-Site', $fetchSite);
+        $template        = 'test.html.twig';
+        $templateWrapper = (new Environment(new ArrayLoader([$template => 'x'])))->load($template);
+        $this->twig->method('load')->willReturn($templateWrapper);
+        $this->fileLinkFormatter->method('format')->willReturn('phpstorm://open?file=/t&line=1');
+
+        $response = ($this->controller)($request, $template);
+
+        $this->assertSame('phpstorm://open?file=/t&line=1', $response->getTargetUrl());
     }
 
     public function testInvokeReturns404InProdEnvironment(): void

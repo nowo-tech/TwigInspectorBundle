@@ -71,7 +71,7 @@ services:
 
   Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector:
     class: Nowo\TwigInspectorBundle\DataCollector\TwigInspectorCollector
-    # Constructor: ControllerRenderSubscriber, ?Environment $twig, cookieName, enableMetrics, overlayTheme, overlayCompact, reducedMotion, keyboardShortcut (no RequestStack)
+    # Constructor: ControllerRenderSubscriber, ?Environment $twig, cookieName, enableMetrics, overlayTheme, overlayCompact, reducedMotion, keyboardShortcut, ?UrlGenerator (no RequestStack)
     arguments:
       - '@Nowo\TwigInspectorBundle\EventSubscriber\ControllerRenderSubscriber'
       - '@twig'
@@ -81,6 +81,7 @@ services:
       - '%nowo_twig_inspector.overlay_compact%'
       - '%nowo_twig_inspector.reduced_motion%'
       - '%nowo_twig_inspector.keyboard_shortcut%'
+      - '@?router'
     tags:
       -
         name: data_collector

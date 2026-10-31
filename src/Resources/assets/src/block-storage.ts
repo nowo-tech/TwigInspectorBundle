@@ -8,6 +8,7 @@
 import type { Block, Template } from './types';
 import { BlockClass, TemplateClass } from './models';
 import { getLogger } from './logger';
+import { getTemplateRoutePrefix, safeTemplateLink } from './link-guard';
 
 /** global: NodeFilter */
 
@@ -37,7 +38,8 @@ function parseTwigBlockOpenComment(nodeValue: string | null): TwigBlockOpenParse
   }
   const templateId = match[7];
   const templateName = match[3] + ' [' + match[5].replace(/\/_template\//g, '') + ']';
-  const templateLink = match[5];
+  // Comments come from the whole page (possibly user content): only keep same-origin template-route links (L1).
+  const templateLink = safeTemplateLink(match[5]) ?? '#';
   return { templateId, templateName, templateLink };
 }
 
@@ -179,7 +181,9 @@ export class BlockStorage {
       const templatePath = openMatch[3]?.trim();
       const controllerName =
         'Controller: ' + controllerStr + ' [' + role + ']' + (templatePath ? ' · ' + templatePath : '');
-      const controllerLink = templatePath ? '/_template/' + templatePath : '#';
+      const controllerLink = templatePath
+        ? (safeTemplateLink(getTemplateRoutePrefix() + templatePath) ?? '#')
+        : '#';
 
       let start: Node | null = node.nextSibling;
       let end: Node | null = null;

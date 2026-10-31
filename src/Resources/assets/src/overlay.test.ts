@@ -306,23 +306,28 @@ describe('Overlay', () => {
       overlay.initClickHandler();
       overlay.block.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 10, clientY: 10 }));
       expect(overlay.isEnabled).toBe(false);
-      expect(navigatedTo).toBe('/_template/base.html.twig');
+      expect(navigatedTo).toBe(new URL('/_template/base.html.twig', origLocation.href).href);
       Object.defineProperty(window, 'location', { configurable: true, value: origLocation });
     });
 
     it('handleBlockClick with one template runs single-template path', () => {
       storage.create(document.createElement('div'));
-      storage.addTemplate(0, new TemplateClass('one', '/url'));
+      storage.addTemplate(0, new TemplateClass('one', '/_template/url'));
       overlay.block.dataset.templateIndex = '0';
       let href = '';
       const origLocation = window.location;
+      const origHref = origLocation.href;
       Object.defineProperty(window, 'location', {
         configurable: true,
-        value: { get href() { return href; }, set href(v: string) { href = v; } },
+        value: {
+          origin: origLocation.origin,
+          get href() { return href || origHref; },
+          set href(v: string) { href = v; },
+        },
       });
       const evt = new MouseEvent('click', { bubbles: true, clientX: 1, clientY: 1 });
       overlay.handleBlockClick(evt);
-      expect(href).toBe('/url');
+      expect(href).toBe(new URL('/_template/url', origHref).href);
       Object.defineProperty(window, 'location', { configurable: true, value: origLocation });
     });
 
@@ -367,8 +372,8 @@ describe('Overlay', () => {
     it('multiple templates: click on picker link with href navigates (location stubbed)', () => {
       const div = document.createElement('div');
       storage.create(div);
-      storage.addTemplate(0, new TemplateClass('a', '/page-a'));
-      storage.addTemplate(0, new TemplateClass('b', '/page-b'));
+      storage.addTemplate(0, new TemplateClass('a', '/_template/page-a'));
+      storage.addTemplate(0, new TemplateClass('b', '/_template/page-b'));
       overlay.block.dataset.templateIndex = '0';
       let navigatedTo = '';
       const origLocation = window.location;
@@ -387,19 +392,19 @@ describe('Overlay', () => {
       overlay.initClickHandler();
       overlay.block.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 50, clientY: 50 }));
       const linkA = Array.from(overlay.block.querySelectorAll('[data-href]')).find(
-        (el) => (el as HTMLElement).dataset.href === '/page-a'
+        (el) => (el as HTMLElement).dataset.href === '/_template/page-a'
       ) as HTMLElement;
       linkA.click();
       expect(overlay.isEnabled).toBe(false);
-      expect(navigatedTo).toBe('/page-a');
+      expect(navigatedTo).toBe(new URL('/_template/page-a', origLocation.href).href);
       Object.defineProperty(window, 'location', { configurable: true, value: origLocation });
     });
 
     it('multiple templates: click on a picker row without data-href only resets', () => {
       const div = document.createElement('div');
       storage.create(div);
-      storage.addTemplate(0, new TemplateClass('a', '/page-a'));
-      storage.addTemplate(0, new TemplateClass('b', '/page-b'));
+      storage.addTemplate(0, new TemplateClass('a', '/_template/page-a'));
+      storage.addTemplate(0, new TemplateClass('b', '/_template/page-b'));
       overlay.block.dataset.templateIndex = '0';
       let navigatedTo = '';
       const origLocation = window.location;
@@ -420,6 +425,61 @@ describe('Overlay', () => {
       expect(overlay.isEnabled).toBe(false);
       expect(navigatedTo).toBe('');
       Object.defineProperty(window, 'location', { configurable: true, value: origLocation });
+    });
+
+    function stubLocation(): { navigated: () => string; restore: () => void } {
+      let navigatedTo = '';
+      const origLocation = window.location;
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: {
+          ...origLocation,
+          get href() {
+            return origLocation.href;
+          },
+          set href(v: string) {
+            navigatedTo = v;
+          },
+        },
+      });
+      return {
+        navigated: () => navigatedTo,
+        restore: () => Object.defineProperty(window, 'location', { configurable: true, value: origLocation }),
+      };
+    }
+
+    it.each([
+      'javascript:alert(document.domain)',
+      'data:text/html,<script>alert(1)</script>',
+      '//evil.example/_template/x',
+      'https://other-origin.example/_template/x',
+      '/_template/../admin',
+      '/other/path',
+    ])('single template with untrusted link %s does not navigate (L1)', (link) => {
+      storage.create(document.createElement('div'));
+      storage.addTemplate(0, new TemplateClass('evil', link));
+      overlay.block.dataset.templateIndex = '0';
+      const loc = stubLocation();
+      overlay.handleBlockClick(new MouseEvent('click', { bubbles: true, clientX: 1, clientY: 1 }));
+      expect(loc.navigated()).toBe('');
+      loc.restore();
+    });
+
+    it('picker row with untrusted link resets without navigating (L1)', () => {
+      storage.create(document.createElement('div'));
+      storage.addTemplate(0, new TemplateClass('evil', 'javascript:alert(1)'));
+      storage.addTemplate(0, new TemplateClass('ok', '/_template/ok.html.twig'));
+      overlay.block.dataset.templateIndex = '0';
+      const loc = stubLocation();
+      overlay.initClickHandler();
+      overlay.block.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 50, clientY: 50 }));
+      const evil = Array.from(overlay.block.querySelectorAll('[data-href]')).find(
+        (el) => (el as HTMLElement).dataset.href === 'javascript:alert(1)'
+      ) as HTMLElement;
+      evil.click();
+      expect(overlay.isEnabled).toBe(false);
+      expect(loc.navigated()).toBe('');
+      loc.restore();
     });
 
     it('click when already static picker does nothing', () => {

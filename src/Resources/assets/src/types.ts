@@ -18,6 +18,8 @@ export interface InspectorConfigRaw {
   overlay_compact?: boolean;
   reduced_motion?: boolean;
   keyboard_shortcut?: string;
+  /** Path prefix of the template route (e.g. "/_template/"); overlay links outside it are ignored. */
+  template_route_prefix?: string;
 }
 
 /** Resolved inspector config (all keys present). */

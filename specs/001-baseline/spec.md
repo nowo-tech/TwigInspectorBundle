@@ -140,12 +140,14 @@ As an integrator, I exclude noisy templates/blocks and tune overlay theme, compa
 
 - **FR-IDE-001**: Route `nowo_twig_inspector_template_link` path `/_template/{template}` (requirements: no NUL), defaults `line=1`, `frontend=true`; controller `OpenTemplateController` validates name/path and redirects via `FileLinkFormatter`.
 - **FR-SEC-001**: Open template MUST 404 outside `dev`/`test`; resolved filesystem path MUST be under Twig loader paths (supports `ChainLoader`).
-- **FR-SEC-002**: Security config MUST expose firewall `twig_inspector` for `^/_template/` with `security: false` (local IDE redirect only).
+- **FR-SEC-002**: *(Retired 2026-10-31, audit BS I2)* The unused `Resources/config/packages/security.yaml` (`security: false` firewall for `^/_template/`, loaded by nothing) was removed; hosts that need it add a `when@dev` firewall themselves (see `docs/SECURITY.md`).
+- **FR-SEC-004**: `OpenTemplateController` MUST reject (403) requests whose `Sec-Fetch-Site` header is present and not `same-origin` or `none`, so another site cannot trigger the IDE redirect (audit BS I3).
+- **FR-SEC-005**: The overlay MUST follow only same-origin `http(s)` links whose normalized path is under the template route prefix (`template_route_prefix` from the collector config, default `/_template/`); any other link parsed from a page comment (`javascript:`, `data:`, other origins, `..` escapes) MUST be ignored (`link-guard.ts`, audit BS L1).
 - **FR-SEC-003**: `DevEnvironments` defines the only allowed environments (`dev`, `test`). When `kernel.environment` is set, `NowoTwigInspectorExtension` MUST call `assertAllowed()` (throw `LogicException` otherwise). Install command MUST refuse non-allowed `--env`. Injectors MUST require `DevEnvironments::isAllowed()` in addition to `kernel.debug`.
 
 ### Web Profiler
 
-- **FR-PROF-001**: `TwigInspectorCollector` (id `twig_inspector`, priority 260) template `@NowoTwigInspectorBundle/Collector/template.html.twig` MUST expose templates, blocks, controllers, enabled flag, overlay config JSON (`window.__twig_inspector_config`), and load built `index.min.js`.
+- **FR-PROF-001**: `TwigInspectorCollector` (id `twig_inspector`, priority 260) template `@NowoTwigInspectorBundle/Collector/template.html.twig` MUST expose templates, blocks, controllers, enabled flag, overlay config JSON (`window.__twig_inspector_config`, including the router-generated `template_route_prefix`), and load built `index.min.js`. The toolbar checkbox state MUST come from `collector.enabled` (configured `cookie_name`).
 - **FR-PROF-002**: Collector MUST parse Twig comment regex `/<!--\s+\S+\s+([^\s]+)\s+\[([^\]]+)\]\s+#(\w+)-->/u` and classify block vs template; optional `lateCollect()` adds Twig profiler timings when `enable_metrics=true`.
 
 ### CLI

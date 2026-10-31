@@ -7,7 +7,8 @@ services:
     container_name: twig-inspector-symfony8-php
     working_dir: /app
     ports:
-      - "${PORT:-8003}:80"
+      # Dev kernel with the profiler and /_template/: loopback only (audit BS I6)
+      - "127.0.0.1:${PORT:-8003}:80"
     volumes:
       - .:/app
       # Mount bundle root so the path repo symlink works and template/code changes are visible

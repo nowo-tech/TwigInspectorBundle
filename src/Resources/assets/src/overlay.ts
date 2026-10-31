@@ -7,6 +7,7 @@ import type { Block, Template } from './types';
 import { BlockStorage } from './block-storage';
 import { blockMatchesFilter } from './filter-match';
 import { getLogger } from './logger';
+import { safeTemplateLink } from './link-guard';
 
 /**
  * Overlay that shows which Twig template (or controller) rendered the element under the cursor.
@@ -359,9 +360,10 @@ export class Overlay {
   }
 
   private navigateSingleTemplate(link: string, event: MouseEvent): void {
-    if (link && link !== '#') {
+    const target = safeTemplateLink(link);
+    if (target !== null) {
       this.reset();
-      window.location.href = link;
+      window.location.href = target;
     }
     event.stopPropagation();
   }
@@ -383,13 +385,11 @@ export class Overlay {
     row.dataset.href = template.link;
     row.innerText = template.name;
     row.addEventListener('click', (ev: MouseEvent) => {
-      const href = (ev.currentTarget as HTMLElement).dataset.href || '';
+      const target = safeTemplateLink((ev.currentTarget as HTMLElement).dataset.href);
       this.reset();
-      /* c8 ignore start -- v8 underreports branches when reached via synthetic click */
-      if (href && href !== '#') {
-        window.location.href = href;
+      if (target !== null) {
+        window.location.href = target;
       }
-      /* c8 ignore stop */
       ev.stopPropagation();
     });
     return row;
