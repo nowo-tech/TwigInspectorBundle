@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6d64ade24616ef556124d0e6be4f94a1",
+    "content-hash": "b97b62f229d999fb2963e0aacde55ce4",
     "packages": [
         {
             "name": "psr/cache",
@@ -3959,7 +3959,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-10-27T14:06:26+00:00"
+            "time": "2026-10-27T14:06:26+00:00",
+            "published-time": "2026-10-27T14:06:42+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",
@@ -6710,5 +6711,8 @@
         "php": ">=8.2 <8.6"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "platform-overrides": {
+        "php": "8.2.0"
+    },
+    "plugin-api-version": "2.11.0"
 }
