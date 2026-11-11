@@ -20,6 +20,7 @@
   - [W-03 — Collector keeps previous data when the inspector is disabled (Low, scenario B only)](#w-03--collector-keeps-previous-data-when-the-inspector-is-disabled-low-scenario-b-only)
   - [W-04 — Output buffers opened in `start()` depend on Twig to be closed on exceptions (Low)](#w-04--output-buffers-opened-in-start-depend-on-twig-to-be-closed-on-exceptions-low)
 - [Usage recommendations in worker mode](#usage-recommendations-in-worker-mode)
+- [Igor findings triage (2026-11-11)](#igor-findings-triage-2026-11-11)
 - [Re-audit triggers](#re-audit-triggers)
 
 ## Execution model assumed
@@ -106,6 +107,15 @@ No other findings. There are no static properties, superglobals or persistent re
 - The "Controllers" section of the profiler panel is reliable in worker mode (W-01 resolved).
 - Worker mode without kernel reboot and without `services_resetter` is supported (scenario B).
 - Subclasses of `HtmlCommentsExtension` / `BoxDrawings` must not add more cross-request state without implementing `reset()`.
+
+## Igor findings triage (2026-11-11)
+
+`composer igor` (igor-php 0.10.1) reported 1 warning on `main`; false positive. Igor now runs in CI (`igor` job) and
+reports 0 KO / 0 WARN.
+
+| Finding | Verdict | Resolution |
+|---------|---------|------------|
+| `HtmlCommentsExtension::$ownedBufferLevels` "mutated but not reset in reset()" | False positive | `reset()` already closed and popped every owned buffer through `discardOwnedBuffers()`, and it runs at the first inspected render of every new main request (`resetStateOnNewMainRequest()`), so scenario B is covered; igor does not follow the call. `reset()` now also assigns `$this->ownedBufferLevels = []` explicitly. |
 
 ## Re-audit triggers
 
