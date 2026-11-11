@@ -179,9 +179,10 @@ class HtmlCommentsExtension extends AbstractExtension implements ResetInterface
     public function reset(): void
     {
         $this->discardOwnedBuffers();
-        $this->previousContent = null;
-        $this->nestingLevel    = 0;
-        $this->stateRequest    = null;
+        $this->ownedBufferLevels = []; // already emptied by discardOwnedBuffers(); explicit for the igor reset check
+        $this->previousContent   = null;
+        $this->nestingLevel      = 0;
+        $this->stateRequest      = null;
         $this->boxDrawings->reset();
     }
 

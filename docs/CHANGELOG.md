@@ -69,6 +69,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+### Changed
+
+- FrankenPHP worker audit (igor): `HtmlCommentsExtension::reset()` empties the owned output-buffer list explicitly; the igor warning was a false positive (the list was already emptied by `discardOwnedBuffers()` at every new main request). See `docs/FRANKENPHP-WORKER-AUDIT.md`.
+- CI: new standalone `igor` job runs `composer igor` (REQ-CS-008).
+
 ### Documentation
 
 - USAGE: new section "Using it from a DDD / hexagonal application" (dev-only presentation tool, same setup for both host kinds, deptrac layer note).
