@@ -17,6 +17,7 @@ This guide explains how to use the inspector overlay and the Web Profiler panel.
 - [Shortcuts](#shortcuts)
 - [Full panel](#full-panel)
 - [Overriding bundle templates](#overriding-bundle-templates)
+- [Using it from a DDD / hexagonal application](#using-it-from-a-ddd--hexagonal-application)
 - [Troubleshooting](#troubleshooting)
 
 ## Quick overview
@@ -121,6 +122,21 @@ Copy the original from `vendor/nowo-tech/twig-inspector-bundle/src/Resources/vie
 | `Collector/toolbar_item.html.twig` | Toolbar dropdown fragment (icon, enable checkbox, filter, shortcuts). |
 
 After adding or changing overrides, clear the Twig cache if needed: `php bin/console cache:clear`.
+
+## Using it from a DDD / hexagonal application
+
+Twig Inspector is a **development-only presentation tool**. It refuses to load outside the `dev` and `test`
+environments, has no Doctrine dependency, defines no entities and never touches your domain objects: it only listens
+to kernel controller/response events and wraps Twig output in HTML comments. Standard Symfony projects and DDD /
+hexagonal ones use exactly the same setup.
+
+- Register it in `config/bundles.php` for `dev` (and optionally `test`) only.
+- Nothing in your domain or application layer needs to reference it: there are no ports or interfaces to type-hint,
+  no services to replace or decorate, no events to listen to and no IDs to map.
+- The only extension point is presentation-side: override its templates (see
+  [Overriding bundle templates](#overriding-bundle-templates)).
+- If you enforce layer rules (e.g. deptrac), the `Nowo\TwigInspectorBundle\` namespace belongs to the
+  presentation/dev-tooling layer and must not be referenced from domain or application code.
 
 ## Troubleshooting
 

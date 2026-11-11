@@ -69,6 +69,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- USAGE: new section "Using it from a DDD / hexagonal application" (dev-only presentation tool, same setup for both host kinds, deptrac layer note).
+
 ## [1.3.2] - 2026-10-31
 
 Security: the overlay only follows same-origin template-route links (audit BS L1); Sec-Fetch-Site check on open-in-IDE; stale dist and unused security.yaml removed. See [UPGRADING](UPGRADING.md#to-132).
