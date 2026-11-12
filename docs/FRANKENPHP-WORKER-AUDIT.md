@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Package | `nowo-tech/twig-inspector-bundle` (`symfony-bundle`, dev/test only) |
-| Audited revision | `v1.1.5` |
-| Audit date | 2026-09-25 |
+| Audited revision | `v1.3.2` (kept-alive test and rule-7 note added 2026-11-12; earlier manual review kept below) |
+| Audit date | 2026-11-12 (first audit 2026-09) |
 | Method | Manual review of every PHP file under `src/` (Twig extensions, node visitor, nodes, subscribers, data collector, controller, command, DI extension, compiler pass, `Resources/config/*.yaml`); HttpKernel request-stack behaviour cross-checked in the installed `symfony/http-kernel` v7.4.18 (dev dependency) |
 | **Verdict** | ✅ **Viable under scenario B** — fully compatible with FrankenPHP worker when the kernel is not reset between requests; controller map is freed on terminate (and weakly keyed), rendering / owned buffers and collector state reset per main request |
 | Remediation (2026-09-23 / 2026-09-25) | W-01, W-02, W-03, W-04 resolved (`src/EventSubscriber/ControllerRenderSubscriber.php`, `src/Twig/HtmlCommentsExtension.php`, `src/BoxDrawings.php`, `src/DataCollector/TwigInspectorCollector.php`). Regression tests simulate consecutive requests on the same instances without `reset()` (`tests/Unit/EventSubscriber/ControllerRenderSubscriberTest.php`, `tests/Unit/Twig/HtmlCommentsExtensionTest.php`, `tests/Unit/DataCollector/TwigInspectorCollectorTest.php`) and assert `kernel.reset` registration (`tests/Integration/BundleIntegrationTest.php`) |
@@ -19,6 +19,7 @@
   - [W-02 — Twig comment rendering state carries over between requests (Low)](#w-02--twig-comment-rendering-state-carries-over-between-requests-low)
   - [W-03 — Collector keeps previous data when the inspector is disabled (Low, scenario B only)](#w-03--collector-keeps-previous-data-when-the-inspector-is-disabled-low-scenario-b-only)
   - [W-04 — Output buffers opened in `start()` depend on Twig to be closed on exceptions (Low)](#w-04--output-buffers-opened-in-start-depend-on-twig-to-be-closed-on-exceptions-low)
+- [Kept-alive test (REQ-RUNTIME-002)](#kept-alive-test-req-runtime-002)
 - [Usage recommendations in worker mode](#usage-recommendations-in-worker-mode)
 - [Igor findings triage (2026-11-11)](#igor-findings-triage-2026-11-11)
 - [Re-audit triggers](#re-audit-triggers)
@@ -100,6 +101,21 @@ A worker demo exists: `demo/symfony8/docker/frankenphp/Caddyfile:15` declares a 
 - **Status:** Resolved — `ownedBufferLevels` records each level after `ob_start()`; `end()` / `reset()` / new-main-request discard only matching owned levels, without closing unrelated outer buffers (`src/Twig/HtmlCommentsExtension.php`). Covered by `testResetClosesLeakedOwnedBuffersWithoutTouchingOuterBuffers`.
 
 No other findings. There are no static properties, superglobals or persistent resources.
+
+## Kept-alive test (REQ-RUNTIME-002)
+
+Test: `Nowo\TwigInspectorBundle\Tests\Integration\Worker\WorkerKeptAliveKernelTest` (`tests/Integration/Worker/WorkerKeptAliveKernelTest.php`). It uses one booted kernel in the `test` environment (`WorkerKeptAliveKernel`) with kernel debug off, like a production worker, and only the inspector's own `debug` argument forced on (Symfony's debug services keep about 50 KB per request when `kernel.reset` never runs, with or without this bundle, so they are not part of the bundle's guarantee; the inspector is dev/test only), driven through `http_kernel` `handle()` + `terminate()` for two request contexts: "alpha" with the inspector cookie and its own marker, "beta" without the cookie and another marker. `services_resetter` / `kernel.reset` is **never** called. It runs 1,200 iterations alternating the two inputs, asserts every response carries the same, non-growing set of inspector comments for the cookie user and no comment at all (and nothing of the other marker) for the other user, and that memory growth after a 100-iteration warm-up stays below 4 MiB.
+
+| Service | State kept between requests | Reset mechanism |
+|---------|-----------------------------|-----------------|
+| `Twig\HtmlCommentsExtension` | `previousContent`, `nestingLevel`, `ownedBufferLevels`, `stateRequest` (weak reference to the main request) | reset on the first inspected node of every new main request (`resetStateOnNewMainRequest()`), so it works with `kernel.reset` off; `reset()` also registered for `kernel.reset` |
+| `BoxDrawings` | current box charset | reset together with the extension |
+| `EventSubscriber\ControllerRenderSubscriber` | `WeakMap` keyed by the main request | entry removed on `kernel.terminate`, weakly keyed, `reset()` for `kernel.reset` |
+| `DataCollector\TwigInspectorCollector`, `Controller\OpenTemplateController`, `Twig\TwigInspectorExtension` | see Services reviewed | profiler data collectors are per request |
+
+Result: no request data is carried between requests, so the bundle is **safe with kernel reset false**.
+
+Rule 7: the bundle never clears or resets the host's default EntityManager (it uses no persistence).
 
 ## Usage recommendations in worker mode
 
