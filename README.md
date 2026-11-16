@@ -40,7 +40,7 @@ Looking for **Twig debug**, **Twig inspector**, **Symfony template debug**, **te
 - ✅ Cookie-based activation (no code changes needed)
 - ✅ Supports nested blocks and templates
 - ✅ **Configurable template/block exclusion** (with wildcard support)
-- ✅ **Template usage metrics** in Web Profiler (templates, blocks, **controllers**)
+- ✅ **Template usage metrics** in Web Profiler (templates, blocks, **controllers**; `enable_metrics`, default `true` — see [CONFIGURATION](docs/CONFIGURATION.md))
 - ✅ **Controllers in Profiler**: Main controller + fragments from `render(controller(...))` with Main/Fragment badges and render counts
 - ✅ **Controller HTML comments** in page source when inspector is on (main + fragment boundaries)
 - ✅ **Performance optimized** (skips processing when disabled)
@@ -115,7 +115,7 @@ The bundle injects HTML comments before and after every Twig block and template.
 
 ## Demo
 
-The Symfony 8.0 demo is in `demo/symfony8`. It runs **FrankenPHP** (Caddy + PHP): the app listens on **:80 inside the container**, and `docker-compose` maps that to the host port **`PORT`** (default: **8003**). Production-style configs use FrankenPHP **worker** mode; classic/dev-friendly mode uses `Caddyfile.dev` without workers (see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md)). Quick start: [docs/DEMO.md](docs/DEMO.md).
+The Symfony 8.1 demo is in `demo/symfony8`. It runs **FrankenPHP** (Caddy + PHP): the app listens on **:80 inside the container**, and `docker-compose` maps that to the host port **`PORT`** (default: **8003**). Production-style configs use FrankenPHP **worker** mode; classic/dev-friendly mode uses `Caddyfile.dev` without workers (see [docs/DEMO-FRANKENPHP.md](docs/DEMO-FRANKENPHP.md)). Quick start: [docs/DEMO.md](docs/DEMO.md).
 
 Playwright e2e: `make -C demo/symfony8 test-e2e`; refresh the README screenshots with `make -C demo/symfony8 demo-screenshots` (see [CONTRIBUTING](docs/CONTRIBUTING.md#end-to-end-tests-and-screenshots-req-demo-013)).
 
@@ -149,13 +149,11 @@ Run tests and QA with Docker: `make up && make install && make test` (or `make t
 - [FrankenPHP worker audit (no kernel reset)](docs/FRANKENPHP-WORKER-AUDIT.md)
 - [Development](docs/DEVELOPMENT.md)
 - [Branching](docs/BRANCHING.md)
-**Security**: The bundle validates template paths and restricts routes to `dev`/`test`. See [docs/SECURITY.md](docs/SECURITY.md).
-**Template usage metrics**: When `enable_metrics` is `true` (default), the Web Profiler shows template/block usage. Details in [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
 
 ## Tests and coverage
 
-- Tests: PHPUnit unit + integration (PHP, 245 tests), Vitest with jsdom (TS/JS, 133 tests)
-- PHP: 100% (lines, 684/684; gate: `make test-coverage` / CI **Code Coverage** job fail below 100%)
+- Tests: PHPUnit unit + integration (PHP, 258 tests), Vitest with jsdom (TS/JS, 176 tests)
+- PHP: 100% (lines, 698/698; gate: `make test-coverage` / CI **Code Coverage** job fail below 100%)
 - TS/JS: 100% (lines, statements, functions and branches; gate: Vitest thresholds in `vitest.config.ts`, CI **Frontend** job)
 - Python: N/A
 

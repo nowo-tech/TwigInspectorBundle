@@ -2,7 +2,7 @@
 
 The bundle includes a demo project for the current Symfony major. It has its own `docker-compose.yml` and can be run independently:
 
-- **Symfony 8.0 Demo**: `demo/symfony8/` (Port 8003 by default, configurable via `PORT`)
+- **Symfony 8.1 Demo**: `demo/symfony8/` (Port 8003 by default, configurable via `PORT`)
 
 **Docker stack:** The demo uses **FrankenPHP** with **Caddy** as the web server. The bundled **Caddyfile serves HTTP only** (`:80` in the container, published to the host as `PORT`: 8003). TLS/HTTPS is **not** enabled in the default demo config; you can extend Caddy if you need HTTPS locally.
 
@@ -17,7 +17,7 @@ The bundle includes a demo project for the current Symfony major. It has its own
 ## Quick Start with Docker
 
 ```bash
-# Symfony 8.0 Demo
+# Symfony 8.1 Demo
 cd demo/symfony8
 docker-compose up -d
 docker-compose exec php composer install

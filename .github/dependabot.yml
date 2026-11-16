@@ -46,3 +46,40 @@ updates:
     commit-message:
       prefix: "chore(ci):"
 
+  # Maintain npm dependencies (/)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Madrid"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "javascript"
+    groups:
+      npm-root:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "chore(deps):"
+
+  # Maintain npm dependencies (/demo/symfony8/e2e)
+  - package-ecosystem: "npm"
+    directory: "/demo/symfony8/e2e"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Madrid"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "javascript"
+    groups:
+      npm-demo-symfony8-e2e:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "chore(deps):"

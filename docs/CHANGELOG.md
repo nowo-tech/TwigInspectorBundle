@@ -69,6 +69,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- README: the Documentation section keeps plain links only (the metrics note moved to Features; the security note is already in the warning banner) (REQ-DOCS-002); test counts and PHP coverage match CI (258 PHPUnit tests, 176 Vitest tests, 698/698 lines) (REQ-TEST-007); the demo is Symfony 8.1.
+- `docs/CONTRIBUTING.md` links the Contributor Covenant Code of Conduct (REQ-DOCS-015); `docs/DEMO.md` says Symfony 8.1.
+
+### Changed (tooling)
+
+- Dependabot: npm updates for the root and demo e2e manifests (REQ-GH-002).
+
 ### Tests
 
 - Tests: kept-alive worker test `WorkerKeptAliveKernelTest` (one kernel or one kept set of services, never reset, 1,200 alternating iterations, memory bound) and `docs/FRANKENPHP-WORKER-AUDIT.md` refreshed for v1.3.2; no runtime change.
