@@ -484,7 +484,6 @@ final class OpenTemplateControllerTest extends TestCase
         // Use reflection to test validateFilePath directly with a non-existent path
         $reflection = new ReflectionClass($controller);
         $method     = $reflection->getMethod('validateFilePath');
-        $method->setAccessible(true);
 
         // Test with a path that realpath() will return false for
         $nonExistentPath = '/nonexistent/path/to/template.html.twig';
@@ -513,7 +512,6 @@ final class OpenTemplateControllerTest extends TestCase
             // Use reflection to test validateFilePath
             $reflection = new ReflectionClass($controller);
             $method     = $reflection->getMethod('validateFilePath');
-            $method->setAccessible(true);
 
             // Test with a valid file path - should not throw exception
             $method->invoke($controller, $templateFile);
@@ -584,7 +582,6 @@ final class OpenTemplateControllerTest extends TestCase
 
             $reflection = new ReflectionClass($controller);
             $method     = $reflection->getMethod('validateFilePath');
-            $method->setAccessible(true);
 
             $this->expectException(BadRequestException::class);
             $this->expectExceptionMessage('outside allowed Twig template directories');
@@ -652,7 +649,6 @@ final class OpenTemplateControllerTest extends TestCase
 
             $reflection = new ReflectionClass($controller);
             $method     = $reflection->getMethod('validateFilePath');
-            $method->setAccessible(true);
 
             $this->expectException(BadRequestException::class);
             $this->expectExceptionMessage('outside allowed Twig template directories');
@@ -687,7 +683,6 @@ final class OpenTemplateControllerTest extends TestCase
 
             $reflection = new ReflectionClass($controller);
             $method     = $reflection->getMethod('collectFilesystemPaths');
-            $method->setAccessible(true);
 
             $paths = $method->invoke($controller, $loader);
             $this->assertIsArray($paths);
