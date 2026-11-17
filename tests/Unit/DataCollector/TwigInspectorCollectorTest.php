@@ -48,8 +48,8 @@ final class TwigInspectorCollectorTest extends TestCase
         $profile->enter();
         $ref        = new ReflectionClass($profile);
         $startsProp = $ref->getProperty('starts');
-        $endsProp = $ref->getProperty('ends');
-        $starts = $startsProp->getValue($profile);
+        $endsProp   = $ref->getProperty('ends');
+        $starts     = $startsProp->getValue($profile);
         $endsProp->setValue($profile, ['wt' => $starts['wt'] + $durationSeconds]);
 
         return $profile;
