@@ -69,6 +69,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- PHP 8.5: `TwigInspectorCollector::getProfileFromExtension()` no longer calls `ReflectionProperty::setAccessible()`, deprecated since 8.5 because it has had no effect since PHP 8.1 (the package requires PHP >= 8.2). The tests drop the same no-op calls. Same behaviour; the PHP 8.5 CI jobs report no deprecation (REQ-SF-005).
+
 ### Documentation
 
 - README: the Documentation section keeps plain links only (the metrics note moved to Features; the security note is already in the warning banner) (REQ-DOCS-002); test counts and PHP coverage match CI (258 PHPUnit tests, 176 Vitest tests, 698/698 lines) (REQ-TEST-007); the demo is Symfony 8.1.

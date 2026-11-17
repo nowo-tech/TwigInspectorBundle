@@ -385,7 +385,6 @@ final class InstallCommandTest extends TestCase
         $command    = new InstallCommand($this->testProjectDir);
         $reflection = new ReflectionClass($command);
         $method     = $reflection->getMethod('ensureRoutesFile');
-        $method->setAccessible(true);
 
         $input  = new ArrayInput([]);
         $output = new BufferedOutput();
@@ -420,7 +419,6 @@ final class InstallCommandTest extends TestCase
             $command    = new InstallCommand($this->testProjectDir);
             $reflection = new ReflectionClass($command);
             $method     = $reflection->getMethod('ensureRoutesFile');
-            $method->setAccessible(true);
 
             $input  = new ArrayInput([]);
             $output = new BufferedOutput();
@@ -451,7 +449,6 @@ final class InstallCommandTest extends TestCase
             $command    = new InstallCommand($this->testProjectDir);
             $reflection = new ReflectionClass($command);
             $method     = $reflection->getMethod('ensureRoutesFile');
-            $method->setAccessible(true);
 
             $input  = new ArrayInput([]);
             $output = new BufferedOutput();
@@ -570,7 +567,6 @@ final class InstallCommandTest extends TestCase
         // Use reflection to test ensureRoutesFile with a mock Filesystem that throws exception
         $reflection = new ReflectionClass($command);
         $method     = $reflection->getMethod('ensureRoutesFile');
-        $method->setAccessible(true);
 
         $input  = new ArrayInput([]);
         $output = new BufferedOutput();
@@ -608,7 +604,6 @@ final class InstallCommandTest extends TestCase
         // Use reflection to test ensureRoutesFile with a mock Filesystem that throws exception
         $reflection = new ReflectionClass($command);
         $method     = $reflection->getMethod('ensureRoutesFile');
-        $method->setAccessible(true);
 
         $input  = new ArrayInput([]);
         $output = new BufferedOutput();

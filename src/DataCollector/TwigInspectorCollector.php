@@ -293,7 +293,6 @@ class TwigInspectorCollector implements DataCollectorInterface, LateDataCollecto
     {
         try {
             $r = new ReflectionProperty($extension, 'actives');
-            $r->setAccessible(true);
             $actives = $r->getValue($extension);
 
             return is_array($actives) && isset($actives[0]) && $actives[0] instanceof Profile ? $actives[0] : null;

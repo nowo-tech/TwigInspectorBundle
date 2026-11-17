@@ -167,7 +167,6 @@ final class ControllerRenderSubscriberTest extends TestCase
         $subscriber = new ControllerRenderSubscriber(new RequestStackMainOrMasterAdapter(new RequestStack()));
         $reflection = new ReflectionClass($subscriber);
         $method     = $reflection->getMethod('controllerToString');
-        $method->setAccessible(true);
 
         $this->assertSame('App\\Controller::index', $method->invoke($subscriber, 'App\\Controller::index'));
         $this->assertSame('unknown', $method->invoke($subscriber, new stdClass()));

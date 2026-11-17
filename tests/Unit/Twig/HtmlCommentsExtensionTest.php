@@ -227,7 +227,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
 
@@ -243,7 +242,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
 
@@ -260,7 +258,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
 
@@ -287,7 +284,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
 
@@ -311,7 +307,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
 
@@ -335,7 +330,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
 
@@ -362,7 +356,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
 
@@ -388,7 +381,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
 
@@ -415,7 +407,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $result = $method->invoke($extension, $ref);
 
@@ -436,7 +427,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($extension);
         $method     = $reflection->getMethod('isExcluded');
-        $method->setAccessible(true);
 
         $this->assertTrue($method->invoke($extension, 'admin/dashboard.html.twig', ['admin/*']));
         $this->assertTrue($method->invoke($extension, 'email/welcome.html.twig', ['email/*.html.twig']));
@@ -447,7 +437,6 @@ final class HtmlCommentsExtensionTest extends TestCase
     {
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('isExcludedByRegex');
-        $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($this->extension, 'template.html.twig', []));
     }
@@ -456,7 +445,6 @@ final class HtmlCommentsExtensionTest extends TestCase
     {
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('isExcludedByPrefix');
-        $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($this->extension, 'template.html.twig', []));
     }
@@ -507,7 +495,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
 
@@ -519,7 +506,6 @@ final class HtmlCommentsExtensionTest extends TestCase
     {
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('isSupported');
-        $method->setAccessible(true);
 
         // Test with empty string - trimmed will be empty
         $result = $method->invoke($this->extension, '');
@@ -532,7 +518,6 @@ final class HtmlCommentsExtensionTest extends TestCase
     {
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('isSupported');
-        $method->setAccessible(true);
 
         // Test with whitespace only - trimmed will be empty
         $result = $method->invoke($this->extension, '   ');
@@ -545,7 +530,6 @@ final class HtmlCommentsExtensionTest extends TestCase
     {
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('isSupported');
-        $method->setAccessible(true);
 
         // Test with content that has HTML tags but starts with [ or {
         // This tests the case where trimmed !== '' && in_array($trimmed[0], ['[', '{'], true)
@@ -561,7 +545,6 @@ final class HtmlCommentsExtensionTest extends TestCase
     {
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('isSupported');
-        $method->setAccessible(true);
 
         // Test with Backbone template (contains <% %>)
         $result = $method->invoke($this->extension, '<div><%= variable %></div>');
@@ -574,7 +557,6 @@ final class HtmlCommentsExtensionTest extends TestCase
     {
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('isSupported');
-        $method->setAccessible(true);
 
         // Test with valid HTML that doesn't start with brackets and doesn't contain Backbone syntax
         $result = $method->invoke($this->extension, '<div>Hello World</div>');
@@ -587,7 +569,6 @@ final class HtmlCommentsExtensionTest extends TestCase
     {
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('isSupported');
-        $method->setAccessible(true);
 
         // Test with HTML that starts with whitespace (trimmed will be empty, so trimmed[0] won't be accessed)
         $result1 = $method->invoke($this->extension, '   <div>Hello</div>   ');
@@ -602,7 +583,6 @@ final class HtmlCommentsExtensionTest extends TestCase
     {
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('isSupported');
-        $method->setAccessible(true);
 
         // Test with string that is empty after trim - this tests the trimmed !== '' check
         $result = $method->invoke($this->extension, '   ');
@@ -621,7 +601,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('getComment');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, '┏━', $ref);
 
@@ -638,7 +617,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('getStartComment');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
 
@@ -654,7 +632,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('getEndComment');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
 
@@ -674,7 +651,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('getLink');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
 
@@ -692,7 +668,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('getLink');
-        $method->setAccessible(true);
 
         $result = $method->invoke($this->extension, $ref);
 
@@ -712,7 +687,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($this->extension, $ref));
     }
@@ -743,7 +717,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $this->assertTrue($method->invoke($extension, $ref));
     }
@@ -758,7 +731,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($this->extension, $ref));
     }
@@ -773,7 +745,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($this->extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($this->extension, $ref));
     }
@@ -799,7 +770,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($extension, $ref));
     }
@@ -826,7 +796,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($extension, $ref));
     }
@@ -854,7 +823,6 @@ final class HtmlCommentsExtensionTest extends TestCase
 
         $reflection = new ReflectionClass($extension);
         $method     = $reflection->getMethod('shouldInspect');
-        $method->setAccessible(true);
 
         $this->assertFalse($method->invoke($extension, $ref));
     }
@@ -970,7 +938,6 @@ final class HtmlCommentsExtensionTest extends TestCase
         $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
 
         $nestingLevel = new ReflectionProperty($extension, 'nestingLevel');
-        $nestingLevel->setAccessible(true);
         $nestingLevel->setValue($extension, 2);
 
         ob_start();
@@ -1008,7 +975,6 @@ final class HtmlCommentsExtensionTest extends TestCase
         $this->urlGenerator->method('generate')->willReturn('/_template/template.html.twig?line=1');
 
         $nestingLevel = new ReflectionProperty($extension, 'nestingLevel');
-        $nestingLevel->setAccessible(true);
         $nestingLevel->setValue($extension, 2);
 
         ob_start();

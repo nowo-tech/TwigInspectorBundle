@@ -552,7 +552,6 @@ final class ControllerCommentSubscriberTest extends TestCase
         $subscriber = new ControllerCommentSubscriber(new RequestStackMainOrMasterAdapter(new RequestStack()), 'twig_inspector_is_active', true);
         $reflection = new ReflectionClass($subscriber);
         $method     = $reflection->getMethod('controllerToString');
-        $method->setAccessible(true);
 
         $this->assertSame('App\\Controller::index', $method->invoke($subscriber, 'App\\Controller::index'));
         $this->assertSame('unknown', $method->invoke($subscriber, new stdClass()));
@@ -578,7 +577,6 @@ final class ControllerCommentSubscriberTest extends TestCase
         $subscriber = new ControllerCommentSubscriber(new RequestStackMainOrMasterAdapter(new RequestStack()), 'twig_inspector_is_active', true);
         $reflection = new ReflectionClass($subscriber);
         $method     = $reflection->getMethod('looksLikeHtml');
-        $method->setAccessible(true);
 
         $this->assertTrue($method->invoke($subscriber, '<!DOCTYPE html><body>x</body>'));
         $this->assertTrue($method->invoke($subscriber, '<html><body>x</body></html>'));

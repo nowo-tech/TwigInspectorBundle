@@ -48,9 +48,7 @@ final class TwigInspectorCollectorTest extends TestCase
         $profile->enter();
         $ref        = new ReflectionClass($profile);
         $startsProp = $ref->getProperty('starts');
-        $startsProp->setAccessible(true);
         $endsProp = $ref->getProperty('ends');
-        $endsProp->setAccessible(true);
         $starts = $startsProp->getValue($profile);
         $endsProp->setValue($profile, ['wt' => $starts['wt'] + $durationSeconds]);
 
@@ -570,7 +568,6 @@ final class TwigInspectorCollectorTest extends TestCase
     {
         $extension = $this->createMock(ProfilerExtension::class);
         $ref       = new ReflectionProperty(ProfilerExtension::class, 'actives');
-        $ref->setAccessible(true);
         $ref->setValue($extension, []);
 
         $twig = $this->createMock(Environment::class);
