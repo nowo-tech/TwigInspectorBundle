@@ -62,7 +62,7 @@ final class DemoControllerTest extends WebTestCase
         $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists("[data-nowo-ui-demo-section=list] ul");
+        $this->assertSelectorExists('[data-nowo-ui-demo-section=list] ul');
         $this->assertSelectorTextContains('[data-nowo-ui-demo-section="list"] ul', 'Enable Twig Inspector');
     }
 
