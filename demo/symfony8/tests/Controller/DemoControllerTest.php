@@ -37,7 +37,8 @@ final class DemoControllerTest extends WebTestCase
         $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('.version-badge', 'Symfony 8.0');
+        $this->assertSelectorTextContains('[data-testid="demo-platform-bundle"]', 'Twig Inspector');
+        $this->assertSelectorTextContains('.nowo-ui-demo-platform__version', 'Symfony 8.0');
     }
 
     /**
@@ -49,7 +50,7 @@ final class DemoControllerTest extends WebTestCase
         $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2 + p', 'showcase the Twig Inspector Bundle functionality with Symfony 8.0');
+        $this->assertSelectorTextContains('main', 'showcase the Twig Inspector Bundle functionality with Symfony 8.0');
     }
 
     /**
@@ -61,8 +62,8 @@ final class DemoControllerTest extends WebTestCase
         $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('.feature-list');
-        $this->assertSelectorTextContains('.feature-list', 'Enable Twig Inspector');
+        $this->assertSelectorExists('[data-nowo-ui-demo-section=list] ul');
+        $this->assertSelectorTextContains('[data-nowo-ui-demo-section="list"] ul', 'Enable Twig Inspector');
     }
 
     /**
@@ -74,6 +75,6 @@ final class DemoControllerTest extends WebTestCase
         $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h4', 'Instructions');
+        $this->assertAnySelectorTextContains('h2', 'Instructions');
     }
 }

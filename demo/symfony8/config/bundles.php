@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Nowo\HotReloadBundle\NowoHotReloadBundle;
 use Nowo\TwigInspectorBundle\NowoTwigInspectorBundle;
+use Nowo\UiKitBundle\NowoUiKitBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
@@ -15,5 +16,6 @@ return [
     WebProfilerBundle::class       => ['dev' => true, 'test' => true],
     NowoHotReloadBundle::class     => ['dev' => true, 'test' => true],
     NowoTwigInspectorBundle::class => ['dev' => true, 'test' => true],
+    NowoUiKitBundle::class         => ['all' => true],
     TwigExtraBundle::class         => ['all' => true],
 ];

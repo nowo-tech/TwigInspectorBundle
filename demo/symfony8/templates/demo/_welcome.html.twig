@@ -1,2 +1,3 @@
-<h2>Welcome!</h2>
-<p>{{ message }}</p>
+{% embed '@NowoUiKit/demo_platform/_section.html.twig' with {title: 'Welcome!', kind: 'content'} %}
+    {% block section_body %}<p>{{ message }}</p>{% endblock %}
+{% endembed %}

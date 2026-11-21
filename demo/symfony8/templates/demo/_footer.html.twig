@@ -1,5 +1,5 @@
-<div class="mt-4 text-center">
-    <small class="text-muted">
-        Powered by <a href="https://github.com/nowo-tech/TwigInspectorBundle" target="_blank">Twig Inspector Bundle</a>
-    </small>
-</div>
+{% embed '@NowoUiKit/demo_platform/_section.html.twig' with {title: 'About', kind: 'content'} %}
+    {% block section_body %}
+        <p>Powered by <a href="https://github.com/nowo-tech/TwigInspectorBundle" target="_blank" rel="noopener">Twig Inspector Bundle</a></p>
+    {% endblock %}
+{% endembed %}

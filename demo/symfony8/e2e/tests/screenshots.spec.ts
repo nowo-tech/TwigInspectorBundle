@@ -28,7 +28,7 @@ test.describe('feature screenshots', () => {
     await showOverlay(page);
     // Close the toolbar dropdown opened by the icon click; keep only the page overlay.
     await page.addStyleTag({ content: '#_twig_inspector__icon .sf-toolbar-info { display: none !important; }' });
-    const target = page.locator('.demo-header h1');
+    const target = page.locator('#nowo-ui-content h1');
     const box = (await target.boundingBox())!;
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await page.mouse.move(box.x + box.width / 2 + 5, box.y + box.height / 2 + 2);
