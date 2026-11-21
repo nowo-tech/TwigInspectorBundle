@@ -11,7 +11,7 @@ test.describe('demo happy path', () => {
   test('home renders the demo and the inspector toolbar item', async ({ page }) => {
     const response = await page.goto('/');
     expect(response?.ok()).toBeTruthy();
-    await expect(page.locator('.demo-header')).toBeVisible();
+    await expect(page.locator('[data-testid="demo-platform"]')).toBeVisible();
     await expect(page.locator('#_twig_inspector__icon')).toBeVisible();
   });
 
@@ -22,7 +22,7 @@ test.describe('demo happy path', () => {
     expect(html).toContain('demo/home.html.twig');
     expect(html).toMatch(/<!--\s*\S*\s*demo\/_header\.html\.twig/);
     await showOverlay(page);
-    await page.locator('.demo-header h1').hover();
+    await page.locator('#nowo-ui-content h1').hover();
     await expect(page.locator('#_twig_inspector__overlay__info')).toBeVisible();
     await expect(page.locator('#_twig_inspector__overlay__info')).toContainText('.html.twig');
   });

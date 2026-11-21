@@ -1,6 +1,9 @@
-<h3 class="mt-4">How to Use:</h3>
-<ul class="feature-list">
-    {% for item in items %}
-        <li>{{ item }}</li>
-    {% endfor %}
-</ul>
+{% embed '@NowoUiKit/demo_platform/_section.html.twig' with {title: 'How to use', kind: 'list'} %}
+    {% block section_body %}
+        <ul>
+            {% for item in items %}
+                <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    {% endblock %}
+{% endembed %}

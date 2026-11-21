@@ -80,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed (tooling)
 
+- Demo: runs in UiKit's demo platform shell (`nowo-tech/ui-kit-bundle` ^2.60); the demo's own header is gone and the pages use the shell page headers and section cards. The demo now installs `nowo-tech/ui-kit-bundle` and loads no CDN stylesheet. Demo only, no bundle change.
 - Dependabot: npm updates for the root and demo e2e manifests (REQ-GH-002).
 
 ### Tests

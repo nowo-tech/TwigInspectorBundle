@@ -1,14 +1,5 @@
-<div class="mt-4">
-    <h3>Example Template Structure</h3>
-    <p>This page is built from several Twig files:</p>
-    <div class="code-block">
-        demo/layout.html.twig (extends base)<br>
-        ├── demo/_header.html.twig<br>
-        ├── demo/_welcome.html.twig<br>
-        ├── demo/_feature_list.html.twig<br>
-        ├── demo/_instructions.html.twig<br>
-        ├── demo/_template_structure.html.twig (this block)<br>
-        ├── demo/_twig_features.html.twig<br>
-        └── demo/_footer.html.twig
-    </div>
-</div>
+{% embed '@NowoUiKit/demo_platform/_section.html.twig' with {title: 'Example template structure', intro: 'This page is built from several Twig files.', kind: 'content'} %}
+    {% block section_body %}
+        {{ include(nowo_ui_partial('code_block'), {code: "demo/layout.html.twig (extends base)\n├── demo/_header.html.twig\n├── demo/_welcome.html.twig\n├── demo/_feature_list.html.twig\n├── demo/_controller_fragment.html.twig\n├── demo/_instructions.html.twig\n├── demo/_template_structure.html.twig (this block)\n├── demo/_twig_features.html.twig\n└── demo/_footer.html.twig"}) }}
+    {% endblock %}
+{% endembed %}
