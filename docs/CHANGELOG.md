@@ -89,6 +89,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Rector (`make rector-dry` passes again): `rector.php` skips `EventSubscriberToAttributeRector` for `ControllerCommentSubscriber` and `ControllerRenderSubscriber` (their public `getSubscribedEvents()` and `EventSubscriberInterface` stay). No source change, no behaviour change.
+- CI: new `release-gates` job runs the four release gates (`make rector-dry`, `validate-phpdoc`, `validate-translations`, `check-twig-extra`) in full mode, so a gate failure shows on the PR instead of at release time (CI only, no change to shipped code).
 - FrankenPHP worker audit (igor): `HtmlCommentsExtension::reset()` empties the owned output-buffer list explicitly; the igor warning was a false positive (the list was already emptied by `discardOwnedBuffers()` at every new main request). See `docs/FRANKENPHP-WORKER-AUDIT.md`.
 - CI: new standalone `igor` job runs `composer igor` (REQ-CS-008).
 
