@@ -51,6 +51,16 @@ export type BundleLogger = {
   error: (...args: unknown[]) => void;
 };
 
+/** True when the page asked for a silent console (`<html data-nowo-console="quiet">` or `globalThis.NOWO_CONSOLE = 'quiet'`). */
+function isQuiet(): boolean {
+  try {
+    if ((globalThis as { NOWO_CONSOLE?: unknown }).NOWO_CONSOLE === 'quiet') return true;
+    return typeof document !== 'undefined' && document.documentElement.dataset.nowoConsole === 'quiet';
+  } catch {
+    return false;
+  }
+}
+
 const STYLES = {
   script: 'color:#0ea5e9;font-weight:bold',
   debug: 'color:#6b7280',
@@ -161,6 +171,7 @@ export function createBundleLogger(name: string, options: BundleLoggerOptions = 
 
   return {
     scriptLoaded(): void {
+      if (isQuiet()) return;
       logScriptLoaded(prefix, buildTime);
     },
 

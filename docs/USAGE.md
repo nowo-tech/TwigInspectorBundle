@@ -19,6 +19,7 @@ This guide explains how to use the inspector overlay and the Web Profiler panel.
 - [Overriding bundle templates](#overriding-bundle-templates)
 - [Using it from a DDD / hexagonal application](#using-it-from-a-ddd--hexagonal-application)
 - [Troubleshooting](#troubleshooting)
+- [Browser console](#browser-console)
 
 ## Quick overview
 
@@ -144,3 +145,7 @@ hexagonal ones use exactly the same setup.
 - **Native popover or `<dialog>` does not close on Esc** — Upgrade to **1.1.7+**. Before that, the inspector called `preventDefault()` on every Escape even with the overlay off.
 - **“No template timing data”** — The Twig profiler may be disabled; template timings are optional. The overlay and “open in IDE” still work.
 - **Click does not open IDE** — Configure `framework.ide` in `config/packages/dev/framework.yaml` (see [Installation – IDE integration](INSTALLATION.md#ide-integration-optional)).
+
+## Browser console
+
+The bundle's script logs one line when it loads (`📦 [twig-inspector] script loaded, build: 2026-11-23 14:05 UTC`) so a developer can tell which build a page runs. To silence it, set `<html data-nowo-console="quiet">` or `globalThis.NOWO_CONSOLE = 'quiet'` before the script loads; nothing is printed then. The default is unchanged.
