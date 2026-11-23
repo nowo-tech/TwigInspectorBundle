@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.4.0] - 2026-11-23](#140---2026-11-23)
 - [[1.3.2] - 2026-10-31](#132---2026-10-31)
 - [[1.3.1] - 2026-10-30](#131---2026-10-30)
 - [[1.3.0] - 2026-10-30](#130---2026-10-30)
@@ -69,6 +70,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-23
+
 ### Fixed
 
 - PHP 8.5: `TwigInspectorCollector::getProfileFromExtension()` no longer calls `ReflectionProperty::setAccessible()`, deprecated since 8.5 because it has had no effect since PHP 8.1 (the package requires PHP >= 8.2). The tests drop the same no-op calls. Same behaviour; the PHP 8.5 CI jobs report no deprecation (REQ-SF-005).
@@ -102,6 +105,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Console**: quiet switch for the script-loaded line: `<html data-nowo-console="quiet">` or `globalThis.NOWO_CONSOLE = 'quiet'` prints nothing. The default is unchanged.
+
+[1.4.0]: https://github.com/nowo-tech/TwigInspectorBundle/releases/tag/v1.4.0
 
 ## [1.3.2] - 2026-10-31
 
