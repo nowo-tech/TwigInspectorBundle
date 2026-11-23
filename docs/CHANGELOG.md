@@ -93,10 +93,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI: new `release-gates` job runs the four release gates (`make rector-dry`, `validate-phpdoc`, `validate-translations`, `check-twig-extra`) in full mode, so a gate failure shows on the PR instead of at release time (CI only, no change to shipped code).
 - FrankenPHP worker audit (igor): `HtmlCommentsExtension::reset()` empties the owned output-buffer list explicitly; the igor warning was a false positive (the list was already emptied by `discardOwnedBuffers()` at every new main request). See `docs/FRANKENPHP-WORKER-AUDIT.md`.
 - CI: new standalone `igor` job runs `composer igor` (REQ-CS-008).
+- **Console**: the script-loaded line of `twig-inspector.js` now reads `📦 [twig-inspector] script loaded, build: 2026-11-23 14:05 UTC`: a readable UTC build time instead of the opaque source hash. The time comes from the committed `build-info.json` (`{sourceHash, builtAt}`): the source hash stays the change detector, `builtAt` is reused while the sources are unchanged and renewed only when they change, so rebuilding unchanged sources never rewrites the committed assets (no wall-clock stamp, no git date).
 
 ### Documentation
 
 - USAGE: new section "Using it from a DDD / hexagonal application" (dev-only presentation tool, same setup for both host kinds, deptrac layer note).
+
+### Added
+
+- **Console**: quiet switch for the script-loaded line: `<html data-nowo-console="quiet">` or `globalThis.NOWO_CONSOLE = 'quiet'` prints nothing. The default is unchanged.
 
 ## [1.3.2] - 2026-10-31
 
