@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Table of contents
 
 - [[Unreleased]](#unreleased)
+- [[1.4.1] - 2026-11-26](#141---2026-11-26)
 - [[1.4.0] - 2026-11-23](#140---2026-11-23)
 - [[1.3.2] - 2026-10-31](#132---2026-10-31)
 - [[1.3.1] - 2026-10-30](#131---2026-10-30)
@@ -70,9 +71,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-11-26
+
 ### Fixed
 
 - The `📦 [name] script loaded` console banner now prints once per page, even when the script is loaded twice: per-name once-guard (a `Set` on `globalThis`) in `logger.ts`, with a Vitest test and rebuilt assets (REQ-ASSETS-005).
+
+[1.4.1]: https://github.com/nowo-tech/TwigInspectorBundle/releases/tag/v1.4.1
 
 ## [1.4.0] - 2026-11-23
 
