@@ -4,6 +4,11 @@ import { createBundleLogger, setBundleLogger } from './logger';
 import { BlockClass, TemplateClass } from './models';
 import { Overlay } from './overlay';
 
+// REQ-ASSETS-005: every test starts with an empty once-guard registry.
+beforeEach(() => {
+  delete (globalThis as { __nowoScriptBannerNames?: unknown }).__nowoScriptBannerNames;
+});
+
 describe('Overlay', () => {
   let storage: BlockStorage;
   let statusIcon: HTMLElement;
