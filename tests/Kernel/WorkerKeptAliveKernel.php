@@ -10,10 +10,12 @@ use Nowo\TwigInspectorBundle\Twig\HtmlCommentsExtension;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Bundle\TwigBundle\TwigBundle;
+use Symfony\Component\Asset\Package;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 use function dirname;
@@ -79,16 +81,22 @@ final class WorkerKeptAliveKernel extends Kernel
 
     private function configureContainer(ContainerConfigurator $container): void
     {
-        $container->extension('framework', [
+        $framework = [
             'secret'                => 'test-secret',
             'test'                  => true,
             'http_method_override'  => false,
             'handle_all_throwables' => true,
             'php_errors'            => ['log' => true],
             'router'                => ['utf8' => true],
-            'property_info'         => ['enabled' => false],
-            'assets'                => ['enabled' => false],
-        ]);
+        ];
+        // Symfony 8.2 refuses the configuration of a component that is not installed: switch off only what is there.
+        if (class_exists(PropertyInfoExtractor::class)) {
+            $framework['property_info'] = ['enabled' => false];
+        }
+        if (class_exists(Package::class)) {
+            $framework['assets'] = ['enabled' => false];
+        }
+        $container->extension('framework', $framework);
         $container->extension('twig', ['paths' => [dirname(__DIR__) . '/Fixtures/worker_templates']]);
         $container->services()
             ->set(HostPageController::class)
